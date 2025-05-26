@@ -218,14 +218,13 @@
         
         <div class="conversion-form">
             <h2>Convertir des Points en Argent</h2>
-            
             <form action="{{ path('app_direct_convert_points') }}" method="post">
                 <div class="form-group">
                     <label for="points">Points à Convertir</label>
-                    <input type="number" id="points" name="points" class="form-control" value="100" min="100" step="100" required>
+                    <input type="range" id="pointsRange" name="pointsRange" class="form-control" min="100" max="5000" step="100" value="100" oninput="document.getElementById('points').value=this.value">
+                    <input type="number" id="points" name="points" class="form-control" value="100" min="100" step="100" required oninput="document.getElementById('pointsRange').value=this.value">
                     <small>Le nombre de points doit être un multiple de 100.</small>
                 </div>
-                
                 <div class="form-group">
                     <label for="devise">Devise</label>
                     <select id="devise" name="devise" class="form-control" required>
@@ -234,12 +233,19 @@
                         <option value="USD">USD</option>
                     </select>
                 </div>
-                
                 <button type="submit" class="btn">Convertir</button>
             </form>
         </div>
-        
         <div class="history-section">
+            <h2>Historique des Points</h2>
+            <form method="get" style="margin-bottom:15px;display:flex;gap:10px;align-items:center;">
+                <input type="text" name="search" placeholder="Recherche par texte ou raison..." value="{{ app.request.query.get('search') }}" class="form-control" style="max-width:200px;">
+                <label for="date_start">Du</label>
+                <input type="date" name="date_start" id="date_start" value="{{ app.request.query.get('date_start') }}" class="form-control">
+                <label for="date_end">au</label>
+                <input type="date" name="date_end" id="date_end" value="{{ app.request.query.get('date_end') }}" class="form-control">
+                <button type="submit" class="btn btn-sm btn-primary">Filtrer</button>
+            </form>
             <h2>Historique des Conversions</h2>
             
             {% if transactions is empty %}
@@ -271,12 +277,31 @@
         </div>
         
         <div class="history-section">
-            <h2>Historique des Points</h2>
+            <h2>HISTORIQUE DES POINTS</h2>
+            <input type="text" id="searchTextFilter" class="form-control" placeholder="Filtrer par type ou raison..." style="max-width:250px;margin-bottom:10px;">
+            <form method="get" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: flex-end;">
+                <div>
+                    <label for="search">Recherche</label>
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Type ou raison..." value="{{ app.request.get('search') }}">
+                </div>
+                <div>
+                    <label for="date">Date</label>
+                    <input type="date" id="date" name="date" class="form-control" value="{{ app.request.get('date') }}">
+                </div>
+                <div>
+                    <button type="submit" class="btn">Filtrer</button>
+                </div>
+                {% if app.request.get('search') or app.request.get('date') %}
+                <div>
+                    <a href="{{ path(app.request.attributes.get('_route')) }}" class="btn" style="background:#aaa;">Réinitialiser</a>
+                </div>
+                {% endif %}
+            </form>
             
             {% if pointsHistory is empty %}
                 <p>Aucun historique de points disponible.</p>
             {% else %}
-                <table>
+                <table id="pointsHistoryTable">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -309,6 +334,27 @@
                     </tbody>
                 </table>
             {% endif %}
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('searchTextFilter');
+                const table = document.getElementById('pointsHistoryTable');
+                if(searchInput && table) {
+                    searchInput.addEventListener('input', function() {
+                        const filter = this.value.toLowerCase();
+                        const rows = table.querySelectorAll('tbody tr');
+                        rows.forEach(row => {
+                            const type = row.children[1].textContent.toLowerCase();
+                            const raison = row.children[3].textContent.toLowerCase();
+                            if(type.includes(filter) || raison.includes(filter)) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+                    });
+                }
+            });
+            </script>
         </div>
     </div>
 {% endblock %}

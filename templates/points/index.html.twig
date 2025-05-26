@@ -1,283 +1,213 @@
+{% block title %} {% endblock %}
 
     {% block stylesheets %}
-        <!-- Inclure FontAwesome pour les icônes -->
+        <!-- FontAwesome pour les icônes -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-
+        <!-- Google Fonts (Poppins) -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
         <style>
-            /* Base Styles */
-            .dashboard-container {
-                display: flex;
-                min-height: 100vh;
-                background: #F5F5FF;
-                font-family: 'Poppins', sans-serif;
+            /* === Variables CSS === */
+            :root {
+                --theme-primary-blue: #1c2b5d;
+                --theme-accent-red: #b03c54;
+                --theme-text-dark: #1F2937;
+                --theme-bg-light: #F7F9FC;
+                --theme-bg-white: #FFFFFF;
+                --theme-border-color: #E0E0E0;
+                --body-font: 'Poppins', sans-serif;
             }
-
-            /* Sidebar */
-            .sidebar {
-                border-radius: 12px;
-                width: 220px;
-                background: linear-gradient(180deg, rgb(34, 0, 84) 0%, #5b21b6 100%);
-                color: #FFFFFF;
-                padding: 20px 8px;
-                position: fixed;
-                top: 7px;
-                bottom: 5px;
-                display: flex;
-                flex-direction: column;
-                box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+    
+            /* === Base Styles === */
+            body {
+                margin: 0;
+                font-family: var(--body-font);
+                background: var(--theme-bg-light);
+                color: var(--theme-text-dark);
+                font-size: 14px;
+                line-height: 1.5;
             }
-
-            .sidebar .logo {
-                margin-bottom: 40px;
-            }
-
-            .sidebar .logo h1 {
-                font-size: 24px;
-                font-weight: 700;
-                text-align: center;
-            }
-
-            .sidebar ul {
-                list-style: none;
-                flex-grow: 1;
-            }
-
-            .sidebar ul li {
-                margin: 10px 0;
-            }
-
-            .sidebar ul li a {
-                display: flex;
-                align-items: center;
-                color: #FFFFFF;
+    
+            a {
+                color: var(--theme-primary-blue);
                 text-decoration: none;
-                font-size: 16px;
-                font-weight: 500;
-                padding: 12px 15px;
-                border-radius: 8px;
-                transition: background 0.3s ease;
             }
-
-            .sidebar ul li a i {
-                margin-right: 10px;
+            a:hover {
+                text-decoration: underline;
             }
-
-            .sidebar ul li a:hover,
-            .sidebar ul li a.active {
-                background: rgba(255, 255, 255, 0.2);
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 15px;
             }
-
-            /* Main Content */
-            .main-content {
-                margin-left: 220px;
-                width: calc(100% - 220px);
-                padding: 20px;
-                background: #F5F5FF;
-            }
-
-            /* Header */
+    
+            /* === Navbar === */
             .header {
+                background: linear-gradient(135deg, var(--theme-bg-white), #e8ecef);
+                padding: 1.5rem;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-bottom: 1px solid #A3BFFA;
+            }
+            .header .nav-container {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 20px;
             }
-
-            .header h1 {
-                font-size: 28px;
-                font-weight: 700;
-                color: #1F2937;
+            .header .logo-img {
+                height: 50px;
+                transition: transform 0.3s ease;
             }
-
-            .header-actions {
+            .header .logo-img:hover {
+                transform: rotate(360deg);
+            }
+            .header .nav-links {
                 display: flex;
+                gap: 2rem;
                 align-items: center;
-                gap: 15px;
             }
-
-            .search-bar {
-                display: flex;
-                align-items: center;
-                background: #FFFFFF;
-                border-radius: 8px;
-                padding: 8px 15px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            }
-
-            .search-bar i {
-                color: #6B7280;
-                margin-right: 10px;
-            }
-
-            .search-bar input {
-                border: none;
-                outline: none;
-                font-size: 14px;
-                color: #1F2937;
-            }
-
-            .user-profile {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-            .user-profile img {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-            }
-
-            .user-profile span {
-                font-size: 14px;
+            .header .nav-link {
                 font-weight: 600;
-                color: #1F2937;
-            }
-
-            /* Welcome Card */
-            .welcome-card {
-                background: linear-gradient(135deg, rgb(44, 1, 109), rgb(88, 68, 116));
-                border-radius: 12px;
-                padding: 25px;
-                display: flex;
+                transition: all 0.3s ease;
+                display: inline-flex;
                 align-items: center;
-                gap: 20px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-                margin-bottom: 10px;
+                gap: 0.75rem;
+                color: var(--theme-text-dark);
+                font-size: 1rem;
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.8);
             }
-
-            .welcome-card:hover {
-                transform: scale(1.03);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-                background: linear-gradient(135deg, rgb(34, 0, 84), rgb(154, 92, 235));
+            .header .nav-link:hover {
+                color: var(--theme-primary-blue);
+                background-color: #D1D5DB;
+                box-shadow: 0 0 10px rgba(163, 191, 250, 0.5);
             }
-
-            .welcome-avatar {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 80px;
-                height: 80px;
-                background: #FFFFFF;
-                border-radius: 50%;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            }
-
-            .welcome-avatar span {
-                font-size: 40px;
-            }
-
-            .welcome-text h2 {
-                font-size: 24px;
-                font-weight: 700;
+            .header .nav-link:active {
                 color: #FFFFFF;
-                margin-bottom: 5px;
+                background-color: var(--theme-accent-red);
+                box-shadow: 0 2px 8px rgba(176, 60, 84, 0.3);
+                transform: scale(0.95);
             }
-
-            .welcome-text p {
-                font-size: 14px;
-                color: #E5E7EB;
+            .header .nav-link.active {
+                background-color: var(--theme-primary-blue);
+                color: #FFFFFF;
+                box-shadow: 0 0 15px rgba(28, 43, 93, 0.5);
             }
-
-            /* Stats Grid */
+    
+            /* === Main Content === */
+            .dashboard-container {
+                padding: 0;
+            }
+            .main-content {
+                display: flex;
+                width: 100%;
+                min-height: calc(100vh - 80px);
+                padding: 0;
+            }
+    
+            /* === Stats Grid === */
             .stats-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 15px;
-                margin-bottom: 20px;
+                gap: 1.5rem;
+                margin: 1.5rem 0;
             }
-
             .stat-card {
-                background: #FFFFFF;
+                background: linear-gradient(135deg, var(--theme-bg-white), #f9fbfd);
                 border-radius: 12px;
-                padding: 15px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-                transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-            }
-
-            .stat-card:hover {
-                transform: scale(1.1);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-                background: #F8F8FF;
-            }
-
-            .stat-card h3 {
-                font-size: 16px;
-                font-weight: 600;
-                color: #6B7280;
-                margin-bottom: 10px;
-            }
-
-            .stat-value {
-                font-size: 28px;
-                font-weight: 700;
-                color: #1F2937;
-                margin-bottom: 10px;
-            }
-
-            .progress-bar {
-                background: #E5E7EB;
-                border-radius: 8px;
-                height: 8px;
+                padding: 1.5rem;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                text-align: center;
+                position: relative;
                 overflow: hidden;
             }
-
-            .progress {
-                background: #7C3AED;
-                height: 100%;
-                transition: width 0.3s ease;
+            .stat-card.stat-lost {
+                border: 2px solid var(--theme-accent-red);
+                background: linear-gradient(135deg, #fbe6ee 60%, #f9fbfd 100%);
+                box-shadow: 0 6px 20px var(--glow-pink, rgba(251,182,206,0.3));
             }
-
-            /* Content Grid */
+            .stat-card.stat-lost .stat-value {
+                color: var(--theme-accent-red);
+            }
+            .stat-card.stat-lost .stat-label {
+                color: #b03c54;
+            }
+            .stat-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            }
+            .stat-card h3 {
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--theme-primary-blue);
+                margin-bottom: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            .stat-value {
+                font-size: 2.2rem;
+                font-weight: 800;
+                color: var(--theme-text-dark);
+                transition: color 0.3s ease;
+            }
+            .stat-card:hover .stat-value {
+                color: var(--theme-accent-red);
+            }
+            .stat-label {
+                font-size: 0.9rem;
+                color: #6B7280;
+                margin-top: 0.5rem;
+                font-style: italic;
+            }
+    
+            /* === Content Grid === */
             .content-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 15px;
+                grid-template-columns: repeat(3, 1fr); /* 3 colonnes comme dans l'image */
+                gap: 1.5rem;
+                margin: 1.5rem 0;
             }
-
-            /* Fortune Wheel Card */
+    
+            /* === Fortune Wheel Card === */
             .wheel-card {
-                background: #FFFFFF;
+                background: linear-gradient(135deg, var(--theme-bg-white), #f9fbfd);
                 border-radius: 12px;
-                padding: 15px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                padding: 1.5rem;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
                 text-align: center;
-                transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
             }
-
             .wheel-card:hover {
-                transform: scale(1.1);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-                background: #F8F8FF;
+                transform: translateY(-8px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             }
-
             .wheel-card h3 {
-                font-size: 16px;
-                font-weight: 600;
-                color: #6B7280;
-                margin-bottom: 10px;
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--theme-primary-blue);
+                margin-bottom: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
             }
-
             .wheel-card p {
-                font-size: 14px;
+                font-size: 0.9rem;
                 color: #6B7280;
-                margin-bottom: 15px;
+                margin-bottom: 1rem;
             }
-
             .wheel {
                 position: relative;
-                width: 150px;
-                height: 150px;
+                width: 250px;
+                height: 250px;
                 margin: 0 auto;
                 border-radius: 50%;
-                border: 6px solid #7C3AED;
+                border: 4px solid var(--theme-primary-blue);
                 overflow: hidden;
-                box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
-                background: #FFFFFF;
+                background: var(--theme-bg-white);
             }
-
             .wheel-circle {
                 width: 100%;
                 height: 100%;
@@ -285,7 +215,6 @@
                 transform: rotate(0deg);
                 transition: transform 4s ease-out;
             }
-
             .wheel-segment {
                 width: 50%;
                 height: 50%;
@@ -293,766 +222,704 @@
                 top: 50%;
                 left: 50%;
                 transform-origin: 0% 0%;
-                font-size: 20px;
+                font-size: 18px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: #FFFFFF;
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                transition: transform 0.3s ease;
             }
-
             .wheel-segment:hover {
                 transform: scale(1.1) translate(-90%, -90%);
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             }
-            @media (max-width: 768px) {
-  .dashboard-container {
-    flex-direction: column;
-  }
-  .sidebar {
-    position: relative;
-    width: 100%;
-    margin-bottom: 20px;
-  }
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-  }
-}
-
-
-            .segment1 { transform: rotate(0deg) translate(-100%, -100%); background: #7C3AED; }
-            .segment2 { transform: rotate(60deg) translate(-100%, -100%); background: #F472B6; }
-            .segment3 { transform: rotate(120deg) translate(-100%, -100%); background: #FBBF24; }
-            .segment4 { transform: rotate(180deg) translate(-100%, -100%); background: #34D399; }
-            .segment5 { transform: rotate(240deg) translate(-100%, -100%); background: #A78BFA; }
-            .segment6 { transform: rotate(300deg) translate(-100%, -100%); background: #F9A8D4; }
-
+            .segment1 { transform: rotate(0deg) translate(-100%, -100%); background: var(--theme-primary-blue); }
+            .segment2 { transform: rotate(60deg) translate(-100%, -100%); background: #A3BFFA; }
+            .segment3 { transform: rotate(120deg) translate(-100%, -100%); background: #7F9CF5; }
+            .segment4 { transform: rotate(180deg) translate(-100%, -100%); background: #93C5FD; }
+            .segment5 { transform: rotate(240deg) translate(-100%, -100%); background: #BFDBFE; }
+            .segment6 { transform: rotate(300deg) translate(-100%, -100%); background: var(--theme-accent-red); }
             .wheel-pointer {
                 position: absolute;
-                top: -15px;
+                top: -12px;
                 left: 50%;
                 transform: translateX(-50%);
                 width: 0;
                 height: 0;
-                border-left: 8px solid transparent;
-                border-right: 8px solid transparent;
-                border-bottom: 15px solid #7C3AED;
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                border-bottom: 12px solid var(--theme-primary-blue);
             }
-
             .spin-button {
-                margin-top: 10px;
-                background: #7C3AED;
+                margin-top: 2rem;
+                background: var(--theme-accent-red);
                 color: #FFFFFF;
                 border: none;
-                padding: 8px 16px;
                 border-radius: 8px;
-                font-size: 14px;
-                font-weight: 600;
+                padding: 0.12rem 1.5rem;
+                font-size: 1.2rem;
+                font-weight: 700;
                 cursor: pointer;
-                box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2);
-                transition: transform 0.2s ease, box-shadow 0.3s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px; /* Espacement entre icône et texte */
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                box-shadow: 0 0 15px rgba(176, 60, 84, 0.5);
             }
-
             .spin-button:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 15px rgba(124, 58, 237, 0.3);
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 10px 25px rgba(176, 60, 84, 0.5);
             }
-
-            /* Chart Card */
+    
+            /* === Chart Card === */
             .chart-card {
-                background: #FFFFFF;
+                background: linear-gradient(135deg, var(--theme-bg-white), #f9fbfd);
                 border-radius: 12px;
-                padding: 15px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-                transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+                padding: 1.5rem;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
             }
-
             .chart-card:hover {
-                transform: scale(1.1);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-                background: #F8F8FF;
+                transform: translateY(-8px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             }
-
             .chart-card h3 {
-                font-size: 16px;
-                font-weight: 600;
-                color: #6B7280;
-                margin-bottom: 15px;
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--theme-primary-blue);
+                margin-bottom: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
             }
-
             .custom-chart {
                 max-width: 100%;
-                height: 250px;
+                height: 220px;
             }
-
-            /* Calendar Card */
+    
+            /* === Calendar Card === */
             .calendar-card {
-                background: #FFFFFF;
+                background: linear-gradient(135deg, var(--theme-bg-white), #f9fbfd);
                 border-radius: 12px;
-                padding: 15px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-                transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+                padding: 1.5rem;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
             }
-
             .calendar-card:hover {
-                transform: scale(1.1);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-                background: #F8F8FF;
+                transform: translateY(-8px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             }
-
             .calendar-card h3 {
-                font-size: 16px;
-                font-weight: 600;
-                color: #6B7280;
-                margin-bottom: 15px;
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--theme-primary-blue);
+                margin-bottom: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
             }
-
             .calendar {
                 width: 100%;
             }
-
             .calendar-header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 15px;
+                margin-bottom: 1rem;
             }
-
             .nav-arrow {
                 background: none;
                 border: none;
-                color: #6B7280;
+                color: var(--theme-primary-blue);
                 cursor: pointer;
-                font-size: 16px;
+                font-size: 1rem;
                 transition: color 0.3s ease;
             }
-
             .nav-arrow:hover {
-                color: #7C3AED;
+                color: #15204a;
             }
-
             .calendar-grid {
                 display: grid;
                 grid-template-columns: repeat(7, 1fr);
-                gap: 5px;
+                gap: 4px;
                 text-align: center;
             }
-
             .day-header {
-                font-size: 12px;
+                font-size: 0.9rem;
                 font-weight: 600;
-                color: #6B7280;
-                padding: 5px 0;
+                color: var(--theme-primary-blue);
+                padding: 4px 0;
             }
-
             .day {
-                font-size: 14px;
-                padding: 8px;
-                border-radius: 8px;
-                color: #1F2937;
-                background: #F9FAFB;
+                font-size: 0.9rem;
+                padding: 6px;
+                border-radius: 6px;
+                color: var(--theme-text-dark);
+                background: var(--theme-bg-light);
             }
-
             .day.empty {
                 background: transparent;
             }
-
             .day.current {
-                background: #7C3AED;
+                background: var(--theme-primary-blue);
                 color: #FFFFFF;
                 font-weight: 600;
             }
-
-            /* Events Card */
+    
+            /* === Events Card === */
             .events-card {
-                background: #FFFFFF;
+                background: linear-gradient(135deg, var(--theme-bg-white), #f9fbfd);
                 border-radius: 12px;
-                padding: 15px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-                transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+                padding: 1.5rem;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
             }
-
             .events-card:hover {
-                transform: scale(1.1);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-                background: #F8F8FF;
+                transform: translateY(-8px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             }
-
             .events-card h3 {
-                font-size: 16px;
-                font-weight: 600;
-                color: #6B7280;
-                margin-bottom: 15px;
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--theme-primary-blue);
+                margin-bottom: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
             }
-
             .events-list {
                 list-style: none;
+                padding: 0;
             }
-
             .events-list li {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 10px 0;
-                border-bottom: 1px solid #F1F3F5;
+                padding: 0.75rem 0;
+                border-bottom: 1px solid var(--theme-border-color);
             }
-
             .events-list li:last-child {
                 border-bottom: none;
             }
-
             .event-details p {
-                font-size: 14px;
+                font-size: 0.9rem;
                 font-weight: 500;
-                color: #1F2937;
+                color: var(--theme-text-dark);
             }
-
             .event-details span {
-                font-size: 12px;
+                font-size: 0.8rem;
                 color: #6B7280;
             }
-
             .event-status {
-                font-size: 12px;
+                font-size: 0.8rem;
                 font-weight: 600;
-                padding: 5px 10px;
-                border-radius: 12px;
+                padding: 0.3rem 0.6rem;
+                border-radius: 10px;
             }
-
             .event-status.confirmed {
-                background: #D1FAE5;
-                color: #10B981;
+                background: var(--theme-accent-red);
+                color: #FFFFFF;
             }
-
             .event-status.pending {
-                background: #FEE2E2;
-                color: #EF4444;
+                background: var(--theme-primary-blue);
+                color: #FFFFFF;
             }
-
-            /* Activity Card */
+    
+            /* === Activity Card === */
             .activity-card {
-                background: #FFFFFF;
+                background: linear-gradient(135deg, var(--theme-bg-white), #f9fbfd);
                 border-radius: 12px;
-                padding: 15px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-                transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+                padding: 1.5rem;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
             }
-
             .activity-card:hover {
-                transform: scale(1.1);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-                background: #F8F8FF;
+                transform: translateY(-8px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             }
-
             .activity-card h3 {
-                font-size: 16px;
-                font-weight: 600;
-                color: #6B7280;
-                margin-bottom: 15px;
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--theme-primary-blue);
+                margin-bottom: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
             }
-
             .activity-list {
                 list-style: none;
+                padding: 0;
             }
-
             .activity-list li {
                 display: flex;
                 align-items: center;
-                padding: 10px 0;
-                border-bottom: 1px solid #F1F3F5;
+                padding: 0.75rem 0;
+                border-bottom: 1px solid var(--theme-border-color);
             }
-
             .activity-list li:last-child {
                 border-bottom: none;
             }
-
             .activity-icon {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 44px;
-                height: 44px;
-                background: #EDE9FE;
-                border-radius: 12px;
-                margin-right: 15px;
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                width: 36px;
+                height: 36px;
+                background: var(--theme-bg-light);
+                border-radius: 8px;
+                margin-right: 0.75rem;
+                transition: transform 0.3s ease;
             }
-
             .activity-icon:hover {
                 transform: scale(1.1);
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             }
-
             .activity-icon span {
-                font-size: 24px;
+                font-size: 18px;
             }
-
             .activity-details p {
-                font-size: 14px;
+                font-size: 0.9rem;
                 font-weight: 500;
-                color: #1F2937;
+                color: var(--theme-text-dark);
             }
-
             .activity-details span {
-                font-size: 12px;
+                font-size: 0.8rem;
                 color: #6B7280;
             }
-
-            /* Achievements Card */
+    
+            /* === Achievements Card === */
             .achievements-card {
-                background: #FFFFFF;
+                background: linear-gradient(135deg, var(--theme-bg-white), #f9fbfd);
                 border-radius: 12px;
-                padding: 15px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-                transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+                padding: 1.5rem;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
             }
-
             .achievements-card:hover {
-                transform: scale(1.1);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-                background: #F8F8FF;
+                transform: translateY(-8px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             }
-
             .achievements-card h3 {
-                font-size: 16px;
-                font-weight: 600;
-                color: #6B7280;
-                margin-bottom: 15px;
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--theme-primary-blue);
+                margin-bottom: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
             }
-
             .achievements-list {
                 list-style: none;
                 display: flex;
                 flex-wrap: wrap;
-                gap: 10px;
+                gap: 0.5rem;
             }
-
             .achievement-item {
                 display: flex;
                 align-items: center;
-                background: #F9FAFB;
-                border-radius: 8px;
-                padding: 10px;
-                width: calc(50% - 5px);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                background: var(--theme-bg-light);
+                border-radius: 6px;
+                padding: 0.5rem;
+                width: calc(50% - 0.25rem);
+                transition: transform 0.3s ease;
             }
-
             .achievement-item:hover {
                 transform: scale(1.05);
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             }
-
             .achievement-icon {
-                font-size: 24px;
-                margin-right: 10px;
+                font-size: 18px;
+                margin-right: 0.5rem;
+                color: var(--theme-primary-blue);
             }
-
             .achievement-details p {
-                font-size: 14px;
+                font-size: 0.9rem;
                 font-weight: 500;
-                color: #1F2937;
+                color: var(--theme-text-dark);
                 margin: 0;
             }
-
             .achievement-details span {
-                font-size: 12px;
+                font-size: 0.8rem;
                 color: #6B7280;
             }
-
-            /* Responsive Adjustments */
+    
+            /* === Footer Styles === */
+            .footer {
+                background: var(--theme-bg-white);
+                padding: 1.5rem 0;
+                border-top: 1px solid var(--theme-border-color);
+                margin-top: 2rem;
+                box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+            }
+            .footer .footer-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            .footer .footer-text {
+                font-size: 0.85rem;
+                color: #6B7280;
+            }
+            .footer .footer-socials {
+                display: flex;
+                gap: 1rem;
+            }
+            .footer .social-icon {
+                font-size: 1rem;
+                color: var(--theme-primary-blue);
+                transition: color 0.3s ease, transform 0.3s ease;
+            }
+            .footer .social-icon:hover {
+                color: var(--theme-accent-red);
+                transform: scale(1.2);
+            }
+    
+            /* === Responsive Adjustments === */
+            @media (max-width: 1024px) {
+                .content-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
             @media (max-width: 768px) {
-                .sidebar {
-                    width: 200px;
+                .header .nav-links {
+                    gap: 1rem;
+                    flex-wrap: wrap;
+                    justify-content: center;
                 }
-
+                .header .nav-link {
+                    font-size: 0.9rem;
+                }
+                .header .logo-img {
+                    height: 40px;
+                }
                 .main-content {
-                    margin-left: 200px;
-                    width: calc(100% - 200px);
-                    padding: 15px;
+                    flex-direction: column;
+                    height: auto;
                 }
-
-                .header h1 {
-                    font-size: 24px;
-                }
-
                 .stats-grid,
                 .content-grid {
                     grid-template-columns: 1fr;
                 }
-
-                .wheel {
-                    width: 120px;
-                    height: 120px;
-                }
-
-                .custom-chart {
-                    height: 200px;
-                }
-
-                .achievement-item {
-                    width: 100%;
-                }
             }
         </style>
     {% endblock %}
-
+    
+    {% block javascripts %}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script>
+        let chartInstance = null;
+        async function fetchChartDataAndUpdate() {
+          const response = await fetch('/api/points/chart-data');
+          const data = await response.json();
+          // Si aucun point perdu, on force à zéro
+          if (data.pointsLost.every(v => v === 0)) {
+            data.pointsLost = data.pointsLost.map(() => 0);
+          }
+          // Calcul dynamique du total perdu
+          const totalLost = data.pointsLost.reduce((a, b) => a + b, 0);
+          document.querySelectorAll('.summary-value')[1].textContent = totalLost;
+          updateChart(data.labels, data.pointsEarned, data.pointsLost);
+        }
+        function updateChart(labels, pointsEarned, pointsLost) {
+          let canvas = document.getElementById('pointChart');
+          if (!canvas) canvas = document.getElementById('pointChart2');
+          const ctx = canvas.getContext('2d');
+          if (chartInstance) chartInstance.destroy();
+          chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: 'Points earned',
+                  data: pointsEarned,
+                  borderColor: '#1a237e',
+                  backgroundColor: 'rgba(26,35,126,0.1)',
+                  tension: 0.4,
+                  fill: true,
+                },
+                {
+                  label: 'Lost points',
+                  data: pointsLost,
+                  borderColor: getComputedStyle(document.documentElement).getPropertyValue('--theme-accent-red').trim() || '#FBB6CE',
+                  backgroundColor: 'rgba(251,182,206,0.2)',
+                  tension: 0.4,
+                  fill: true,
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: true },
+                tooltip: { enabled: true }
+              },
+              scales: {
+                y: { beginAtZero: true }
+              }
+            }
+          });
+        }
+        fetchChartDataAndUpdate();
+        setInterval(fetchChartDataAndUpdate, 10000);
+        </script>
+    {% endblock %}
+    
     {% block body %}
         <div class="dashboard-container">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <div class="logo">
-                    <h1>Connect Sphere</h1>
-                </div>
-                <ul><li><a href="{{ path('app_home') }}" class="active"><i class="fas fa-home"></i> Home</a></li>
-                                   <li><a href="{{ path('app_points') }}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-                                      <li><a href='/points/fortune-wheel'><i class="fas fa-box"></i><span>Fourtune wheel</span></a></li>
-                                  <li><a href="{{ path('app_convert_points') }}"><i class="fas fa-users"></i><span>Conversion </span></a></li>
-                                    <li class="menu-item logout">
-
-                                                 <li class="menu-item logout">
-                                                     <a href="{{ path('app_logout') }}">
-                                                         <i class="fas fa-sign-out-alt"></i>
-                                                         <span>Logout</span>
-                                                     </a>
-                                                 </li>
-
-
-                </ul>
-            </div>
-
+            <!-- Navbar -->
+            <header class="header">
+                <nav class="nav-container container">
+                    <div class="logo">
+                        <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+                            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:0;">
+                            <span style="font-weight:700;font-size:1.2rem;color:var(--theme-text-dark);">ConnectSphere</span>
+                        </a>
+                    </div>
+                    <div class="nav-links">
+                        <a href="{{ path('app_home') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                        <a href="{{ path('app_points') }}" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                        <a href="{{ path('app_fortune_wheel') }}" class="nav-link"><i class="fas fa-dice"></i> Fortune Wheel</a>
+                        <a href="{{ path('app_convert_points') }}" class="nav-link"><i class="fas fa-exchange-alt"></i> Conversion</a>
+                        <a href="{{ path('app_logout') }}" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </nav>
+            </header>
+    
             <!-- Main Content -->
             <div class="main-content">
-                <!-- Welcome Card -->
-                <div class="welcome-card">
-                    <div class="welcome-avatar">
-                        <span>👨‍💻</span>
+                <div style="flex: 1; width: 100%;">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Daily Visit Streak</h3>
+                            <div class="stat-value">{{ visitesCount|default(0) }}</div>
+                            <div class="stat-label">Days in a Row</div>
+                            {% if pointAddedMessage is defined and pointAddedMessage %}
+                                <div style="color: var(--theme-primary-blue); font-size: 0.9rem; margin-top: 0.5rem;">{{ pointAddedMessage }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="stat-card">
+                            <h3>Total Points <button id="refreshPoints" style="background: none; border: none; cursor: pointer; font-size: 1rem;"><i class="fas fa-sync-alt" style="color: var(--theme-primary-blue);"></i></button></h3>
+                            <div class="stat-value" id="userPoints">{{ user.points|default('No points') }}</div>
+                            <pre id="debugUser" style="font-size:0.65rem;color:#888;"></pre>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    try {
+                                        var user = {{ user|json_encode|raw }};
+                                        document.getElementById('debugUser').textContent = JSON.stringify(user, null, 2);
+                                        console.log('DEBUG user:', user);
+                                    } catch(e) {
+                                        document.getElementById('debugUser').textContent = 'Erreur debug user: ' + e;
+                                    }
+                                });
+                            </script>
+                            <div class="stat-label">Available Points</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Events Attended</h3>
+                            <div class="stat-value">{{ my_participations|length }}</div>
+                            <div class="stat-label">Total events you attended</div>
+                        </div>
+                        <!-- Vous pouvez ajouter d'autres cartes statistiques ici -->
                     </div>
-                    <div class="welcome-text">
-                        <h2>Welcome to Your Dashboard!</h2>
-                        <p>Track your points, activities, and achievements here!</p>
-                    </div>
-                </div>
-
-                <!-- Stats Grid -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Daily Visit Streak</h3>
-                        <div class="stat-value">{{ visitesCount|default(0) }}</div>
-                        {% if pointAddedMessage is defined and pointAddedMessage %}
-                            <div style="color: #7C3AED; font-size: 13px; margin-top: 4px;">{{ pointAddedMessage }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="stat-card">
-                        <h3>Total Events Attended</h3>
-                        <p class="stat-value">12</p>
-                        <div class="progress-bar">
-                          <div class="progress" style="width: {{ min(12 / 15 * 100, 100) }}%;"></div>
-
+                    <div class="dashboard-summary" style="display:flex;gap:2rem;margin:1.5rem 0;justify-content:center;">
+                        <div class="summary-item" style="background:#fff;padding:1rem 2rem;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;flex-direction:column;align-items:center;">
+                            <span class="summary-label" style="font-weight:600;color:var(--theme-primary-blue);">Points earned:</span>
+                            <span class="summary-value" style="font-size:1.3rem;font-weight:700;color:var(--theme-text-dark);">{{ totalEarned }}</span>
+                        </div>
+                        <div class="summary-item" style="background:#fff;padding:1rem 2rem;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;flex-direction:column;align-items:center;">
+                            <span class="summary-label" style="font-weight:600;color:var(--theme-accent-red);">Points lost:</span>
+                            <span class="summary-value" style="font-size:1.3rem;font-weight:700;color:var(--theme-accent-red);">{{ totalLost }}</span> <!-- sera mis à jour dynamiquement -->
+                        </div>
+                        <div class="summary-item" style="background:#fff;padding:1rem 2rem;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;flex-direction:column;align-items:center;">
+                            <span class="summary-label" style="font-weight:600;color:var(--theme-primary-blue);">Current points:</span>
+                            <span class="summary-value" style="font-size:1.3rem;font-weight:700;color:var(--theme-primary-blue);">{{ user.points }}</span>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>Total Points <button id="refreshPoints" style="background: none; border: none; cursor: pointer; font-size: 14px;"><i class="fas fa-sync-alt"></i></button></h3>
-                        <p class="stat-value" id="userPoints">{{user.points|default('Aucun point') }}</p>
-                        <pre id="debugUser" style="font-size:10px;color:#888;"></pre>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                try {
-                                    var user = {{ user|json_encode|raw }};
-                                    document.getElementById('debugUser').textContent = JSON.stringify(user, null, 2);
-                                    console.log('DEBUG user:', user);
-                                } catch(e) {
-                                    document.getElementById('debugUser').textContent = 'Erreur debug user: ' + e;
-                                }
-                            });
-                        </script>
-                        <div class="progress-bar">
-                          <div class="progress" id="pointsProgress" style="width: {{ min(340 / 1000 * 100, 100) }}%;"></div>
-
-                        </div>
-                    </div>
-                     
-                </div>
-
-                <!-- Main Content Grid -->
-                <div class="content-grid">
-                    <!-- Fortune Wheel -->
-                    <div class="wheel-card">
-                        <h3>Fortune Wheel</h3>
-                        <p>Use the Fortune Wheel to earn extra points every day.</p>
-                        <div class="wheel">
-                            <div class="wheel-circle" id="wheel">
-                                <div class="wheel-segment segment1">🎁</div>
-                                <div class="wheel-segment segment2">🎉</div>
-                                <div class="wheel-segment segment3">💰</div>
-                                <div class="wheel-segment segment4">⭐</div>
-                                <div class="wheel-segment segment5">🎊</div>
-                                <div class="wheel-segment segment6">🍀</div>
+    
+                    <!-- Content Grid -->
+                    <div class="content-grid">
+                        <!-- Fortune Wheel -->
+                        <div class="wheel-card">
+                            <h3>Fortune Wheel</h3>
+                            <p>Use the Fortune Wheel to earn extra points every day.</p>
+                            <div class="wheel">
+                                <div class="wheel-circle" id="wheel">
+                                    <div class="wheel-segment segment1">🎁</div>
+                                    <div class="wheel-segment segment2">🎉</div>
+                                    <div class="wheel-segment segment3">💰</div>
+                                    <div class="wheel-segment segment4">⭐</div>
+                                    <div class="wheel-segment segment5">🎊</div>
+                                    <div class="wheel-segment segment6">🍀</div>
+                                </div>
+                                <div class="wheel-pointer"></div>
                             </div>
-                            <div class="wheel-pointer"></div>
+                           <a href="{{ path('app_fortune_wheel') }}" class="spin-button">Spin</a>
                         </div>
-                        <button id="spinButton" class="spin-button"><i class="fas fa-sync-alt"></i> SPIN</button>
-                    </div>
-
-                    <!-- Chart -->
-                    <div class="chart-card">
-                        <h3>Weekly Points Progress</h3>
-                        <canvas id="pointChart" class="custom-chart" width="500" height="500" style="background:#fff; border-radius:12px; border:1px solid #eee;"></canvas>
-                        <canvas id="pointChart2" class="custom-chart" width="500" height="500" style="background:#fff; border-radius:12px; border:1px solid #eee; display:none;"></canvas>
-                    </div>
-
-                    <!-- Calendar -->
-                    <div class="calendar-card">
-                        <h3>{% set currentMonth = "now"|date('F Y') %}{{ currentMonth }}</h3>
-                        <div class="calendar">
-                            <div class="calendar-header">
-                                <button class="nav-arrow"><i class="fas fa-chevron-left"></i> Prev</button>
-                                <button class="nav-arrow"><i class="fas fa-chevron-right"></i> Next</button>
-                            </div>
-                            <div class="calendar-grid">
-                                <div class="day-header">Mon</div>
-                                <div class="day-header">Tue</div>
-                                <div class="day-header">Wed</div>
-                                <div class="day-header">Thu</div>
-                                <div class="day-header">Fri</div>
-                                <div class="day-header">Sat</div>
-                                <div class="day-header">Sun</div>
-                                {# Days rendering #}
-                                {% set today = "now"|date('j') %}
-                                {% set currentMonth = "now"|date('n') %}
-                                {% set currentYear = "now"|date('Y') %}
-                                {% set firstDayOfMonth = date('now')|date_modify('first day of this month') %}
-                                {% set startWeekDay = firstDayOfMonth|date('N') %}
-                                {% set daysInMonth = "now"|date('t') %}
-                                {% for i in 1..(startWeekDay-1) %}
-                                    <div class="day empty"></div>
-                                {% endfor %}
-                                {% for day in 1..daysInMonth %}
-                                    <div class="day{% if day == today|number_format(0, '', '') and currentMonth == "now"|date('n') and currentYear == "now"|date('Y') %} current{% endif %}">{{ day }}</div>
-                                {% endfor %}
+    
+                        <!-- Chart -->
+                        <div class="chart-card">
+                            <h3>Weekly Points Progress</h3>
+                            <canvas id="pointChart" class="custom-chart" width="500" height="500" style="background:#fff; border-radius:8px;"></canvas>
+                            <canvas id="pointChart2" class="custom-chart" width="500" height="500" style="background:#fff; border-radius:8px; display:none;"></canvas>
+                        </div>
+    
+                        <!-- Calendar -->
+                        <div class="calendar-card">
+                            <h3>{% set currentMonth = "now"|date('F Y') %}{{ currentMonth }}</h3>
+                            <div class="calendar">
+                                <div class="calendar-header">
+                                    <button class="nav-arrow"><i class="fas fa-chevron-left"></i> Prev</button>
+                                    <button class="nav-arrow"><i class="fas fa-chevron-right"></i> Next</button>
+                                </div>
+                                <div class="calendar-grid">
+                                    <div class="day-header">Mon</div>
+                                    <div class="day-header">Tue</div>
+                                    <div class="day-header">Wed</div>
+                                    <div class="day-header">Thu</div>
+                                    <div class="day-header">Fri</div>
+                                    <div class="day-header">Sat</div>
+                                    <div class="day-header">Sun</div>
+                                    {% set today = "now"|date('j') %}
+                                    {% set currentMonth = "now"|date('n') %}
+                                    {% set currentYear = "now"|date('Y') %}
+                                    {% set firstDayOfMonth = date('now')|date_modify('first day of this month') %}
+                                    {% set startWeekDay = firstDayOfMonth|date('N') %}
+                                    {% set daysInMonth = "now"|date('t') %}
+                                    {% for i in 1..(startWeekDay-1) %}
+                                        <div class="day empty"></div>
+                                    {% endfor %}
+                                    {% for day in 1..daysInMonth %}
+                                        <div class="day{% if day == today|number_format(0, '', '') and currentMonth == 'now'|date('n') and currentYear == 'now'|date('Y') %} current{% endif %}">{{ day }}</div>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Recent Events -->
-                    <div class="events-card">
-                        <h3>Recent Events</h3>
-                        <ul class="events-list">
-                            <li>
-                                <div class="event-details">
-                                    <p>Tech Conference 2025</p>
-                                    <span>April 20, 2025</span>
-                                </div>
-                                <span class="event-status confirmed">Confirmed</span>
-                            </li>
-                            <li>
-                                <div class="event-details">
-                                    <p>AI Workshop</p>
-                                    <span>April 15, 2025</span>
-                                </div>
-                                <span class="event-status pending">Pending</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Recent Activity -->
-                    <div class="activity-card">
-                        <h3>Recent Activity</h3>
-                        <ul class="activity-list">
-                            <li>
-                                <span class="activity-icon"><span>🥇</span></span>
-                                <div class="activity-details">
-                                    <p>Earned 100 points</p>
-                                    <span>2025-03-17</span>
-                                </div>
-                            </li>
-                            <li>
-                                <span class="activity-icon"><span>📅</span></span>
-                                <div class="activity-details">
-                                    <p>Attended Event</p>
-                                    <span>2025-03-15</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Achievements -->
-                    <div class="achievements-card">
-                        <h3>Achievements</h3>
-                        <ul class="achievements-list">
-                            <li class="achievement-item">
-                                <span class="achievement-icon">🏆</span>
-                                <div class="achievement-details">
-                                    <p>Daily Login Streak</p>
-                                    <span>Logged in {{ streak|default(0) }} days in a row</span>
-                                </div>
-                            </li>
-                            <li class="achievement-item">
-                                <span class="achievement-icon">🎯</span>
-                                <div class="achievement-details">
-                                    <p>Event Master</p>
-                                    <span>Attended 10 events</span>
-                                </div>
-                            </li>
-                            <li class="achievement-item">
-                                <span class="achievement-icon">⭐</span>
-                                <div class="achievement-details">
-                                    <p>Points Pro</p>
-                                    <span>Earned 500 points</span>
-                                </div>
-                            </li>
-                        </ul>
+    
+                        <!-- Recent Events -->
+                        <div class="events-card">
+                            <h3>Recent Events</h3>
+                            <ul class="events-list">
+                                <li>
+                                    <div class="event-details">
+                                        <p>Tech Conference 2025</p>
+                                        <span>April 20, 2025</span>
+                                    </div>
+                                    <span class="event-status confirmed">Confirmed</span>
+                                </li>
+                                <li>
+                                    <div class="event-details">
+                                        <p>AI Workshop</p>
+                                        <span>April 15, 2025</span>
+                                    </div>
+                                    <span class="event-status pending">Pending</span>
+                                </li>
+                            </ul>
+                        </div>
+    
+                        <!-- Recent Activity -->
+                        <div class="activity-card">
+                            <h3>Recent Activity</h3>
+                            <ul class="activity-list">
+                                <li>
+                                    <span class="activity-icon"><i class="fas fa-trophy"></i></span>
+                                    <div class="activity-details">
+                                        <p>Earned 100 points</p>
+                                        <span>2025-03-17</span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="activity-icon"><i class="fas fa-calendar"></i></span>
+                                    <div class="activity-details">
+                                        <p>Attended Event</p>
+                                        <span>2025-03-15</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+    
+                        <!-- Achievements -->
+                        <div class="achievements-card">
+                            <h3>Achievements</h3>
+                            <ul class="achievements-list">
+                                <li class="achievement-item">
+                                    <span class="achievement-icon"><i class="fas fa-trophy"></i></span>
+                                    <div class="achievement-details">
+                                        <p>Daily Login Streak</p>
+                                        <span>Logged in {{ streak|default(0) }} days in a row</span>
+                                    </div>
+                                </li>
+                                <li class="achievement-item">
+                                    <span class="achievement-icon"><i class="fas fa-bullseye"></i></span>
+                                    <div class="achievement-details">
+                                        <p>Event Master</p>
+                                        <span>Attended 10 events</span>
+                                    </div>
+                                </li>
+                                <li class="achievement-item">
+                                    <span class="achievement-icon"><i class="fas fa-star"></i></span>
+                                    <div class="achievement-details">
+                                        <p>Points Pro</p>
+                                        <span>Earned 500 points</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
+    
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-container container">
+                    <div class="footer-text">
+                        © {{ "now"|date('Y') }} ConnectSphere. All rights reserved.
+                    </div>
+                    <div class="footer-socials">
+                        <a href="https://facebook.com" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://twitter.com" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="https://instagram.com" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </footer>
         </div>
-    {% endblock %}
-
-    {% block javascripts %}
-       
-
-
-        
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('Chargement du script pour le graphique');
-
-            // Utiliser des données statiques correspondant à l'image
-            const labels = ['2025/03/13', '2025/03/14', '2025/03/15', '2025/03/16', '2025/03/17', '2025/03/18', '2025/03/19'];
-            const pointsEarned = [0, 0, 0, 400, 600, 100, 0];
-            const pointsLost = [0, 0, 0, 0, 0, 0, 50];
-
-            console.log('Labels:', labels);
-            console.log('Points gagnés:', pointsEarned);
-            console.log('Points perdus:', pointsLost);
-
-            let canvas = document.getElementById('pointChart');
-            if (!canvas) {
-                canvas = document.getElementById('pointChart2');
-                if (canvas) canvas.style.display = 'block';
-            }
-            if (!canvas) {
-                alert('Aucun canvas pour afficher le graphique');
-                return;
-            }
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-                alert('Impossible d’obtenir le contexte 2D du canvas');
-                return;
-            }
-
-            // Dégradé pour la courbe Points Earned
-            const gradient = ctx.createLinearGradient(0, 0, 0, 250);
-            gradient.addColorStop(0, 'rgba(124,58,237,0.25)');
-            gradient.addColorStop(1, 'rgba(124,58,237,0)');
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Points Earned',
-                            data: pointsEarned,
-                            borderColor: '#7C3AED',
-                            backgroundColor: gradient,
-                            borderWidth: 4,
-                            pointRadius: 7,
-                            pointBackgroundColor: '#7C3AED',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 3,
-                            fill: true,
-                            tension: 0.3,
-                            hoverRadius: 10,
-                        },
-                        {
-                            label: 'Points Lost',
-                            data: pointsLost,
-                            borderColor: '#F472B6',
-                            backgroundColor: '#F472B6',
-                            borderWidth: 4,
-                            pointRadius: 7,
-                            pointBackgroundColor: '#F472B6',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 3,
-                            fill: false,
-                            tension: 0.3,
-                            hoverRadius: 10,
-                        }
-                    ]
-                },
-                options: {
-                    plugins: {
-                        legend: {
-                            labels: {
-                                boxWidth: 28,
-                                boxHeight: 14,
-                                font: { size: 18, weight: 'bold' },
-                                color: '#6B7280',
-                                padding: 30
-                            }
-                        },
-                        tooltip: {
-                            enabled: true,
-                            backgroundColor: '#fff',
-                            titleColor: '#7C3AED',
-                            bodyColor: '#1F2937',
-                            borderColor: '#7C3AED',
-                            borderWidth: 2,
-                            titleFont: { size: 16, weight: 'bold' },
-                            bodyFont: { size: 15 },
-                            padding: 12,
-                            displayColors: false
-                        }
-                    },
-                    layout: {
-                        padding: 30
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Points',
-                                font: { size: 18, weight: 'bold' },
-                                color: '#7C3AED'
-                            },
-                            grid: {
-                                color: '#E5E7EB',
-                                lineWidth: 2
-                            },
-                            ticks: { font: { size: 16 }, color: '#6B7280' }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Days',
-                                font: { size: 18, weight: 'bold' },
-                                color: '#7C3AED'
-                            },
-                            grid: {
-                                color: '#F3F4F6',
-                                lineWidth: 2
-                            },
-                            ticks: { font: { size: 16 }, color: '#6B7280', maxRotation: 45, minRotation: 45 }
-                        }
-                    },
-                    animation: {
-                        duration: 1200,
-                        easing: 'easeOutQuart'
-                    }
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fonction pour mettre à jour le compteur d'événements
+            function updateTotalEventsAttended(newTotal) {
+                const counter = document.getElementById('totalEventsAttended');
+                if (counter) {
+                    counter.textContent = newTotal;
                 }
+            }
+            // Gestionnaire pour le bouton JOIN (supposé avoir la classe .join-event-btn)
+            document.querySelectorAll('.join-event-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const eventId = this.dataset.eventId;
+                    if (!eventId) return;
+                    this.disabled = true;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Joining...';
+                    fetch('/events/participate/' + eventId, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'same-origin'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.innerHTML = '<i class="fas fa-check"></i> Joined';
+                            this.classList.add('joined');
+                            updateTotalEventsAttended(data.totalEvents);
+                        } else {
+                            this.disabled = false;
+                            this.innerHTML = 'Join';
+                            alert(data.message || 'Erreur lors de la participation.');
+                        }
+                    })
+                    .catch(() => {
+                        this.disabled = false;
+                        this.innerHTML = 'Join';
+                        alert('Erreur réseau.');
+                    });
+                });
             });
-
-            console.log('Graphique affiché avec succès');
         });
-        {% if pointAddedMessage %}
-            alert("{{ pointAddedMessage|e('js') }}");
-        {% endif %}
-    </script>
-{% endblock %}
+        </script>
+    {% endblock %}
