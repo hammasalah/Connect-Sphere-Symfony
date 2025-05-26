@@ -1,884 +1,1021 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Conversion de Points{% endblock %}
+{% block title %}Points Conversion{% endblock %}
 
 {% block stylesheets %}
-    <!-- Inclure FontAwesome pour les icônes -->
+    <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Google Fonts (Poppins) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        /* Base Styles */
-        body, html {
+        :root {
+            --theme-royal-blue: #1c2b5d;
+            --theme-accent-pink: #b03c54;
+            --theme-text-dark: #1F2937;
+            --theme-bg-light: #F7F9FC;
+            --theme-bg-white: #FFFFFF;
+            --theme-border-color: #E0E0E0;
+            --pastel-blue: #A3BFFA;
+            --pastel-pink: #FBB6CE;
+            --pastel-mint: #B5EAD7;
+            --pastel-lavender: #D7B9D5;
+            --pastel-yellow: #FFF3B0;
+            --pastel-green: #C3E6CB;
+            --glow-blue: rgba(163, 191, 250, 0.5);
+            --glow-pink: rgba(251, 182, 206, 0.5);
+            --glow-royal-blue: rgba(28, 43, 93, 0.5);
+            --glow-green: rgba(195, 230, 203, 0.5);
+            --money-gold: #FFD700;
+            --nav-hover-gray: #D1D5DB;
+            --body-font: 'Poppins', sans-serif;
+        }
+
+        body {
             margin: 0;
+            font-family: var(--body-font);
+            background: var(--theme-bg-light);
+            color: var(--theme-text-dark);
+            font-size: 16px;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        a {
+            color: var(--theme-royal-blue);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: var(--theme-accent-pink);
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background: #F5F5FF; /* Fond clair */
-            color: #1F2937;
+            position: relative;
+            z-index: 1;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--theme-bg-white), #e8ecef);
+            padding: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid var(--pastel-blue);
+        }
+        .header .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header .logo-img {
+            height: 50px;
+            transition: transform 0.3s ease;
+        }
+        .header .logo-img:hover {
+            transform: rotate(360deg);
+        }
+        .header .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        .header .nav-link {
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--theme-text-dark);
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        .header .nav-link:hover {
+            color: var(--theme-royal-blue);
+            background-color: var(--nav-hover-gray);
+            box-shadow: 0 0 10px var(--glow-blue);
+        }
+        .header .nav-link:active {
+            color: #FFFFFF;
+            background-color: var(--theme-accent-pink);
+            box-shadow: 0 2px 8px rgba(176, 60, 84, 0.3);
+            transform: scale(0.95);
+        }
+        .header .nav-link.active {
+            background-color: var(--theme-royal-blue);
+            color: #FFFFFF;
+            box-shadow: 0 0 15px var(--glow-blue);
         }
 
         .dashboard-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 207px;
-            background: linear-gradient(180deg, #220054 0%, #5B21B6 100%); /* Dégradé violet */
-            color: #FFFFFF;
-            padding: 20px 8px;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
-            border-top-right-radius: 12px; /* Border-radius côté droit */
-            border-bottom-right-radius: 12px; /* Border-radius côté droit */
-        }
-
-        .sidebar .logo {
-            margin-bottom: 40px;
-        }
-
-        .sidebar .logo h1 {
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .sidebar ul {
-            list-style: none;
-            flex-grow: 1;
             padding: 0;
         }
-
-        .sidebar ul li {
-            margin: 10px 0;
-            position: relative;
-        }
-
-        .sidebar ul li a {
-            display: flex;
-            align-items: center;
-            color: #FFFFFF;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 500;
-            padding: 12px 15px;
-            border-radius: 8px;
-            transition: background 0.3s ease, transform 0.2s ease;
-        }
-
-        .sidebar ul li a i {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .sidebar ul li a:hover,
-        .sidebar ul li a.active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.03); /* Léger agrandissement au survol */
-        }
-
-        /* Sous-menu pour Dashboard */
-        .submenu {
-            display: none;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .submenu li a {
-            padding: 10px 30px;
-            font-size: 14px;
-        }
-
-        .submenu li a:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .submenu.active {
-            display: block;
-            max-height: 200px; /* Ajuste selon le contenu */
-        }
-
-        /* Main Content */
         .main-content {
-            margin-left: 220px;
-            width: calc(100% - 220px);
-            padding: 15px; /* Réduit pour minimiser les espaces */
-            background: #F5F5FF;
-        }
-
-        /* Welcome Card */
-        .welcome-card {
-            background: linear-gradient(135deg,rgb(29, 0, 98), #9F7AEA); /* Dégradé violet doux */
-            border-radius: 12px;
-            padding: 10px 20px;
             display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 15px; /* Réduit pour minimiser les espaces */
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            min-height: calc(100vh - 80px);
+            padding: 0;
         }
 
-        .welcome-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .welcome-avatar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px;
-            height: 60px;
-            background: #FFFFFF;
-            border-radius: 50%;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .welcome-avatar i {
-            font-size: 30px;
-            color: #6B46C1;
-        }
-
-        .welcome-text h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #FFFFFF;
-            margin-bottom: 5px;
-            line-height: 1.2;
-        }
-
-        .welcome-text p {
-            font-size: 14px;
-            color: #EDE9FE;
-            font-weight: 400;
-        }
-
-        /* Stats Grid (Points, Money, Conversion Score) */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px; /* Réduit pour minimiser les espaces */
+            gap: 1.5rem;
+            margin: 1.5rem 0;
         }
-
-        .stat-card, .conversion-score-card {
+        .stat-card, .conversion-score-card, .conversion-card, .history-card {
+            background: linear-gradient(135deg, var(--theme-bg-white), #f9fbfd);
             border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             text-align: center;
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-
-        .stat-card:hover, .conversion-score-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Nouvelles couleurs élégantes pour chaque carte */
         .stat-card.points-card {
-            background: linear-gradient(135deg,rgb(249, 198, 69),rgb(250, 213, 149)); /* Dégradé doré/orange */
+            border: 3px solid var(--pastel-blue);
         }
-
         .stat-card.money-card {
-            background: linear-gradient(135deg,rgb(115, 209, 249), #0EA5E9); /* Dégradé bleu saphir */
+            border: 3px solid var(--pastel-pink);
         }
-
         .conversion-score-card {
-            background: linear-gradient(135deg,rgb(205, 165, 244),rgb(183, 112, 249)); /* Dégradé violet améthyste */
+            border: 3px solid var(--pastel-mint);
         }
-
-        .stat-card .icon, .conversion-score-card .icon {
-            font-size: 28px;
-            margin-bottom: 10px;
-            color: #FFFFFF;
+        .conversion-card {
+            border: 3px solid var(--pastel-lavender);
         }
-
-        .stat-card h3, .conversion-score-card h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #FFFFFF;
-            margin-bottom: 5px;
+        .history-card.points-history-card {
+            border: 3px solid var(--pastel-green);
         }
-
-        .stat-card .value, .conversion-score-card .value {
-            font-size: 28px;
+        .history-card.conversion-history-card {
+            border: 3px solid var(--pastel-yellow);
+        }
+        .history-card:hover, .conversion-score-card:hover, .conversion-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .history-card h3, .conversion-score-card h3, .conversion-card h3 {
+            font-size: 1.2rem;
             font-weight: 700;
-            color: #FFFFFF;
-            margin-bottom: 5px;
+            color: var(--theme-royal-blue);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .history-card .value, .conversion-score-card .value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--theme-text-dark);
+            transition: color 0.3s ease;
+        }
+        .history-card:hover .value, .conversion-score-card:hover .value {
+            color: var(--theme-accent-pink);
+        }
+        .history-card .label, .conversion-score-card .label {
+            font-size: 0.9rem;
+            color: #6B7280;
+            margin-top: 0.5rem;
+            font-style: italic;
         }
 
-        .stat-card .label, .conversion-score-card .label {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Content Grid (Conversion Form & History) */
         .content-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        /* Conversion Form */
-        .conversion-card {
-            background: #FFFFFF;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .conversion-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
         }
 
         .conversion-card h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1F2937;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #F3F4F6;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--pastel-lavender);
         }
-
         .convert-form {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 1rem;
         }
-
         .convert-field {
             flex: 1;
             min-width: 200px;
         }
-
         .convert-field label {
             display: block;
-            font-size: 14px;
+            font-size: 0.9rem;
             font-weight: 600;
-            color: #4B5563;
-            margin-bottom: 8px;
+            color: #6B7280;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
         }
-
         .convert-field input, .convert-field select {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #E5E7EB;
+            padding: 0.75rem;
+            border: 1px solid var(--theme-border-color);
             border-radius: 8px;
-            font-size: 16px;
-            color: #1F2937;
+            font-size: 1rem;
+            color: var(--theme-text-dark);
+            background: #f9fbfd;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
         .convert-field input:focus, .convert-field select:focus {
-            border-color: #8B5CF6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            border-color: var(--pastel-pink);
+            box-shadow: 0 0 0 4px var(--glow-pink);
             outline: none;
         }
-
         .convert-btn {
-            background: linear-gradient(135deg, #6B46C1, #9F7AEA);
+            background: var(--theme-royal-blue);
             color: #FFFFFF;
             border: none;
             border-radius: 8px;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: wave 2s infinite ease-in-out;
+            box-shadow: 0 0 15px var(--glow-royal-blue);
         }
-
         .convert-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(107, 70, 193, 0.4);
-            background: linear-gradient(135deg, #5B21B6, #8B5CF6);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px var(--glow-royal-blue);
         }
-
+        .convert-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+        .convert-btn:hover::before {
+            left: 100%;
+        }
+        @keyframes wave {
+            0% { box-shadow: 0 0 15px var(--glow-royal-blue); }
+            50% { box-shadow: 0 0 25px var(--glow-royal-blue), 0 0 30px var(--theme-royal-blue); }
+            100% { box-shadow: 0 0 15px var(--glow-royal-blue); }
+        }
         .conversion-preview {
-            margin-top: 15px;
-            padding: 12px;
-            background: #F3F4F6;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #F9FAFB, var(--pastel-mint));
             border-radius: 8px;
             text-align: center;
             display: none;
+            animation: fadeIn 0.5s ease;
         }
-
         .conversion-preview p {
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: 600;
-            color: #4B5563;
+            color: var(--theme-royal-blue);
             margin: 0;
-
         }
-        
-        /* Styles pour les alertes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .alert {
-            padding: 12px 15px;
-            margin: 15px 0;
+            padding: 1rem;
+            margin: 1rem 0;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 0.9rem;
             font-weight: 500;
+            animation: fadeIn 0.5s ease;
         }
-        
         .alert-success {
             background-color: #D1FAE5;
             color: #065F46;
             border: 1px solid #A7F3D0;
         }
-        
         .alert-danger {
             background-color: #FEE2E2;
             color: #B91C1C;
             border: 1px solid #FECACA;
         }
-        
         .alert-info {
             background-color: #E0F2FE;
             color: #0369A1;
             border: 1px solid #BAE6FD;
         }
-
-        /* History Card */
-        .history-card {
-            background: #FFFFFF;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.05);
+        .new-conversion {
+            animation: highlight 3s ease-in-out;
+            background-color: rgba(76, 175, 80, 0.2);
         }
-
-        .history-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        @keyframes highlight {
+            0% { background-color: rgba(76, 175, 80, 0.5); }
+            100% { background-color: transparent; }
         }
 
         .history-card h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1F2937;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #F3F4F6;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
         }
-
+        .history-card.points-history-card h3 {
+            border-bottom: 2px solid var(--pastel-green);
+        }
+        .history-card.conversion-history-card h3 {
+            border-bottom: 2px solid var(--pastel-yellow);
+        }
         .history-table {
             width: 100%;
             border-collapse: collapse;
         }
-
         .history-table th, .history-table td {
-            padding: 12px 15px;
+            padding: 0.75rem;
             text-align: left;
-            border-bottom: 1px solid #F3F4F6;
+            border-bottom: 1px solid var(--theme-border-color);
         }
-
         .history-table th {
-            font-size: 14px;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #6B7280;
+            background: #f9fbfd;
         }
-
         .history-table td {
-            font-size: 14px;
-            color: #1F2937;
+            font-size: 0.9rem;
+            color: var(--theme-text-dark);
         }
-
         .history-table tr:last-child td {
             border-bottom: none;
         }
-
-        .history-table tr:hover {
-            background: #F9FAFB;
+        .history-card.points-history-card .history-table tr:hover {
+            background: var(--pastel-green);
+            transition: background 0.3s ease;
         }
-        
-    /* Style pour les nouvelles conversions */
-    .new-conversion {
-        animation: highlight 3s ease-in-out;
-        background-color: rgba(76, 175, 80, 0.2);
-    }
-    
-    @keyframes highlight {
-        0% { background-color: rgba(76, 175, 80, 0.5); }
-        100% { background-color: transparent; }
-    }
+        .history-card.conversion-history-card .history-table tr:hover {
+            background: var(--pastel-yellow);
+            transition: background 0.3s ease;
+        }
+        .history-table .type-gain {
+            color: #065F46;
+            font-weight: 600;
+        }
+        .history-table .type-loss {
+            color: #B91C1C;
+            font-weight: 600;
+        }
 
-        /* Responsive Design */
+        /* Adjusted filter-bar style to keep inputs on the same line */
+        .filter-bar {
+            display: flex;
+            flex-wrap: nowrap; /* Prevent wrapping to new line */
+            align-items: center; /* Vertically center align items */
+            gap: 10px; /* Maintain spacing between inputs */
+            margin-bottom: 1rem; /* Space between filter bar and table */
+        }
+        .filter-bar input, .filter-bar select {
+            flex: 0 0 auto; /* Prevent inputs from growing or shrinking */
+            min-width: 0; /* Ensure inputs don't overflow */
+        }
+
         @media (max-width: 1024px) {
             .content-grid {
                 grid-template-columns: 1fr;
             }
         }
-
         @media (max-width: 768px) {
-            .sidebar {
-                width: 80px;
-                padding: 20px 5px;
+            .header .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
             }
-
-            .sidebar .logo h1 {
-                font-size: 0;
+            .header .nav-link {
+                font-size: 0.9rem;
             }
-
-            .sidebar .logo h1::first-letter {
-                font-size: 24px;
+            .header .logo-img {
+                height: 40px;
             }
-
-            .sidebar ul li a span {
-                display: none;
-            }
-
-            .sidebar ul li a i {
-                margin-right: 0;
-                font-size: 20px;
-            }
-
             .main-content {
-                margin-left: 90px;
-                width: calc(100% - 90px);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .sidebar {
-                width: 60px;
-                padding: 15px 5px;
-            }
-
-            .main-content {
-                margin-left: 70px;
-                width: calc(100% - 70px);
-            }
-
-            .welcome-card {
                 flex-direction: column;
-                text-align: center;
-                padding: 15px 10px;
+                height: auto;
             }
-
-            .welcome-text h2 {
-                font-size: 20px;
-            }
-
-            .welcome-text p {
-                font-size: 12px;
-            }
-
-            .welcome-avatar {
-                width: 50px;
-                height: 50px;
-            }
-
-            .welcome-avatar i {
-                font-size: 25px;
-            }
-
-            .stats-grid, .content-grid {
+            .stats-grid,
+            .content-grid {
                 grid-template-columns: 1fr;
             }
-
             .convert-form {
                 flex-direction: column;
                 align-items: center;
             }
-
             .convert-field {
                 min-width: 100%;
             }
-
             .history-table th, .history-table td {
-                font-size: 12px;
-                padding: 8px;
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            /* On smaller screens, allow wrapping if necessary */
+            .filter-bar {
+                flex-wrap: wrap;
+            }
+            .filter-bar input, .filter-bar select {
+                width: 100%; /* Full width on small screens */
+                margin-bottom: 0.5rem;
             }
         }
     </style>
 {% endblock %}
 
 {% block javascripts %}
-{{ parent() }}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Éléments du DOM
-        const form = document.getElementById('dynamic-convert-form');
-        const pointsInput = document.getElementById('numPoints');
-        const deviseSelect = document.getElementById('devise');
-        const conversionPreview = document.getElementById('conversion-preview');
-        const previewText = document.getElementById('preview-text');
-        const conversionStatus = document.getElementById('conversion-status');
-        
-        // Prévisualisation de la conversion
-        pointsInput.addEventListener('input', updatePreview);
-        deviseSelect.addEventListener('change', updatePreview);
-        
-        // Mise à jour de la prévisualisation
-        function updatePreview() {
-            const points = parseInt(pointsInput.value) || 0;
-            const devise = deviseSelect.value;
-            
-            if (points <= 0) {
-                conversionPreview.style.display = 'none';
-                return;
-            }
-            
-            // Calculer le montant en TND (1 point = 0.325 TND)
-            const montantTND = points * 0.325;
-            
-            // Convertir en devise demandée
-            let montant;
-            switch (devise) {
-                case 'EUR':
-                    montant = (montantTND * 0.29).toFixed(2); // 1 TND = 0.29 EUR
-                    break;
-                case 'USD':
-                    montant = (montantTND * 0.32).toFixed(2); // 1 TND = 0.32 USD
-                    break;
-                default:
-                    montant = montantTND.toFixed(2);
-            }
-            
-            // Formater le montant avec séparateur de milliers
-            const montantFormate = Number(montant).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            
-            // Afficher la prévisualisation
-            previewText.textContent = `${points.toLocaleString('fr-FR')} points = ${montantFormate} ${devise}`;
-            conversionPreview.style.display = 'block';
-        }
-        
-        // Gestion de la soumission du formulaire
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Récupérer les données du formulaire
-            const points = parseInt(pointsInput.value) || 0;
-            const devise = deviseSelect.value;
-            
-            // Valider les données
-            if (points < 100) {
-                conversionStatus.innerHTML = '<div class="alert alert-danger">Vous devez convertir au moins 100 points.</div>';
-                return;
-            }
-            
-            // Vérifier si l'utilisateur a suffisamment de points
-            const pointsDisponibles = parseInt(document.querySelector('.points-card .value').textContent.replace(/[^0-9]/g, '')) || 0;
-            if (points > pointsDisponibles) {
-                conversionStatus.innerHTML = '<div class="alert alert-danger">Vous n\'avez pas suffisamment de points pour cette conversion.</div>';
-                return;
-            }
-            
-            // Créer les données à envoyer
-            const formData = new FormData();
-            formData.append('points', points);
-            formData.append('devise', devise);
-            
-            // Afficher un message de chargement
-            conversionStatus.innerHTML = '<div class="alert alert-info">Traitement en cours...</div>';
-            
-            // Envoyer la requête AJAX
-            fetch('{{ path("app_dynamic_convert_points") }}', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Afficher le message de succès avec les détails de la conversion
-                    const montantFormate = Number(data.data.montant).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    const pointsFormates = parseInt(data.data.points_convertis).toLocaleString('fr-FR');
-                    conversionStatus.innerHTML = `<div class="alert alert-success">
-                        ${data.message}<br>
-                        Vous avez converti ${pointsFormates} points en ${montantFormate} ${data.data.devise}.
-                    </div>`;
-                    
-                    // Mettre à jour la session avec les nouvelles valeurs
-                    fetch('/update-session', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            points: data.data.newPoints || data.data.new_points
-                        })
-                    }).catch(error => console.error('Erreur de mise à jour de session:', error));
+    {{ parent() }}
+    <script>
+        // Canvas Animation with Images and Money
+        window.addEventListener('load', () => {
+            const canvas = document.createElement('canvas');
+            document.body.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
 
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
 
+            const particlesArray = [];
+            const moneyArray = [];
+            const numberOfParticles = 100;
+            const numberOfMoney = 10;
 
+            // Load images (replace these URLs with actual image paths)
+            const pointsImg = new Image();
+            pointsImg.src = '{{ asset('images/points.png') }}';
+            const moneyImg = new Image();
+            moneyImg.src = '{{ asset('images/money.png') }}';
+            const rateImg = new Image();
+            rateImg.src = '{{ asset('images/rate.png') }}';
+            const convertImg = new Image();
+            convertImg.src = '{{ asset('images/convert.png') }}';
+            const coinImg = new Image();
+            coinImg.src = '{{ asset('images/coin.png') }}';
 
-
-
-
-
-
-
-
-                    // Mettre à jour les points affichés
-                    const pointsElement = document.querySelector('.points-card .value');
-                    if (pointsElement) {
-                        // Utiliser newPoints ou new_points selon ce qui est disponible
-                        const newPoints = parseFloat(data.data.newPoints || data.data.new_points || 0);
-                        if (!isNaN(newPoints)) {
-                            pointsElement.textContent = newPoints.toLocaleString('fr-FR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
- 
-                            // Mettre à jour la valeur estimée
-                            const moneyElement = document.querySelector('.money-card .value');
-                            if (moneyElement) {
-                                // Calculer la nouvelle valeur estimée (1 point = 0.325 TND)
-                                const newEstimated = (newPoints * 0.325).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                               
-                               
-                               
-                               moneyElement.textContent = ${newEstimated} TND;
-
-
-                                moneyElement.setAttribute('data-estimated', newEstimated); // for debug
-                            }
-
-
-
-                            
-                        }
-                    }
-                    
-
-                    // Mettre à jour la variable user.points côté Twig si besoin (pour un affichage correct après reload)
-                    // (Pas possible en JS pur, mais l'affichage JS est déjà mis à jour ci-dessus)
-
-                    // Réinitialiser le formulaire
-                    form.reset();
-                    updatePreview();
-
-                    // Mettre à jour l'historique sans recharger la page
-                    let historyTable = document.querySelector('.history-table tbody');
-                    if (historyTable) {
-                        // Formater la date au format français (JJ/MM/AAAA)
-                        const now = new Date();
-                        const day = String(now.getDate()).padStart(2, '0');
-                        const month = String(now.getMonth() + 1).padStart(2, '0');
-                        const year = now.getFullYear();
-                        const dateStr = `${day}/${month}/${year}`;
-
-                        // Récupérer les données de la conversion
-                        const devise = data.data.devise || '';
-                        const pointsConvertis = data.data.points_convertis || data.data.pointsConvertis || 0;
-                        const montant = data.data.montant || 0;
-
-                        // Créer la nouvelle ligne
-                        const newRow = document.createElement('tr');
-                        newRow.className = 'new-conversion';
-                        newRow.innerHTML = `
-                            <td>${dateStr}</td>
-                            <td>${devise}</td>
-                            <td>${parseInt(pointsConvertis).toLocaleString('fr-FR')}</td>
-                            <td>${Number(montant).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${devise}</td>
-                        `;
-
-                        // Supprimer le message "Aucune conversion effectuée" s'il existe
-                        const emptyRow = historyTable.querySelector('tr td[colspan="4"]');
-                        if (emptyRow) {
-                            emptyRow.parentNode.remove();
-                        }
-                        // Ajouter la nouvelle ligne en haut du tableau
-                        historyTable.insertBefore(newRow, historyTable.firstChild);
-                        // Animation
-                        setTimeout(() => {
-                            newRow.classList.remove('new-conversion');
-                        }, 3000);
-                    } else {
-                        console.error('Tableau d\'historique non trouvé');
-                    }
-                } else {
-                    // Afficher le message d'erreur
-                    conversionStatus.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
-
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 5 + 2;
+                    this.speedX = Math.random() * 2 - 1;
+                    this.speedY = Math.random() * 2 - 1;
+                    this.color = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                    this.life = Math.random() * 100 + 50;
                 }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                conversionStatus.innerHTML = '<div class="alert alert-danger">Une erreur est survenue lors de la conversion. Veuillez réessayer.</div>';
-                // Réinitialiser l'interface après une erreur
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    this.life -= 0.5;
+                    if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY = -this.speedY;
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                    ctx.stroke();
+                }
+            }
+
+            class CardImage {
+                constructor(img, x, y) {
+                    this.img = img;
+                    this.x = x;
+                    this.y = y;
+                    this.size = 40;
+                    this.pulse = 0;
+                    this.pulseSpeed = 0.05;
+                }
+                update() {
+                    this.pulse += this.pulseSpeed;
+                    if (this.pulse > Math.PI * 2) this.pulse = 0;
+                }
+                draw() {
+                    const scale = 1 + Math.sin(this.pulse) * 0.1;
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.scale(scale, scale);
+                    ctx.drawImage(this.img, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size / 1.5, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(255, 215, 0, ${Math.sin(this.pulse)})`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+
+            class Money {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = -20;
+                    this.size = 20;
+                    this.speedY = Math.random() * 2 + 1;
+                    this.rotation = 0;
+                    this.rotationSpeed = Math.random() * 0.1;
+                }
+                update() {
+                    this.y += this.speedY;
+                    this.rotation += this.rotationSpeed;
+                    if (this.y > canvas.height) {
+                        this.y = -20;
+                        this.x = Math.random() * canvas.width;
+                    }
+                }
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation);
+                    ctx.drawImage(coinImg, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+
+            const cardImages = [];
+            function initCardImages() {
+                cardImages.push(new CardImage(pointsImg, 200, 150));
+                cardImages.push(new CardImage(moneyImg, 500, 150));
+                cardImages.push(new CardImage(rateImg, 800, 150));
+                cardImages.push(new CardImage(convertImg, 200, 450));
+            }
+
+            function initParticles() {
+                for (let i = 0; i < numberOfParticles; i++) {
+                    particlesArray.push(new Particle());
+                }
+            }
+
+            function initMoney() {
+                for (let i = 0; i < numberOfMoney; i++) {
+                    moneyArray.push(new Money());
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                    particlesArray[i].draw();
+                    if (particlesArray[i].life <= 0) {
+                        particlesArray.splice(i, 1);
+                        i--;
+                        particlesArray.push(new Particle());
+                    }
+                }
+
+                for (let i = 0; i < cardImages.length; i++) {
+                    cardImages[i].update();
+                    cardImages[i].draw();
+                }
+
+                for (let i = 0; i < moneyArray.length; i++) {
+                    moneyArray[i].update();
+                    moneyArray[i].draw();
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            Promise.all([
+                new Promise(resolve => pointsImg.onload = resolve),
+                new Promise(resolve => moneyImg.onload = resolve),
+                new Promise(resolve => rateImg.onload = resolve),
+                new Promise(resolve => convertImg.onload = resolve),
+                new Promise(resolve => coinImg.onload = resolve)
+            ]).then(() => {
+                initCardImages();
+                initParticles();
+                initMoney();
+                animate();
+            });
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                cardImages[0].x = canvas.width * 0.2;
+                cardImages[0].y = 150;
+                cardImages[1].x = canvas.width * 0.5;
+                cardImages[1].y = 150;
+                cardImages[2].x = canvas.width * 0.8;
+                cardImages[2].y = 150;
+                cardImages[3].x = canvas.width * 0.2;
+                cardImages[3].y = 450;
+            });
+        });
+
+        // Form Logic with Burst Effect
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('dynamic-convert-form');
+            const pointsInput = document.getElementById('numPoints');
+            const deviseSelect = document.getElementById('devise');
+            const conversionPreview = document.getElementById('conversion-preview');
+            const previewText = document.getElementById('preview-text');
+            const conversionStatus = document.getElementById('conversion-status');
+            const canvas = document.querySelector('canvas');
+            const ctx = canvas.getContext('2d');
+
+            pointsInput.addEventListener('input', updatePreview);
+            deviseSelect.addEventListener('change', updatePreview);
+            
+            function updatePreview() {
+                const points = parseInt(pointsInput.value) || 0;
+                const devise = deviseSelect.value;
+                
+                if (points <= 0) {
+                    conversionPreview.style.display = 'none';
+                    return;
+                }
+                
+                const montantTND = points * 0.325;
+                let montant;
+                switch (devise) {
+                    case 'EUR': montant = (montantTND * 0.29).toFixed(2); break;
+                    case 'USD': montant = (montantTND * 0.32).toFixed(2); break;
+                    default: montant = montantTND.toFixed(2);
+                }
+                
+                const montantFormate = Number(montant).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                previewText.textContent = `${points.toLocaleString('en-US')} points = ${montantFormate} ${devise}`;
+                conversionPreview.style.display = 'block';
+            }
+            
+            function createBurstEffect(x, y) {
+                const burstParticles = 20;
+                for (let i = 0; i < burstParticles; i++) {
+                    const burst = {
+                        x: x,
+                        y: y;
+                        size: Math.random() * 5 + 2;
+                        speedX: Math.random() * 4 - 2;
+                        speedY: Math.random() * 4 - 2;
+                        color: `hsl(${Math.random() * 360}, 80%, 60%)`;
+                        life: 30
+                    };
+                    function updateBurst() {
+                        burst.x += burst.speedX;
+                        burst.y += burst.speedY;
+                        burst.life--;
+                        if (burst.life > 0) requestAnimationFrame(updateBurst);
+                        ctx.fillStyle = burst.color;
+                        ctx.beginPath();
+                        ctx.arc(burst.x, burst.y, burst.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    updateBurst();
+                }
+            }
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const points = parseInt(pointsInput.value) || 0;
+                const devise = deviseSelect.value;
+                const buttonRect = document.getElementById('convertBtn').getBoundingClientRect();
+                
+                if (points < 100) {
+                    conversionStatus.innerHTML = '<div class="alert alert-danger">You must convert at least 100 points.</div>';
+                    return;
+                }
+                
+                const pointsDisponibles = parseInt(document.querySelector('.stat-card.points-card .value').textContent.replace(/[^0-9]/g, '')) || 0;
+                if (points > pointsDisponibles) {
+                    conversionStatus.innerHTML = '<div class="alert alert-danger">You don\'t have enough points for this conversion.</div>';
+                    return;
+                }
+                
+                const formData = new FormData();
+                formData.append('points', points);
+                formData.append('devise', devise);
+                
+                conversionStatus.innerHTML = '<div class="alert alert-info">Processing...</div>';
+                
+                fetch('{{ path("app_dynamic_convert_points") }}', { method: 'POST', body: formData })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            createBurstEffect(buttonRect.left + buttonRect.width / 2, buttonRect.top + buttonRect.height / 2);
+                            const montantFormate = Number(data.data.montant).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                            const pointsFormates = parseInt(data.data.points_convertis).toLocaleString('en-US');
+                            conversionStatus.innerHTML = `<div class="alert alert-success">
+                                ${data.message}<br>
+                                You have converted ${pointsFormates} points to ${montantFormate} ${data.data.devise}.
+                            </div>`;
+                            
+                            fetch('/update-session', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ points: data.data.newPoints || data.data.new_points })
+                            }).catch(error => console.error('Session update error:', error));
+
+                            const pointsElement = document.querySelector('.stat-card.points-card .value');
+                            if (pointsElement) {
+                                const newPoints = parseFloat(data.data.newPoints || data.data.new_points || 0);
+                                if (!isNaN(newPoints)) {
+                                    pointsElement.textContent = newPoints.toLocaleString('en-US');
+                                    const moneyElement = document.querySelector('.stat-card.money-card .value');
+                                    if (moneyElement) {
+                                        const newEstimated = (newPoints * 0.325).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                        moneyElement.textContent = `${newEstimated} TND`;
+                                    }
+                                }
+                            }
+                            
+                            form.reset();
+                            updatePreview();
+
+                            let historyTable = document.querySelector('.history-card.conversion-history-card .history-table tbody');
+                            if (historyTable) {
+                                const now = new Date();
+                                const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+                                const newRow = document.createElement('tr');
+                                newRow.className = 'new-conversion';
+                                newRow.innerHTML = `
+                                    <td>${dateStr}</td>
+                                    <td>${data.data.devise}</td>
+                                    <td>${parseInt(data.data.points_convertis).toLocaleString('en-US')}</td>
+                                    <td>${Number(data.data.montant).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${data.data.devise}</td>
+                                `;
+                                const emptyRow = historyTable.querySelector('tr td[colspan="4"]');
+                                if (emptyRow) emptyRow.parentNode.remove();
+                                historyTable.insertBefore(newRow, historyTable.firstChild);
+                                setTimeout(() => newRow.classList.remove('new-conversion'), 3000);
+                            }
+                        } else {
+                            conversionStatus.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        conversionStatus.innerHTML = '<div class="alert alert-danger">An error occurred during conversion. Please try again.</div>';
+                        setTimeout(() => conversionStatus.innerHTML = '', 5000);
+                    });
+                
                 setTimeout(() => {
-                    conversionStatus.innerHTML = '';
-                }, 5000); // Effacer le message d'erreur après 5 secondes
+                    if (conversionStatus.querySelector('.alert-success')) conversionStatus.innerHTML = '';
+                }, 5000);
             });
             
-            // Effacer les messages de succès après un certain temps
-            setTimeout(() => {
-                if (conversionStatus.querySelector('.alert-success')) {
-                    conversionStatus.innerHTML = '';
-                }
-            }, 5000);
+            updatePreview();
         });
-        
-        // Initialiser la prévisualisation
-        updatePreview();
-     
-</script>
+    </script>
 {% endblock %}
 
 {% block body %}
     <div class="dashboard-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="logo">
-                <h1>Connect Sphere</h1>
-            </div>
-            <ul><ul><li><a href="{{ path('app_home') }}" class="active"><i class="fas fa-home"></i> Home</a></li>
-                                              <li><a href="{{ path('app_points') }}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-                                                 <li><a href='/points/fortune-wheel'><i class="fas fa-box"></i><span>Fourtune wheel</span></a></li>
-                                             <li><a href="{{ path('app_convert_points') }}"><i class="fas fa-users"></i><span>Conversion </span></a></li>
-                                               <li class="menu-item logout">
-
-                                                            <li class="menu-item logout">
-                                                                <a href="{{ path('app_logout') }}">
-                                                                    <i class="fas fa-sign-out-alt"></i>
-                                                                    <span>Logout</span>
-                                                                </a>
-                                                            </li>
-
-
-                           </ul>
-        </div>
+        <!-- Navbar -->
+        <header class="header">
+            <nav class="nav-container container">
+                <div class="logo">
+                    <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:0;">
+                        <span style="font-weight:700;font-size:1.2rem;color:var(--theme-text-dark);">ConnectSphere</span>
+                    </a>
+                </div>
+                <div class="nav-links">
+                    <a href="{{ path('app_home') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                    <a href="{{ path('app_points') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    <a href="{{ path('app_fortune_wheel') }}" class="nav-link"><i class="fas fa-dice"></i> Fortune Wheel</a>
+                    <a href="{{ path('app_convert_points') }}" class="nav-link active"><i class="fas fa-exchange-alt"></i> Conversion</a>
+                    <a href="{{ path('app_logout') }}" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </nav>
+        </header>
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Welcome Card -->
-            <div class="welcome-card">
-                <div class="welcome-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="welcome-text">
-                    <h2>Bienvenue, {{ user.username}} </h2>
-                    <p>Convertissez vos points en argent réel facilement et rapidement.</p>
-                </div>
-            </div>
-
-         <div class="stats-grid">
-    <div class="stat-card points-card">
-        <div class="icon"><i class="fas fa-star"></i></div>
-        <h3>Vos Points</h3>
-        <div class="value">
-            {{ user.points|number_format(0, ',', ' ')|default('Aucun point') }}
-        </div>
-        <div class="label">Points disponibles</div>
-    </div>
-    <div class="stat-card money-card">
-        <div class="icon"><i class="fas fa-money-bill-wave"></i></div>
-        <h3>Valeur Estimée</h3>
-        <div class="value">{{ (user.points * 0.325)|number_format(2, ',', ' ') }} TND</div>
-        <div class="label">1 point = 0.325 TND</div>
-    </div>
-    <div class="conversion-score-card">
-        <div class="icon"><i class="fas fa-exchange-alt"></i></div>
-        <h3>Taux de Conversion</h3>
-        <div class="value">100%</div>
-        <div class="label">Conversion sans frais</div>
-    </div>
-</div>
-
-            <!-- Content Grid -->
-            <div class="content-grid">
-                <!-- Conversion Form Card -->
-                <div class="conversion-card">
-                    <h3>Convertir vos Points</h3>
-                    <form id="dynamic-convert-form" class="convert-form" action="{{ path('app_dynamic_convert_points') }}" method="post">
-                        <div class="convert-field">
-                            <label for="numPoints">Nombre de Points</label>
-                            <input type="number" id="numPoints" name="points" min="100" step="100" placeholder="Minimum 100 points" required>
+            <div style="flex: 1; width: 100%;">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card points-card">
+                        <h3>Your Points</h3>
+                        <div class="value">
+                            {{ user.points|number_format(0, ',', ' ')|default('No points') }}
                         </div>
-                        <div class="convert-field">
-                            <label for="devise">Devise Souhaitée</label>
-                            <select id="devise" name="devise" required>
-                                <option value="TND">Dinar Tunisien (TND)</option>
-                                <option value="EUR">Euro (EUR)</option>
-                                <option value="USD">Dollar US (USD)</option>
+                        <div class="label">Available Points</div>
+                    </div>
+                    <div class="stat-card money-card">
+                        <h3>Estimated Value</h3>
+                        <div class="value">
+                            {{ user.argent|number_format(2, ',', ' ') }} TND
+                        </div>
+                        <div class="label">Total Converted Balance</div>
+                    </div>
+                    <div class="conversion-score-card">
+                        <h3>Conversion Rate</h3>
+                        <div class="value">100%</div>
+                        <div class="label">Conversion Without Fees</div>
+                    </div>
+                </div>
+
+                <!-- Content Grid -->
+                <div class="content-grid">
+                    <!-- Points History -->
+                    <div class="history-card points-history-card">
+                        <h3>Points History</h3>
+                        <div class="filter-bar">
+                            <input type="text" id="searchInput" placeholder="Search..." style="margin-right:10px; padding:0.5rem; border-radius:6px; border:1px solid #E0E0E0;">
+                            <input type="date" id="dateInput" style="margin-right:10px; padding:0.5rem; border-radius:6px; border:1px solid #E0E0E0;">
+                            <select id="typeInput" style="padding:0.5rem; border-radius:6px; border:1px solid #E0E0E0;">
+                                <option value="">All Types</option>
+                                <option value="Gain">Gain</option>
+                                <option value="Loss">Loss</option>
                             </select>
                         </div>
-                        <div class="convert-field">
-                            <button type="submit" id="convertBtn" class="convert-btn">Convertir Maintenant</button>
-                        </div>
-                    </form>
-                    <div id="conversion-preview" class="conversion-preview">
-                        <p id="preview-text">100 points = 32.50 TND</p>
-                    </div>
-                    <div id="conversion-status"></div>
-                </div>
-
-                <!-- History Card -->
-                <div class="history-card">
-                    <h3>Historique des Conversions</h3>
-                    <div class="history-table-container">
-                        <table class="history-table">
+                        <table class="history-table" id="pointsHistoryTable">
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Devise</th>
-                                    <th>Points Convertis</th>
-                                    <th>Montant</th>
+                                    <th>Points</th>
+                                    <th>Type</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in pointsHistory %}
+                                    <tr>
+                                        <td>{{ entry.date|date('d/m/Y H:i') }}</td>
+                                        <td>{{ entry.points > 0 ? '+' ~ entry.points : entry.points }}</td>
+                                        <td class="{{ entry.points > 0 ? 'type-gain' : 'type-loss' }}">
+                                            {{ entry.points > 0 ? 'Gain' : 'Loss' }}
+                                        </td>
+                                        <td>{{ entry.raison }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const searchInput = document.getElementById('searchInput');
+                        const dateInput = document.getElementById('dateInput');
+                        const typeInput = document.getElementById('typeInput');
+                        const table = document.getElementById('pointsHistoryTable');
+                        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                    
+                        function filterTable() {
+                            const searchValue = searchInput.value.toLowerCase();
+                            const dateValue = dateInput.value;
+                            const typeValue = typeInput.value;
+                            for (let i = 0; i < rows.length; i++) {
+                                let show = true;
+                                const cells = rows[i].getElementsByTagName('td');
+                                const dateCell = cells[0].textContent;
+                                const pointsCell = cells[1].textContent;
+                                const typeCell = cells[2].textContent;
+                                const reasonCell = cells[3].textContent;
+                                if (searchValue && !(dateCell + pointsCell + typeCell + reasonCell).toLowerCase().includes(searchValue)) {
+                                    show = false;
+                                }
+                                if (dateValue) {
+                                    const parts = dateCell.split(' ');
+                                    const dmy = parts[0].split('/');
+                                    const formatted = dmy[2] + '-' + dmy[1] + '-' + dmy[0];
+                                    if (formatted !== dateValue) {
+                                        show = false;
+                                    }
+                                }
+                                if (typeValue) {
+                                    if (typeCell.trim().toLowerCase() !== typeValue.toLowerCase()) {
+                                        show = false;
+                                    }
+                                }
+                                rows[i].style.display = show ? '' : 'none';
+                            }
+                        }
+                        searchInput.addEventListener('input', filterTable);
+                        dateInput.addEventListener('change', filterTable);
+                        typeInput.addEventListener('change', filterTable);
+                    });
+                    </script>
+                    <!-- Conversion Form Card -->
+                    <div class="conversion-card">
+                        <h3>Convert Your Points</h3>
+                        <form id="dynamic-convert-form" class="convert-form" action="{{ path("app_dynamic_convert_points") }}" method="post">
+                            <div class="convert-field">
+                                <label for="numPoints">Number of Points</label>
+                                <input type="number" id="numPoints" name="points" min="100" step="100" placeholder="Minimum 100 points" required>
+                            </div>
+                            <div class="convert-field">
+                                <label for="devise">Desired Currency</label>
+                                <select id="devise" name="devise" required>
+                                    <option value="TND">Tunisian Dinar (TND)</option>
+                                    <option value="EUR">Euro (EUR)</option>
+                                    <option value="USD">US Dollar (USD)</option>
+                                </select>
+                            </div>
+                            <div class="convert-field">
+                                <button type="submit" id="convertBtn" class="convert-btn">Convert Now</button>
+                            </div>
+                        </form>
+                        <div id="conversion-preview" class="conversion-preview">
+                            <p id="preview-text">100 points = 32.50 TND</p>
+                        </div>
+                        <div id="conversion-status"></div>
+                    </div>
+
+                    <!-- Conversion History (Dynamic) -->
+                    <div class="history-card conversion-history-card">
+                        <h3>Conversion History</h3>
+                        <div class="filter-bar">
+                            <input type="text" id="conversionSearchInput" placeholder="Search..." style="margin-right:10px; padding:0.5rem; border-radius:6px; border:1px solid #E0E0E0;">
+                            <input type="date" id="conversionDateInput" style="margin-right:10px; padding:0.5rem; border-radius:6px; border:1px solid #E0E0E0;">
+                            <select id="currencyInput" style="padding:0.5rem; border-radius:6px; border:1px solid #E0E0E0;">
+                                <option value="">All Currencies</option>
+                                <option value="TND">TND</option>
+                                <option value="EUR">EUR</option>
+                                <option value="USD">USD</option>
+                            </select>
+                        </div>
+                        <table class="history-table" id="conversion-history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Currency</th>
+                                    <th>Converted Points</th>
+                                    <th>Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for conversion in conversions %}
-                               <tr>
-        <td>{{ conversion.date|date('d/m/Y') }}</td>
-        <td>{{ conversion.devise }}</td>
-       <td>{{ conversion.pointConvertis|number_format(0, ',', ' ') }}</td> <!-- Formatage des points avec séparateur de milliers -->
-        <td>{{ conversion.montant|number_format(2, ',', ' ') }} {{ conversion.devise }}</td>
-    </tr>
+                                    <tr>
+                                        <td>{{ conversion.date|date('d/m/Y') }}</td>
+                                        <td>{{ conversion.devise }}</td>
+                                        <td>{{ conversion.pointConvertis|number_format(0, ',', ' ') }}</td>
+                                        <td>{{ conversion.montant|number_format(2, ',', ' ') }} {{ conversion.devise }}</td>
+                                    </tr>
                                 {% else %}
-                                <tr>
-                                    <td colspan="4" style="text-align: center;">Aucune conversion effectuée</td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="4" style="text-align: center;">No conversions made</td>
+                                    </tr>
                                 {% endfor %}
-                                <!-- Exemples de conversions (à supprimer en production) -->
-                                {#
-                                <tr>
-                                    <td>2025-03-15</td>
-                                    <td>EUR</td>
-                                    <td>200</td>
-                                    <td>9.80 €</td>
-                                </tr>
-                                <tr>
-                                    <td>2025-02-25</td>
-                                    <td>USD</td>
-                                    <td>300</td>
-                                    <td>15.00 $</td>
-                                </tr>
-                                <tr>
-                                    <td>2025-01-10</td>
-                                    <td>TND</td>
-                                    <td>150</td>
-                                    <td>48.75 TND</td>
-                                </tr>
-                                <tr>
-                                    <td>2024-12-05</td>
-                                    <td>EUR</td>
-                                    <td>50</td>
-                                    <td>2.45 €</td>
-                                </tr>
-                                #}
                             </tbody>
                         </table>
                     </div>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const searchInput = document.getElementById('conversionSearchInput');
+                        const dateInput = document.getElementById('conversionDateInput');
+                        const currencyInput = document.getElementById('currencyInput');
+                        const table = document.getElementById('conversion-history-table');
+                        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                    
+                        function filterTable() {
+                            const searchValue = searchInput.value.toLowerCase();
+                            const dateValue = dateInput.value;
+                            const currencyValue = currencyInput.value;
+                            for (let i = 0; i < rows.length; i++) {
+                                let show = true;
+                                const cells = rows[i].getElementsByTagName('td');
+                                if (cells.length === 1) { // Handle "No conversions made" row
+                                    continue;
+                                }
+                                const dateCell = cells[0].textContent;
+                                const currencyCell = cells[1].textContent;
+                                const pointsCell = cells[2].textContent;
+                                const amountCell = cells[3].textContent;
+                                if (searchValue && !(dateCell + currencyCell + pointsCell + amountCell).toLowerCase().includes(searchValue)) {
+                                    show = false;
+                                }
+                                if (dateValue) {
+                                    const dmy = dateCell.split('/');
+                                    const formatted = dmy[2] + '-' + dmy[1] + '-' + dmy[0];
+                                    if (formatted !== dateValue) {
+                                        show = false;
+                                    }
+                                }
+                                if (currencyValue) {
+                                    if (currencyCell.trim().toLowerCase() !== currencyValue.toLowerCase()) {
+                                        show = false;
+                                    }
+                                }
+                                rows[i].style.display = show ? '' : 'none';
+                            }
+                        }
+                        searchInput.addEventListener('input', filterTable);
+                        dateInput.addEventListener('change', filterTable);
+                        currencyInput.addEventListener('change', filterTable);
+                    });
+                    </script>
                 </div>
             </div>
         </div>
     </div>
-    {% endblock %}
-
-
+{% endblock %}
