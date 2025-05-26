@@ -1,0 +1,230 @@
+{# templates/create_job/createjob.html.twig #}
+{# REMOVE: {% extends 'base.html.twig' %} as we are building a full page now #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Create a Job | ConnectSphere{% endblock %}</title>
+    
+    {# Stylesheets #}
+    {% block stylesheets %}
+        {# Font Awesome & Google Fonts (consistent with events page) #}
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        
+        {# Link to the CSS file for events page styles (header/footer/variables) #}
+        {# This assumes you have general styles for header/footer in events_page.css #}
+        {# OR, if you have a truly global root.css, use that. For now, using events_page.css as a base for theme. #}
+        <link rel="stylesheet" href="{{ asset('css/events_page.css') }}"> 
+        
+        {# Specific styles for this page - can be a separate file or inline #}
+        {# For this example, I'll keep them inline but adjust them #}
+        {# You might want to move these to public/css/create_job_form_V2.css #}
+        <link rel="stylesheet" href="{{ asset('css/create_job_form.css') }}"> {# Link to your existing one to be modified #}
+    {% endblock %}
+</head>
+<body>
+
+    {% block page_header %}
+    <!-- Header from events page -->
+    <header class="header">
+        <nav class="nav-container container">
+            <div class="logo">
+                <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:10px;">
+                    <span style="font-weight:bold;font-size:1.5rem;color:black;">ConnectSphere</span>
+                </a>
+            </div>
+            <div class="nav-links">
+        <a href="{{ path('app_events') }}" class="nav-link">Events</a>
+        <a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
+        <a href="{{ path('app_organizer') }}" class="nav-link">Dashboard</a>
+        <a href="{{ path('app_groups') }}" class="nav-link">Groups</a>
+        <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+        <a href="{{ path('app_profile') }}" class="nav-link">Profile</a>
+        <a href="{{ path('app_social') }}" class="nav-link">Social</a>
+            </div>
+        </nav>
+    </header>
+    {% endblock %}
+
+    {% block body %}
+    <main class="create-job-page-container"> {# Changed class for page specific styling #}
+        <div class="create-job-wrapper">
+            <div class="form-header">
+                <div class="form-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <h1>Create New Opportunity</h1>
+                <p class="form-subtitle">Fill in the details to post your job listing and find the perfect candidate</p>
+            </div>
+            
+            {{ form_start(form) }}
+                <div class="form-grid">
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="{{ form.jobTitle.vars.id }}">
+                                <i class="fas fa-heading"></i> Job Title
+                            </label>
+                            {{ form_widget(form.jobTitle) }}
+                            {# <i class="fas fa-pen input-icon"></i> #}
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="{{ form.eventTitle.vars.id }}">
+                                <i class="fas fa-calendar-alt"></i> Event Title (Optional)
+                            </label>
+                            {{ form_widget(form.eventTitle) }}
+                            {# <i class="fas fa-tag input-icon"></i> #}
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="{{ form.jobLocation.vars.id }}">
+                                <i class="fas fa-map-marker-alt"></i> Job Location
+                            </label>
+                            {{ form_widget(form.jobLocation) }}
+                            {# <i class="fas fa-location-dot input-icon"></i> #}
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="{{ form.employmentType.vars.id }}">
+                                <i class="fas fa-user-tie"></i> Employment Type
+                            </label>
+                            {{ form_widget(form.employmentType, {'attr': {'class': 'form-select-styled'}}) }} {# Added class for select styling #}
+                            {# <i class="fas fa-briefcase input-icon"></i> #}
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="{{ form.applicationDeadLine.vars.id }}">
+                                <i class="fas fa-clock"></i> Application Deadline
+                            </label>
+                            {{ form_widget(form.applicationDeadLine) }}
+                            {# <i class="fas fa-calendar-day input-icon"></i> #}
+                        </div>
+                    </div>
+                    
+                    {# Salary Range in one card for better grouping if desired, or keep separate #}
+                    <div class="form-card salary-range-card"> 
+                        <div class="salary-range">
+                            <div class="form-group">
+                                <label for="{{ form.minSalary.vars.id }}">
+                                    <i class="fas fa-money-bill-wave"></i> Minimum Salary
+                                </label>
+                                {{ form_widget(form.minSalary) }}
+                                {# <i class="fas fa-coins input-icon"></i> #}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.maxSalary.vars.id }}">
+                                    <i class="fas fa-money-bill-wave"></i> Maximum Salary
+                                </label>
+                                {{ form_widget(form.maxSalary) }}
+                                {# <i class="fas fa-coins input-icon"></i> #}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="{{ form.currency.vars.id }}">
+                                <i class="fas fa-dollar-sign"></i> Currency
+                            </label>
+                            {{ form_widget(form.currency) }}
+                            {# <i class="fas fa-wallet input-icon"></i> #}
+                        </div>
+                    </div>
+
+                    <div class="form-card tall"> {# Spans full width if form-grid has 1 column on mobile #}
+                        <div class="form-group">
+                            <label for="{{ form.jobDescreption.vars.id }}">
+                                <i class="fas fa-file-alt"></i> Job Description
+                            </label>
+                            {{ form_widget(form.jobDescreption) }}
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="{{ form.recruiterName.vars.id }}">
+                                <i class="fas fa-user"></i> Recruiter Name
+                            </label>
+                            {{ form_widget(form.recruiterName) }}
+                            {# <i class="fas fa-signature input-icon"></i> #}
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="{{ form.recruiterEmail.vars.id }}">
+                                <i class="fas fa-envelope"></i> Recruiter Email
+                            </label>
+                            {{ form_widget(form.recruiterEmail) }}
+                            {# <i class="fas fa-at input-icon"></i> #}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">
+                        <span>Post Opportunity</span>
+                        <i class="fas fa-paper-plane btn-icon"></i>
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </main>
+    {% endblock %}
+
+    {% block page_footer %}
+    <!-- Footer from events page -->
+    <footer class="site-footer">
+        <div class="footer-content container">
+            <div class="footer-column">
+                <h4>ConnectSphere</h4>
+                <p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p>
+            </div>
+            <div class="footer-column">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{{ path('app_home') }}">Home</a></li>
+                    <li><a href="{{ path('app_events') }}">Events</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-column footer-contact">
+                <h4>Contact Us</h4>
+                <p><i class="fas fa-phone"></i><a href="tel:+21692160411">+216 92 160 411</a></p>
+                <p><i class="fas fa-envelope"></i><a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p>
+            </div>
+            <div class="footer-column">
+                <h4>Follow Us</h4>
+                <div class="footer-social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
+    </footer>
+    {% endblock %}
+
+    {% block javascripts %}
+        {# Add any page-specific JS here if needed #}
+    {% endblock %}
+</body>
+</html>

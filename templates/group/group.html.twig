@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Group - Connect Sphere{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/creategroups.css') }}">
+    <style>
+        #preview {
+            margin-top: 1rem;
+            max-height: 200px;
+            max-width: 100%;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="groups-container">
+    <div class="group-view-container">
+        <h1 class="groups-title">Create New Group</h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+
+        <form method="post" enctype="multipart/form-data" class="group-form">
+            <div class="form-group">
+                <label for="name">Group Name</label>
+                <input type="text" id="name" name="name" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="rules">Group Rules</label>
+                <textarea id="rules" name="rules" class="form-control" rows="5" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="profile_picture">Profile Picture</label>
+                <input type="file" id="profile_picture" name="profile_picture" class="form-control-file" accept="image/*">
+                <img id="preview" alt="Preview" />
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ path('app_groups') }}" class="group-btn group-btn-outline">Cancel</a>
+                <button type="submit" class="group-btn group-btn-primary">Create Group</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        const input = document.getElementById('profile_picture');
+        const preview = document.getElementById('preview');
+
+        input.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    </script>
+{% endblock %}

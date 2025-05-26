@@ -1,0 +1,367 @@
+/* public/css/job_feed.css */
+
+/* :root variables are assumed to be loaded from events_page.css or a global.css */
+/* Ensure --primary-color: #1c2b5d; and --primary-hover: #3d5472; are defined there */
+
+.job-feed-page-container {
+    background-color: var(--light-bg, #f8f9fa);
+    padding-top: 1.5rem;
+    padding-bottom: 3rem;
+    min-height: calc(100vh - 160px); 
+}
+
+.job-feed-controls-header {
+   display: flex; 
+   flex-wrap: wrap; 
+   justify-content: space-between; 
+   align-items: center; 
+   padding-bottom: 1rem; 
+   margin-bottom: 1.5rem; 
+   border-bottom: 1px solid var(--theme-border-color, #DEE2E6); 
+   gap: 1rem; 
+}
+
+.job-feed-controls-header .page-title { 
+   font-size: 1.8rem; 
+   font-weight: 700; 
+   color: var(--primary-color, #1c2b5d); 
+   margin: 0; 
+   flex-shrink: 0; 
+   position: relative;
+}
+.job-feed-controls-header .page-title::after { 
+   content: '';
+   position: absolute;
+   bottom: -5px;
+   left: 0;
+   width: 50px;
+   height: 3px;
+   background: var(--secondary-color, #d54d67);
+   border-radius: 3px;
+}
+
+.new-job-action {
+    /* Styles for the container of the button, if needed for alignment */
+    /* For example, if you want it to always be on the far right: */
+    /* margin-left: auto; */
+}
+
+/* Styles for the "Post New Job" button */
+.btn-add-job-page {
+   background-color: var(--primary-color) !important; /* Added !important as a test if overridden */
+   color: white !important;  /* Added !important as a test */
+   border: none;
+   text-decoration: none;
+   padding: 0.6rem 1.2rem; 
+   border-radius: 6px;
+   font-size: 0.95rem;
+   font-weight: 500;
+   display: inline-flex; 
+   align-items: center;
+   transition: background-color var(--transition-fast, 0.2s ease), transform var(--transition-fast, 0.2s ease); /* Explicitly transition background-color */
+   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.btn-add-job-page:hover {
+   background-color: var(--primary-hover, #3d5472) !important; /* Added !important */
+   color: white !important; /* Ensure text stays white on hover */
+   transform: translateY(-1px);
+   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* ... (rest of your job_feed.css: .jobs-list, .job-card, etc. from previous response) ... */
+
+.jobs-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem; 
+}
+
+.job-card {
+  background-color: var(--secondary-bg, #FFFFFF); 
+  border-radius: var(--border-radius, 10px);
+  box-shadow: var(--card-shadow, 0 5px 15px rgba(0,0,0,0.07)); 
+  border-left: 5px solid var(--theme-secondary-teal, #20C997); 
+  border-top: 1px solid #e9ecef;
+  border-right: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-left-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+.job-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--card-shadow-hover, 0 10px 25px rgba(0,0,0,0.1));
+    border-left-color: var(--theme-primary-pink, #E83E8C); 
+}
+
+.job-card-header {
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid var(--theme-border-color, #DEE2E6);
+    background-color: #fcfdff; 
+}
+
+.job-title {
+  font-size: 1.5rem; 
+  font-weight: 700; 
+  color: var(--primary-color, #1c2b5d); 
+  margin-bottom: 0.35rem;
+  line-height: 1.3;
+}
+
+.job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.88rem;
+    color: var(--theme-text-dark);
+    margin-top: 0.25rem;
+    gap: 0.5rem;
+}
+.job-event-title {
+    display: inline-flex;
+    align-items: center;
+    color: var(--primary-color); 
+    font-weight: 500;
+}
+.job-event-title i {
+    margin-right: 0.4rem;
+    color: var(--secondary-color); 
+}
+
+.salary-badge {
+    background-color: rgba(32, 201, 151, 0.15); 
+    color: var(--theme-secondary-teal, #20C997);
+    padding: 0.3rem 0.8rem;
+    border-radius: 1rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: 1px solid rgba(32, 201, 151, 0.3); 
+}
+
+.job-card-content {
+    padding: 1.75rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.job-card-body {
+  display: grid;
+  grid-template-columns: 2fr 1fr; 
+  gap: 1.75rem; 
+  margin-bottom: 1.5rem; 
+}
+
+.section-title-sm { 
+  color: var(--primary-color);
+  font-size: 1.1rem; 
+  font-weight: 600;
+  margin-bottom: 1rem; 
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--theme-secondary-teal); 
+  display: inline-block; 
+}
+
+.job-detail-item {
+  display: flex;
+  margin-bottom: 0.75rem; 
+  align-items: flex-start; 
+  font-size: 0.92rem;
+}
+
+.job-detail-icon {
+  width: 20px; 
+  color: var(--theme-secondary-teal); 
+  margin-right: 0.75rem; 
+  flex-shrink: 0;
+  text-align: center; 
+  padding-top: 0.15em; 
+}
+.job-detail-text {
+    display: flex;
+    flex-direction: column; 
+}
+.job-detail-label {
+  font-weight: 600; 
+  color: var(--theme-text-dark);
+  margin-right: 0.4rem;
+}
+.job-detail-value {
+  color: var(--theme-text-dark);
+}
+
+.job-description {
+  margin-top: 1rem; 
+}
+
+.job-description-text {
+  color: var(--theme-text-dark);
+  line-height: 1.65; 
+  font-size: 0.92rem;
+  padding: 0.75rem;
+  background-color: rgba(240, 248, 255, 0.5); 
+  border-radius: 4px;
+}
+
+.key-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; 
+}
+
+.deadline-info {
+  display: flex;
+  align-items: center; 
+  background-color: rgba(213, 77, 103, 0.08); 
+  color: var(--secondary-color); 
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--border-radius, 6px);
+  font-size: 0.88rem;
+  border: 1px solid rgba(213, 77, 103, 0.2);
+}
+
+.deadline-icon {
+  color: var(--secondary-color); 
+  margin-right: 0.6rem;
+  font-size: 1.1rem; 
+}
+.deadline-details { display: flex; flex-direction: column; }
+.deadline-label { font-weight: 600; margin-bottom: 0.1rem; }
+.deadline-value { font-weight: 500; }
+
+.job-posted-date {
+    font-size: 0.88rem;
+    color: var(--theme-text-dark);
+    display: flex;
+    align-items: center;
+}
+.job-posted-date i {
+    margin-right: 0.4rem;
+    color: var(--primary-color);
+}
+
+.job-card .btn { 
+    padding: 0.6rem 1.2rem; 
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 6px; 
+    font-weight: 500;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    text-transform: uppercase; 
+    letter-spacing: 0.5px;  
+    border: 1px solid transparent; 
+}
+.job-card .btn:hover {
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.apply-button { 
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+.apply-button:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.share-button {
+  background-color: transparent;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.share-button:hover {
+  background-color: rgba(28, 43, 93, 0.07); 
+  border-color: var(--primary-hover);
+  color: var(--primary-hover);
+}
+
+.no-jobs-message { 
+   text-align: center; 
+   padding: 3rem; 
+   color: var(--theme-text-dark, #6c757d); 
+   font-size: 1.1rem;
+   width: 100%;
+   background: var(--secondary-bg, white);
+   border-radius: var(--border-radius, 10px);
+   box-shadow: var(--card-shadow, 0 4px 8px rgba(0,0,0,0.06));
+   margin-top: 1.5rem;
+}
+.no-jobs-message a {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+#applicationModal .modal-header {
+    background-color: var(--primary-color, #1c2b5d);
+    color: white;
+    border-bottom: none; 
+}
+#applicationModal .modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+#applicationModal .modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+#applicationModal .modal-body {
+    padding: 1.5rem 2rem; 
+}
+#applicationModal .form-label {
+    font-weight: 500;
+    color: var(--theme-text-dark);
+    margin-bottom: 0.3rem;
+}
+#applicationModal .form-control { 
+    border-color: var(--theme-border-color);
+    padding: 0.6rem 1rem;
+}
+#applicationModal .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(28,43,93,0.25);
+}
+#applicationModal .modal-footer {
+    border-top: 1px solid var(--theme-border-color);
+    padding: 1rem 2rem;
+}
+
+@media (max-width: 992px) {
+  .job-card-body {
+    grid-template-columns: 1fr; 
+  }
+  .job-right-column {
+      margin-top: 1.75rem; 
+      border-top: 1px solid var(--theme-border-color);
+      padding-top: 1.75rem;
+  }
+  .job-description { 
+      margin-top: 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .job-title {
+    font-size: 1.25rem;
+  }
+  .job-feed-controls-header { 
+      flex-direction: column;
+      align-items: stretch; 
+  }
+  .job-feed-controls-header .page-title {
+    margin-bottom: 1rem; 
+  }
+  .new-job-action { 
+    width: 100%; 
+    margin-left: 0;
+  }
+  .btn-add-job-page { 
+      width: 100%; 
+      justify-content: center;
+  }
+}

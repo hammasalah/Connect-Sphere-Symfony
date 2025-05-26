@@ -1,0 +1,266 @@
+/* public/css/create_job_form.css */
+/* This file will now use variables defined in events_page.css (or a global root.css) */
+
+/* Overall page container for this specific page */
+.create-job-page-container {
+    background-color: var(--light-bg); /* Use light background from events page theme */
+    padding: 2rem 0; /* Add some padding */
+    min-height: calc(100vh - 160px); /* Adjust based on actual header/footer height */
+}
+
+.create-job-wrapper {
+    max-width: 900px;
+    margin: 2rem auto; /* Adjusted margin */
+    padding: 2.5rem;   /* Adjusted padding */
+    background-color: var(--secondary-bg, #FFFFFF); /* Use a theme variable or fallback */
+    border-radius: var(--border-radius, 10px); /* Use theme border radius */
+    box-shadow: var(--card-shadow, 0 4px 8px rgba(0,0,0,0.06));
+    /* Remove backdrop-filter and complex gradients if not part of the events page theme */
+    /* backdrop-filter: blur(8px); */ 
+    border: 1px solid var(--theme-border-color, #DEE2E6);
+    position: relative;
+    overflow: hidden; /* Keep this */
+}
+
+/* Remove the ::before pseudo-element if it's too theme-specific to the dark original */
+/*
+.create-job-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(213,77,103,0.1) 0%, rgba(30,28,39,0) 70%);
+    z-index: -1;
+}
+*/
+
+.form-header {
+    text-align: center;
+    margin-bottom: 2.5rem; /* Adjusted margin */
+    position: relative;
+}
+
+.form-icon {
+    color: var(--primary-color); /* Use primary theme color for icon */
+    margin-bottom: 1rem;
+    font-size: 2.2rem;
+}
+
+.create-job-wrapper h1 { /* More specific selector */
+    font-family: var(--body-font, 'Poppins', sans-serif); /* Theme font */
+    font-size: 1.8rem; /* Align with events page title */
+    font-weight: 700;
+    color: var(--theme-text-dark, #343A40); /* Theme text color */
+    margin-bottom: 0.75rem;
+    background: none; /* Remove text gradient if not in events page theme */
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    letter-spacing: normal; /* Reset letter spacing */
+    border-bottom: 2px solid var(--primary-color); /* Similar to page-title underline */
+    display: inline-block;
+    padding-bottom: 0.5rem;
+}
+
+.form-subtitle {
+    color: var(--theme-text-dark, #6c757d); /* Theme muted text color */
+    font-size: 1rem;
+    font-weight: 400; /* Normal weight */
+    max-width: 600px;
+    margin: 0.5rem auto 0;
+    line-height: 1.6;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive columns */
+    gap: 1.5rem; /* Adjusted gap */
+    margin-bottom: 2rem;
+}
+
+.form-card {
+    background: var(--secondary-bg, #FFFFFF); /* Lighter card background, or keep current if it fits */
+    border: 1px solid var(--theme-border-color, #DEE2E6);
+    border-radius: var(--border-radius, 8px);
+    padding: 1.5rem;
+    transition: box-shadow 0.3s ease; /* Simpler transition */
+    /* Remove theme-specific hover effects unless desired */
+}
+.form-card:hover {
+    box-shadow: var(--card-shadow-hover, 0 8px 16px rgba(0,0,0,0.1));
+    transform: translateY(-2px);
+}
+/* Remove ::before for form-card if not part of the general theme */
+.form-card::before {
+    display: none; 
+}
+
+
+.form-card.tall {
+    grid-column: span 2; /* Ensure it spans if grid has 2 columns */
+    /* min-height: auto; /* Let content define height */
+}
+@media (max-width: 768px) {
+    .form-card.tall {
+        grid-column: span 1; /* Stack on smaller screens */
+    }
+}
+
+
+.form-group {
+    margin-bottom: 1.25rem; /* Adjusted margin */
+    position: relative;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.create-job-wrapper label { /* More specific selector for labels within this form */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem; /* Slightly smaller */
+    font-weight: 600; /* Bolder */
+    margin-bottom: 0.5rem;
+    color: var(--theme-text-dark, #343A40); /* Theme text color */
+}
+
+.create-job-wrapper label i {
+    font-size: 0.9em;
+    color: var(--primary-color); /* Theme primary color for icons */
+}
+
+.create-job-wrapper input, 
+.create-job-wrapper textarea, 
+.create-job-wrapper select {
+    width: 100%;
+    padding: 0.75rem 1rem; /* Adjusted padding */
+    background: #FFFFFF; /* Standard white background for inputs */
+    border: 1px solid var(--theme-border-color, #ced4da);
+    border-radius: 6px; /* Standard border radius */
+    color: var(--theme-text-dark, #343A40);
+    font-family: var(--body-font, 'Poppins', sans-serif);
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box; /* Ensure padding doesn't expand element */
+}
+
+.create-job-wrapper input::placeholder,
+.create-job-wrapper textarea::placeholder {
+    color: #aab8c2; /* Lighter placeholder text */
+}
+
+.create-job-wrapper input:focus, 
+.create-job-wrapper textarea:focus, 
+.create-job-wrapper select:focus {
+    outline: none;
+    border-color: var(--primary-color); /* Theme primary color for focus */
+    box-shadow: 0 0 0 0.2rem rgba(28,43,93,0.25); /* Focus shadow similar to events page */
+}
+
+/* Style for select elements to look more like inputs */
+.create-job-wrapper select.form-select-styled {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem; /* Make space for arrow */
+}
+
+
+.create-job-wrapper textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.salary-range-card { /* New class for the card containing salary fields */
+    grid-column: span 2; /* Make it span full width if grid is 2 columns */
+}
+@media (max-width: 768px) {
+    .salary-range-card {
+        grid-column: span 1; /* Stack on smaller screens */
+    }
+}
+
+.salary-range { /* This is the flex container inside the card */
+    display: flex;
+    gap: 1.5rem;
+}
+@media (max-width: 576px) {
+    .salary-range {
+        flex-direction: column; /* Stack salary fields on very small screens */
+        gap: 1.25rem;
+    }
+}
+.salary-range .form-group {
+    flex: 1;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end; /* Align button to the right, like events page */
+    margin-top: 2rem; /* Increased margin */
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--theme-border-color, #DEE2E6);
+}
+
+.create-job-wrapper .submit-btn { /* More specific */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.75rem; /* Adjusted padding */
+    background-color: var(--primary-color); /* Theme primary color */
+    color: white;
+    border: none;
+    border-radius: 6px; /* Standard border radius */
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    /* Remove theme-specific gradient and before pseudo-element for consistency */
+}
+
+.create-job-wrapper .submit-btn:hover {
+    background-color: var(--primary-hover); /* Theme primary hover color */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.submit-btn .btn-icon {
+    transition: transform 0.3s ease;
+}
+.submit-btn:hover .btn-icon {
+    transform: translateX(3px);
+}
+
+
+/* Remove old input-icon styling if not used, or adapt if you re-add them in HTML */
+.input-icon {
+   display: none; 
+}
+
+/* Animation (can be kept if desired) */
+@keyframes fadeInForms { /* Renamed to avoid conflict if events_page.css is also loaded */
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-card {
+    animation: fadeInForms 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+/* Staggered animation delays for form cards */
+.form-grid .form-card:nth-child(1) { animation-delay: 0.1s; }
+.form-grid .form-card:nth-child(2) { animation-delay: 0.15s; }
+.form-grid .form-card:nth-child(3) { animation-delay: 0.2s; }
+.form-grid .form-card:nth-child(4) { animation-delay: 0.25s; }
+.form-grid .form-card:nth-child(5) { animation-delay: 0.3s; }
+/* ...and so on if you have more direct children for staggered effect */

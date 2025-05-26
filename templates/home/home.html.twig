@@ -1,0 +1,513 @@
+{# templates/home/home.html.twig #}
+{# PAS de {% extends 'base.html.twig' %} ici #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home - ConnectSphere</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>CS</text></svg>">
+
+  <!-- Google Fonts (Poppins) -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="{{ asset('css/root.css') }}">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+  <style>
+    /* === Original inline CSS === */
+    :root {
+      --theme-primary-pink: #E83E8C; --theme-secondary-teal: #20C997;
+      --theme-text-dark: #343A40; --theme-bg-light: #FFFFFF;
+      --theme-bg-medium: #F8F9FA; --theme-border-color: #DEE2E6;
+      --map-bg-color: #f0f5f9; --body-font: 'Poppins', sans-serif;
+    }
+    body {
+      margin:0; font-family:var(--body-font); background:var(--theme-bg-light);
+      color:var(--theme-text-dark); font-size:16px; line-height:1.6;
+    }
+    a { color:var(--theme-primary-pink); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .container { max-width:1140px; margin:0 auto; padding:0 15px; }
+
+    .header { background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1); padding:.8rem 1rem; border-bottom:1px solid var(--theme-border-color); }
+    .header .nav-container { display:flex; justify-content:space-between; align-items:center; }
+    .header .logo-img { height:80px; }
+    .header .nav-links { display:flex; gap:1.5rem; align-items: center; /* Pour bien aligner si icônes de tailles différentes */}
+    .header .nav-link { font-weight:500; transition:color .2s; display:inline-flex; align-items:center; gap: 0.4rem; /* Pour espacer icône et texte */}
+    .header .nav-link i { /* Style optionnel pour les icônes dans les liens de nav */
+        /* font-size: 1.1em; */ /* Décommentez si vous voulez des icônes légèrement plus grandes */
+    }
+    .header .nav-link:hover { color:var(--theme-primary-pink); }
+    .header .contact-btn { background:var(--theme-primary-pink); color:#fff; padding:.5rem 1.2rem; border-radius:20px; font-weight:500; }
+    .header .contact-btn:hover { background:#d0367c; }
+
+    /* === ENHANCED HERO SECTION STYLES === */
+    .hero {
+      padding: 4rem 1rem;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.95) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('{{ asset('images/pattern-bg.png') }}') repeat;
+      opacity: 0.05;
+      z-index: 0;
+    }
+    
+    .hero .container {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero h1 {
+      color: var(--theme-primary-pink);
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      font-size: 2.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 1px rgba(0,0,0,0.05);
+      animation: fadeInDown 1s ease-out;
+    }
+    
+    .hero h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--theme-text-dark);
+      max-width: 800px;
+      margin: 0 auto 2rem;
+      line-height: 1.3;
+      animation: fadeInUp 1s ease-out;
+    }
+    
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    .featured-events {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+      animation: fadeIn 1.2s ease-out;
+    }
+    
+    .featured-event-card {
+      flex: 1 1 calc(33% - 1.5rem);
+      max-width: calc(33% - 1.5rem);
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+    }
+    
+    .featured-event-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      text-decoration: none;
+    }
+    
+    .featured-event-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    
+    .featured-event-card:hover img {
+      transform: scale(1.05);
+    }
+    
+    .featured-event-card .info {
+      padding: 1.2rem;
+      position: relative;
+    }
+    
+    .featured-event-card .info h4 {
+      margin: 0 0 0.5rem;
+      font-size: 1.25rem;
+      color: var(--theme-text-dark);
+      font-weight: 600;
+    }
+    
+    .featured-event-card .info p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #555;
+    }
+    
+    #current-date {
+      color: #666;
+      margin: 0 0 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: rgba(255,255,255,0.7);
+      border-radius: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .cta-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .cta-btn {
+      display: inline-block;
+      background: var(--theme-secondary-teal);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 30px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(32, 201, 151, 0.2);
+      font-size: 1rem;
+    }
+    
+    .cta-btn:hover {
+      background: #1AAE88;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(32, 201, 151, 0.3);
+      text-decoration: none;
+    }
+    
+    .cta-btn.surprise {
+      background: var(--theme-primary-pink);
+      box-shadow: 0 4px 10px rgba(232, 62, 140, 0.2);
+    }
+    
+    .cta-btn.surprise:hover {
+      background: #d0367c;
+      box-shadow: 0 6px 15px rgba(232, 62, 140, 0.3);
+    }
+    
+    @media (max-width: 992px) {
+      .featured-event-card {
+        flex: 1 1 calc(50% - 1.5rem);
+        max-width: calc(50% - 1.5rem);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      .hero h2 {
+        font-size: 1.5rem;
+      }
+      .featured-event-card {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+      .header .nav-links {
+        gap: 0.8rem; /* Réduire l'espace sur mobile */
+        flex-wrap: wrap; /* Permettre le retour à la ligne si nécessaire */
+        justify-content: center;
+      }
+      .header .nav-link {
+        font-size: 0.9rem; /* Taille de police un peu plus petite sur mobile */
+      }
+    }
+    /* === END ENHANCED HERO SECTION STYLES === */
+
+    .event-map-section { padding:2.5rem 1rem; background:var(--theme-bg-medium); border-bottom:1px solid var(--theme-border-color); }
+    .event-map-section h2 { text-align:center; margin-bottom:2rem; font-weight:600; }
+    #standalone-event-map {
+      width:100%; max-width:1100px; height:550px; margin:0 auto;
+      background:var(--map-bg-color); border:1px solid var(--theme-border-color);
+      border-radius:8px; box-shadow:0 5px 15px rgba(0,0,0,0.08); position:relative;
+    }
+    .map-feedback-message {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      background:rgba(255,255,255,0.8); padding:8px 12px; border-radius:4px; color:#666;
+    }
+
+    .section { padding:3rem 1rem; }
+
+    .site-footer { background:#343a40; color:rgba(255,255,255,.75); padding:3rem 1rem 1.5rem; margin-top:3rem; }
+    .site-footer .footer-content { display:flex; flex-wrap:wrap; justify-content:space-between; gap:2rem; }
+    .site-footer .footer-column { flex:1; min-width:200px; }
+    .site-footer .footer-column h4 { color:#fff; margin-bottom:1rem; font-weight:600; border-bottom:2px solid #E83E8C; display:inline-block; padding-bottom:.5rem; }
+    .site-footer .footer-column ul { list-style:none; padding:0; }
+    .site-footer .footer-column ul li { margin-bottom:.6rem; }
+    .site-footer .footer-column ul li a { color:rgba(255,255,255,.75); transition:color .2s; }
+    .site-footer .footer-column ul li a:hover { color:#E83E8C; }
+    .site-footer .footer-contact i { margin-right:.5rem; color:#E83E8C; }
+    .site-footer .footer-social-icons a { color:rgba(255,255,255,.75); margin-right:1rem; font-size:1.5rem; transition:color .2s; }
+    .site-footer .footer-social-icons a:hover { color:#E83E8C; }
+    .site-footer .footer-bottom { text-align:center; margin-top:2rem; font-size:.85rem; color:rgba(255,255,255,.55); border-top:1px solid #495057; padding-top:1rem; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <nav class="nav-container container">
+      <div class="logo">
+        <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+          <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:10px;">
+          <span style="font-weight:bold;font-size:1.5rem;color:black;">ConnectSphere</span>
+        </a>
+      </div>
+      <div class="nav-links">
+        <a href="{{ path('app_events') }}" class="nav-link">Events</a>
+        <a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
+        <a href="{{ path('app_organizer') }}" class="nav-link">Dashboard</a>
+        <a href="{{ path('app_groups') }}" class="nav-link">Groups</a>
+        <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+        <a href="{{ path('app_profile') }}" class="nav-link">Profile</a>
+        <a href="{{ path('app_social') }}" class="nav-link">Social</a>
+        {# <!-- MODIFICATION : Ajout du bouton Messagerie --> #}
+        <a href="{{ path('app_discussion') }}" class="nav-link" title="Messagerie">
+             Chat
+        </a>
+        <a href="{{ path('app_points') }}" class="nav-link">Game</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ENHANCED HERO -->
+  <section class="hero">
+    <div class="container">
+      <h1>Welcome!</h1>
+      <h2>The Ultimate Platform for Planning and Promoting Successful Events</h2>
+      
+      <!-- FEATURED EVENTS (3 in one line) -->
+      <div class="featured-events">
+        <a href="{{ path('app_events') }}" class="featured-event-card">
+          <img src="{{ asset('images/ev6.jpg') }}" alt="Food Festival">
+          <div class="info">
+            <h4>Food Festival</h4>
+            <p>Street food & cook‑offs</p>
+          </div>
+        </a>
+        <a href="{{ path('app_events') }}" class="featured-event-card">
+          <img src="{{ asset('images/ev5.jpg') }}" alt="Yoga Retreat">
+          <div class="info">
+            <h4>Yoga Retreat</h4>
+            <p>Sunrise beach yoga</p>
+          </div>
+        </a>
+        <a href="{{ path('app_events') }}" class="featured-event-card">
+          <img src="{{ asset('images/ev4.jpg') }}" alt="Dev Tech Meetup">
+          <div class="info">
+            <h4>Dev Tech Meetup</h4>
+            <p>JS frameworks deep‑dive</p>
+          </div>
+        </a>
+        <a href="{{ path('app_events') }}" class="featured-event-card">
+          <img src="{{ asset('images/event1.jpeg') }}" alt="Yoga Retreat">
+          <div class="info">
+            <h4>Dancing Party</h4>
+            <p>A nigth club party</p>
+          </div>
+        </a>
+        <a href="{{ path('app_events') }}" class="featured-event-card">
+          <img src="{{ asset('images/event3.jpeg') }}" alt="Yoga Retreat">
+          <div class="info">
+            <h4>Night Club</h4>
+            <p>Night club party </p>
+          </div>
+        </a>
+        <a href="{{ path('app_events') }}" class="featured-event-card">
+          <img src="{{ asset('images/ev8.png') }}" alt="Yoga Retreat">
+          <div class="info">
+            <h4>Music festival</h4>
+            <p>Sunrise beach yoga</p>
+          </div>
+        </a>
+
+        
+      </div>
+      <p id="current-date"></p>
+      <div class="cta-buttons">
+        <a href="{{ path('app_events') }}" class="cta-btn">Explore Events</a>
+        <button id="surprise-btn" class="cta-btn surprise">Surprise Me</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP SECTION -->
+  <section class="event-map-section">
+    <div class="container">
+      <h2>Event Locations Overview</h2>
+      <div id="standalone-event-map">
+        <p class="map-feedback-message">Loading map...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO WE ARE -->
+  <section class="section">
+    <div class="container">
+      <h1 style="color:#E83E8C;font-weight:800;">WHO WE ARE</h1>
+      <h2>ConnectSphere helps you create unforgettable experiences with our comprehensive event management tools.</h2>
+      <div class="cards-grid"></div>
+    </div>
+  </section>
+
+  <!-- ORIGINAL FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-content container">
+      <div class="footer-column">
+        <h4>ConnectSphere</h4>
+        <p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p>
+      </div>
+      <div class="footer-column">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="{{ path('app_home') }}">Home</a></li>
+          <li><a href="{{ path('app_events') }}">Events</a></li>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="footer-column footer-contact">
+        <h4>Contact Us</h4>
+        <p><i class="fas fa-phone"></i><a href="tel:+21692160411">+216 92 160 411</a></p>
+        <p><i class="fas fa-envelope"></i><a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p>
+      </div>
+      <div class="footer-column">
+        <h4>Follow Us</h4>
+        <div class="footer-social-icons">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Display current date
+      const dateEl = document.getElementById('current-date');
+      if (dateEl) {
+        const today = new Date();
+        dateEl.textContent = today.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+      }
+
+      // Initialize map
+      const map = L.map('standalone-event-map').setView([34.5, 9.5], 7);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© <a href="https://osm.org/copyright">OSM</a>'
+      }).addTo(map);
+
+      // Remove loading message
+      document.querySelector('.map-feedback-message')?.remove();
+
+      // Dummy events array (16 markers)
+      const events = [
+        { id:1,  name:'Patisserie Flora',      description:'Traditional sweets workshop', imageUrl:'{{ asset("images/event1.jpeg") }}', lat:35.8256, lng:10.6345, phone:'29.862.414', address:'Monastir' },
+        { id:2,  name:'Café Montplaisir',      description:'Live acoustic night',          imageUrl:'{{ asset("images/event3.jpeg") }}', lat:36.8065, lng:10.1815, phone:'71.123.456', address:'Tunis'    },
+        { id:3,  name:'Dev Tech Meetup',       description:'JS frameworks deep‑dive',      imageUrl:'{{ asset("images/event2.png") }}',  lat:34.7406, lng:10.7603, phone:'74.321.987', address:'Sfax'     },
+        { id:4,  name:'Art Workshop',          description:'Painting & sculpture demo',     imageUrl:'{{ asset("images/gaming.png") }}',  lat:36.8061, lng:10.1795, phone:'71.555.123', address:'Tunis'    },
+        { id:5,  name:'Food Festival',         description:'Street food & cook‑offs',      imageUrl:'{{ asset("images/ev1.jpg") }}',    lat:35.8850, lng:10.6059, phone:'73.777.888', address:'Sousse'   },
+        { id:6,  name:'Yoga Retreat',          description:'Sunrise beach yoga',           imageUrl:'{{ asset("images/ev2.jpg") }}',    lat:36.8610, lng:10.3176, phone:'71.234.567', address:'La Marsa' },
+        { id:7,  name:'Startup Pitch Night',   description:'Pitch ideas to investors',     imageUrl:'{{ asset("images/ev3.jpg") }}',    lat:36.8067, lng:10.1718, phone:'71.345.678', address:'Tunis'    },
+        { id:8,  name:'Marathon Challenge',    description:'10K charity run',               imageUrl:'{{ asset("images/ev4.jpg") }}',    lat:34.7395, lng:10.7601, phone:'74.456.789', address:'Sfax'     },
+        { id:9,  name:'Carthage Music Nights', description:'Open‑air amphitheatre concert', imageUrl:'{{ asset("images/ev5.jpg") }}',    lat:36.8520, lng:10.3300, phone:'71.678.910', address:'Carthage'},
+        { id:10, name:'Kairouan Crafts Fair',  description:'Traditional crafts exhibition', imageUrl:'{{ asset("images/ev6.jpg") }}',    lat:35.6781, lng:10.0963, phone:'77.123.456', address:'Kairouan'},
+        { id:11, name:'Tozeur Oasis Festival', description:'Desert oasis cultural fest',    imageUrl:'{{ asset("images/ev7.png") }}',    lat:33.9197, lng:8.1220,  phone:'76.234.567', address:'Tozeur'  },
+        { id:12, name:'Bizerte Sailing Cup',   description:'Regatta & boat show',           imageUrl:'{{ asset("images/ev8.png") }}',    lat:37.2746, lng:9.8739,  phone:'72.345.678', address:'Bizerte' },
+        { id:13, name:'Gabès Date Festival',   description:'Celebrating the date harvest',  imageUrl:'{{ asset("images/event.jpg") }}',   lat:33.8818, lng:10.0982, phone:'75.123.456', address:'Gabès'   },
+        { id:14, name:'El Kef Heritage Tour',  description:'Historic walking tour',         imageUrl:'{{ asset("images/ev10.jpg") }}',   lat:36.1770, lng:8.7120,  phone:'78.234.567', address:'El Kef'  },
+        { id:15, name:'Mahdia Sea Fest',       description:'Beachside seafood celebration', imageUrl:'{{ asset("images/ev11.jpg") }}',   lat:35.5047, lng:11.0622, phone:'73.345.678', address:'Mahdia'  },
+        { id:16, name:'Djerba Cultural Week',  description:'Island music, dance & crafts',  imageUrl:'{{ asset("images/ev12.jpg") }}',   lat:33.8074, lng:10.8456, phone:'75.456.789', address:'Djerba'  }
+      ];
+
+      const markers = [];
+      events.forEach(evt => {
+        const m = L.marker([evt.lat, evt.lng]).addTo(map);
+        m.bindPopup(`
+          <div style="width:260px;border-radius:8px;overflow:hidden;font-family:var(--body-font);">
+            <img src="${evt.imageUrl}" alt="${evt.name}" style="width:100%;height:150px;object-fit:cover;">
+            <div style="padding:10px;background:#fff;">
+              <h3 style="margin:0;font-size:1.1rem;color:var(--theme-text-dark);">
+                <i class="fas fa-map-marker-alt" style="color:var(--theme-primary-pink);margin-right:5px;"></i>${evt.name}
+              </h3>
+              <p style="margin:5px 0;font-size:0.9rem;color:#555;"><i class="fas fa-info-circle" style="margin-right:6px;"></i>${evt.description}</p>
+              <p style="margin:5px 0;font-size:0.9rem;color:#555;"><i class="fas fa-map-marker-alt" style="margin-right:6px;"></i>${evt.address}</p>
+              <p style="margin:5px 0;font-size:0.9rem;color:#555;"><i class="fas fa-phone" style="margin-right:6px;"></i>${evt.phone}</p>
+            </div>
+          </div>`, { maxWidth:270 });
+        markers.push(m);
+      });
+
+      // Surprise Me
+      document.getElementById('surprise-btn').addEventListener('click', () => {
+        const i = Math.floor(Math.random()*markers.length);
+        const e = events[i];
+        map.setView([e.lat,e.lng],12,{animate:true});
+        markers[i].openPopup();
+      });
+    });
+  </script>
+</body>
+</html>

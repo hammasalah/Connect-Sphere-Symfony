@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register - Connect Sphere{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="auth-container">
+    <div class="auth-form">
+        <h2>Create Account</h2>
+        <p class="auth-subtitle">Please fill in your information to register</p>
+        
+        {# Success messages #}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        {# Error messages #}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message|raw }}</div>
+        {% endfor %}
+
+        {{ form_start(registrationForm) }}
+            <div class="form-group">
+                {{ form_label(registrationForm.username) }}
+                {{ form_widget(registrationForm.username, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(registrationForm.username) }}
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(registrationForm.email) }}
+                {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(registrationForm.email) }}
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(registrationForm.age) }}
+                {{ form_widget(registrationForm.age, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(registrationForm.age) }}
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(registrationForm.gender) }}
+                {{ form_widget(registrationForm.gender, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(registrationForm.gender) }}
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(registrationForm.plainPassword) }}
+                {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(registrationForm.plainPassword) }}
+            </div>
+            
+            <div class="form-options">
+                <div class="remember-me">
+                    {{ form_widget(registrationForm.agreeTerms) }}
+                    {{ form_label(registrationForm.agreeTerms) }}
+                </div>
+            </div>
+            {{ form_errors(registrationForm.agreeTerms) }}
+
+            <button type="submit" class="auth-btn">Sign Up</button>
+        {{ form_end(registrationForm) }}
+        
+        <p class="auth-redirect">
+            Already have an account? <a href="{{ path('app_login') }}">Sign in</a>
+        </p>
+    </div>
+    
+    <div class="auth-illustration">
+        <img src="{{ asset('images/register.jpg') }}" alt="Registration Illustration">
+    </div>
+</div>
+{% endblock %}

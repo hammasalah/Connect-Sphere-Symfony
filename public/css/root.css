@@ -1,0 +1,745 @@
+/* === MODIFIED CSS (applying events_page.css theme) === */
+
+:root {
+    /* Theme variables from events_page.css */
+    --primary-color: #1c2b5d;
+    --primary-hover: #3d5472;
+    --secondary-color: #d54d67;
+    --secondary-hover: #b03c54;
+
+    --theme-primary-pink: #E83E8C;
+    --theme-secondary-teal: #20C997;
+    --joined-event-color: var(--theme-secondary-teal);
+    --joined-event-hover: #16826a;
+
+    --light-bg: #f8f9fa;         /* Replacing --primary-bg */
+    --card-header-bg: #FFFFFF;   /* Replacing --secondary-bg for elements like header/cards */
+
+    --theme-text-dark: #343A40;    /* Replacing --text-primary */
+    --theme-text-muted: #6C757D;   /* Similar to original --text-muted */
+    --theme-border-color: #DEE2E6;
+
+    --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    --card-shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.1);
+    --transition-fast: 0.2s ease;
+    --transition-medium: 0.3s ease;
+    --border-radius: 10px;       /* Standard card/element radius */
+    --button-radius: 6px;        /* For smaller buttons */
+    --pill-radius: 30px;         /* For pill-shaped buttons */
+
+    --body-font: 'Poppins', sans-serif; /* Replacing --font-family */
+
+    /* Specific accent from new page, to be reviewed/replaced where possible */
+    --new-page-accent: #FF6B6B; /* Original --accent, will try to use theme colors instead */
+    --banner-label-bg: #C6F500; /* Keep if distinct branding is intended, or change to theme teal/pink */
+}
+
+body {
+    font-family: var(--body-font);
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: var(--light-bg); /* Themed background */
+    color: var(--theme-text-dark);     /* Themed text */
+    line-height: 1.6;
+}
+
+a {
+    color: var(--primary-color); /* Themed link color */
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+a:hover {
+    color: var(--theme-primary-pink); /* Themed link hover */
+    text-decoration: none;
+}
+
+.container { /* Generic container if used, matches events_page */
+    max-width:1140px;
+    margin:0 auto;
+    padding:0 15px;
+}
+
+.header {
+    background-color: var(--card-header-bg); /* White header */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Consistent shadow */
+    padding: .8rem 1rem; /* Consistent padding */
+    border-bottom: 1px solid var(--theme-border-color); /* Consistent border */
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1140px; /* Centering content */
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.logo-img {
+    height: 60px; /* Adjusted for better visibility if Poppins is larger */
+}
+
+.search-location {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.search-container {
+    position: relative;
+    width: 300px;
+}
+
+.search-input {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 8px 15px;
+    padding-right: 3rem; /* Space for icon */
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pill-radius); /* Pill shape for search */
+    background-color: #fff;
+    height: 40px;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(28, 43, 93, 0.15);
+    outline: none;
+}
+
+.search-btn {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem; /* Adjusted for pill radius */
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--theme-text-muted);
+    padding: 0.5rem;
+    cursor: pointer;
+}
+.search-btn i { font-size: 1rem; }
+
+.location-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--theme-text-muted);
+    cursor: pointer;
+}
+.location-selector:hover {
+    color: var(--primary-color);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* Consistent gap */
+}
+/* Adding nav-link style from events_page.css for consistency */
+.nav-links a, .nav-links .nav-link {
+   font-weight: 500;
+   transition: color var(--transition-fast);
+   color: var(--theme-text-dark);
+   text-decoration: none;
+}
+.nav-links a:hover, .nav-links .nav-link:hover {
+   color: var(--theme-primary-pink);
+   text-decoration: none;
+}
+
+.signup-btn { /* Style like header contact button from events_page */
+    background: var(--theme-primary-pink);
+    color: white;
+    padding: .5rem 1.2rem;
+    border-radius: var(--pill-radius);
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color var(--transition-fast);
+}
+.signup-btn:hover {
+    background: #d0367c; /* Darker pink */
+    color: white;
+}
+
+.hero {
+    position: relative;
+    overflow: hidden;
+    margin: 1.5rem auto; /* Add some margin if carousel is directly under header */
+    max-width: 100%; /* Optional: constrain width for larger screens */
+    border-radius: var(--border-radius); /* Rounded corners for the hero area */
+}
+
+.carousel {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 450px; /* Original height */
+    border-radius: var(--border-radius); /* Ensure carousel itself is rounded if hero is */
+}
+
+.slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* border-radius: var(--border-radius); Removed, carousel container handles radius */
+}
+
+.slide.active {
+    opacity: 1;
+    z-index: 1;
+}
+
+.carousel-content {
+    position: absolute;
+    top: 50%; /* Centered vertically */
+    left: 8%; /* Slightly more inset */
+    transform: translateY(-50%);
+    color: var(--card-header-bg); /* White text for dark images */
+    text-align: left;
+    z-index: 2; /* Above slide image */
+    max-width: 50%;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5); /* Text shadow for readability */
+}
+
+.banner-label {
+    background-color: var(--theme-secondary-teal); /* Themed: Using Teal as an accent */
+    color: var(--card-header-bg); /* White text */
+    display: inline-block;
+    font-weight: bold;
+    padding: 0.3rem 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.banner-title {
+    font-size: 2.8rem; /* Slightly larger */
+    font-weight: 700; /* Bold, but not excessively so */
+    margin: 0;
+    line-height: 1.2;
+}
+
+.cta-btn { /* Carousel CTA button */
+    margin-top: 1.5rem;
+    display: inline-block;
+    background: var(--theme-primary-pink); /* Themed: Pink CTA */
+    padding: 0.75rem 1.8rem;
+    border-radius: var(--pill-radius);
+    font-weight: 600;
+    color: var(--card-header-bg); /* White text */
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+.cta-btn:hover {
+    background: #d0367c; /* Darker pink */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+    color: var(--card-header-bg);
+}
+
+.carousel-controls {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    padding: 0 1rem; /* Reduced padding */
+    box-sizing: border-box;
+    z-index: 3; /* Above content and slide */
+}
+
+.carousel-controls button {
+    background: rgba(28, 43, 93, 0.5); /* Semi-transparent primary color */
+    border: none;
+    color: white;
+    font-size: 1.5rem; /* Adjusted size */
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: background-color var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-controls button:hover {
+    background: var(--primary-color); /* Solid primary on hover */
+}
+
+.categories {
+    padding: 3rem 1rem; /* Themed padding */
+    background-color: var(--card-header-bg); /* White background for category section */
+}
+.categories .container { /* Centering categories */
+    max-width: 1140px; margin: 0 auto; padding: 0 15px;
+}
+
+.category-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem; /* Adjusted gap */
+}
+
+.category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--theme-text-dark);
+    text-decoration: none;
+    transition: transform var(--transition-fast);
+    min-width: 100px; /* Ensure items have some width */
+}
+.category-item:hover {
+    transform: translateY(-3px);
+    color: var(--primary-color);
+}
+.category-item:hover .icon-circle {
+    border-color: var(--primary-color);
+    background-color: rgba(28, 43, 93, 0.05);
+    color: var(--primary-color);
+}
+
+.icon-circle {
+    width: 70px; /* Slightly larger */
+    height: 70px;
+    border: 1px solid var(--theme-border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+    color: var(--theme-text-muted);
+    font-size: 1.8rem; /* Larger icons */
+    background-color: var(--light-bg);
+    transition: border-color var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.events { /* Section for event listing */
+    padding: 3rem 1rem; /* Themed padding */
+    background-color: var(--light-bg); /* Match page background */
+}
+.events .container {
+    max-width: 1140px; margin: 0 auto; padding: 0 15px;
+}
+
+
+.section-title { /* General section title style */
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0 0 1.5rem 0; /* Consistent margin */
+    position: relative;
+    padding-bottom: 10px;
+    text-align: center; /* Center title by default */
+}
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: var(--secondary-color);
+    border-radius: 3px;
+}
+/* If a title needs to be left-aligned */
+.section-title.text-left {
+    text-align: left;
+}
+.section-title.text-left::after {
+    left: 0;
+    transform: translateX(0);
+}
+
+
+.event-list {
+    display: grid;
+    /* Adjusted to look like events_page.css event grid */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px; /* Consistent gap */
+    padding: 20px 0;
+}
+
+.event-card { /* Applying events_page.css card theme */
+    border: 1px solid rgba(233, 236, 239, 0.8);
+    border-radius: var(--border-radius);
+    background-color: var(--card-header-bg);
+    box-shadow: var(--card-shadow);
+    transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+    text-decoration: none; /* Ensure card is not underlined if it's a link */
+}
+.event-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--card-shadow-hover);
+}
+.event-card::before { /* Top border hover effect */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+.event-card:hover::before {
+    opacity: 1;
+}
+
+.event-card img {
+    width: 100%;
+    height: 180px; /* Adjusted height */
+    object-fit: cover;
+    display: block;
+    transition: transform var(--transition-fast);
+}
+.event-card:hover img {
+    transform: scale(1.03);
+}
+
+.event-details {
+    padding: 1.2rem; /* Consistent padding */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.event-details h3 {
+    font-size: 1.1rem; /* Consistent title size */
+    font-weight: 700;
+    color: var(--theme-text-dark);
+    margin: 0 0 0.5rem;
+    transition: color var(--transition-fast);
+}
+.event-card:hover .event-details h3 {
+    color: var(--primary-color);
+}
+
+.event-details p {
+    font-size: 0.9rem;
+    color: var(--theme-text-muted);
+    margin: 0 0 0.8rem; /* Increased margin */
+    line-height: 1.5;
+}
+
+.event-price {
+    font-weight: bold;
+    color: var(--secondary-color); /* Themed price color */
+    margin-top: auto; /* Push price to bottom if card content varies */
+    font-size: 1rem;
+}
+
+.interests-section {
+    background-color: var(--card-header-bg); /* White background for contrast */
+    padding: 3rem 1.5rem;
+    border-top: 1px solid var(--theme-border-color);
+    border-bottom: 1px solid var(--theme-border-color);
+    margin-top: 3rem;
+}
+
+.interests-container {
+    /* Replaced by .interests-section .container for consistency */
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+}
+.interests-section .section-title { /* Using the .section-title class */
+    color: var(--primary-color); /* Original #1c0f41 is very close to primary */
+}
+.interests-header p { /* Sub-text for section title */
+    color: var(--theme-text-muted);
+    font-size: 1rem;
+    margin-top: -1rem; /* Adjust if section-title has padding-bottom */
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.interests-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.interest-tag { /* Style like category pills from events_page.css */
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: var(--pill-radius);
+    background-color: #e9ecef; /* Light gray for default */
+    color: #495057; /* Darker gray text */
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid #ced4da;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.interest-tag:hover {
+    background-color: #ced4da;
+    color: var(--primary-color);
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+}
+.interest-tag.selected {
+    background-color: var(--primary-color); /* Themed selected state */
+    color: white;
+    border-color: var(--primary-color);
+    font-weight: 600;
+    box-shadow: 0 3px 6px rgba(28, 43, 93, 0.2);
+}
+
+.view-all {
+    display: inline-block;
+    margin-top: 2rem;
+    color: var(--primary-color); /* Themed link */
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+.view-all:hover {
+    color: var(--theme-primary-pink); /* Themed hover */
+    text-decoration: underline;
+}
+
+.sponsors {
+    padding: 3rem 1rem; /* Themed padding */
+    background-color: var(--light-bg); /* Consistent background */
+    text-align: center;
+}
+/* Sponsors .section-title will use the global style */
+
+.sponsor-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 40px; /* Keep original gap */
+}
+
+.sponsor-logos img {
+    height: 50px; /* Adjusted height */
+    max-width: 150px; /* Prevent oversized logos */
+    object-fit: contain;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+    opacity: 0.75;
+}
+.sponsor-logos img:hover {
+    transform: scale(1.05);
+    opacity: 1;
+}
+
+.footer { /* Theming footer like events_page.css */
+    background: #343a40;
+    color: rgba(255,255,255,.75);
+    padding: 3rem 1rem 1.5rem;
+    margin-top: 3rem;
+    font-family: var(--body-font);
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2rem;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.footer-section { /* Renaming for consistency */
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-section h4 {
+    color: #fff;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    border-bottom: 2px solid var(--theme-primary-pink); /* Themed accent */
+    display: inline-block;
+    padding-bottom: .5rem;
+    font-size: 1.1rem; /* Consistent size */
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: .6rem;
+}
+
+.footer-section ul li a {
+    color: rgba(255,255,255,.75);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+}
+
+.footer-section ul li a:hover {
+    color: var(--theme-primary-pink); /* Themed hover */
+    text-decoration: none;
+}
+
+.social-icons a {
+    color: rgba(255,255,255,.75);
+    margin-right: 1rem; /* Consistent spacing */
+    font-size: 1.5rem; /* Consistent size */
+    transition: color var(--transition-fast);
+    text-decoration: none;
+}
+.social-icons a:hover {
+    color: var(--theme-primary-pink); /* Themed hover */
+}
+/* Adding footer contact style if needed */
+.footer-contact i {
+   margin-right: .5rem;
+   color: var(--theme-primary-pink);
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: .85rem;
+    color: rgba(255,255,255,.55);
+    border-top: 1px solid #495057; /* Darker border for dark bg */
+    padding-top: 1.5rem; /* Consistent padding */
+    max-width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+@media (max-width: 992px) {
+    .event-list {
+        /* Already responsive with minmax */
+    }
+    .carousel-content {
+        max-width: 70%;
+        left: 5%;
+    }
+    .banner-title {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0; /* Remove padding if logo/search take full width */
+    }
+    .search-location {
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%; /* Make search take more space */
+        margin-bottom: 0.5rem; /* If nav-links are below */
+    }
+    .search-container {
+        width: 100%;
+    }
+    .nav-links {
+        /* display: none; */ /* Consider a hamburger menu instead */
+        flex-direction: column; /* Example if it becomes a dropdown */
+        width: 100%;
+        background-color: var(--card-header-bg);
+        position: absolute;
+        top: 100%; /* Position below header */
+        left: 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        padding: 1rem 0;
+        /* Initially hidden, toggled by JS */
+        display: none;
+    }
+    .nav-links.active {
+        display: flex;
+    }
+    .nav-links a {
+        padding: 0.5rem 1rem;
+        width: 100%;
+        text-align: center;
+    }
+    .signup-btn {
+        width: calc(100% - 2rem);
+        margin: 0.5rem auto;
+        text-align: center;
+    }
+
+    .hero {
+        margin: 1rem auto;
+        border-radius: 0; /* Full width on mobile */
+    }
+    .carousel {
+        height: 350px;
+        border-radius: 0;
+    }
+    .carousel-content {
+        max-width: 90%;
+        left: 5%;
+    }
+    .banner-title {
+        font-size: 1.8rem;
+    }
+    .cta-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    .carousel-controls {
+        padding: 0 0.5rem;
+    }
+    .carousel-controls button {
+        width: 35px;
+        height: 35px;
+        font-size: 1.2rem;
+    }
+
+    .categories { padding: 2rem 1rem; }
+    .icon-circle { width: 60px; height: 60px; font-size: 1.5rem; }
+
+    .events { padding: 2rem 1rem; }
+    .event-list {
+        gap: 15px;
+    }
+    .interests-section, .sponsors { padding: 2rem 1rem; }
+    .footer { padding: 2rem 1rem 1rem; }
+}
+
+@media (max-width: 576px) {
+    .header { padding: 0.5rem; }
+    .logo-img { height: 50px; }
+    .navbar { flex-wrap: wrap; } /* Allow wrapping for menu button */
+
+    .banner-label { font-size: 0.75rem; padding: 0.2rem 0.4rem; margin-bottom: 0.5rem; }
+    .banner-title { font-size: 1.5rem; }
+
+    .category-grid { gap: 1rem; }
+    .category-item { font-size: 0.8rem; }
+    .icon-circle { width: 50px; height: 50px; font-size: 1.2rem; }
+}

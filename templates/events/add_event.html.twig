@@ -1,0 +1,276 @@
+{# templates/events/add_event.html.twig #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Create New Event | ConnectSphere</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+  {# Base theme CSS (your root styles) #}
+  <link rel="stylesheet" href="{{ asset('css/root.css') }}"/>
+
+  {# Page‑specific CSS #}
+  <link rel="stylesheet" href="{{ asset('css/add_event_form.css') }}"/>
+
+  {# Bootstrap for alerts, grid, form controls, etc. #}
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-+++"
+    crossorigin="anonymous"
+  />
+
+  {# Font Awesome for icons #}
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <nav class="nav-container container">
+      <div class="logo">
+        <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+          <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:10px;">
+          <span style="font-weight:bold;font-size:1.5rem;color:black;">ConnectSphere</span>
+        </a>
+      </div>
+    <div class="nav-links">
+      <a href="{{ path('app_home') }}" class="nav-link">Home</a>
+        <a href="{{ path('app_events') }}" class="nav-link active">Events</a>
+        <a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
+        <a href="{{ path('app_organizer') }}" class="nav-link">Dashboard</a>
+        <a href="{{ path('app_groups') }}" class="nav-link">Groups</a>
+        <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+        <a href="{{ path('app_profile') }}" class="nav-link">Profile</a>
+        <a href="{{ path('app_social') }}" class="nav-link">Social</a>
+        
+    </nav>
+    </nav>
+  </header>
+
+  <main class="container py-5">
+    <div class="add-event-page-container">
+      <h1>Create New Event</h1>
+
+      {# Flash messages #}
+      {% for label, messages in app.flashes %}
+        <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+          {% for message in messages %}{{ message }}{% endfor %}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+
+      {{ form_start(create_event_form, {
+          action: path('app_event_new'),
+          method: 'POST',
+          attr: { novalidate: 'novalidate', class: 'add-event-form' }
+      }) }}
+
+        {% if not create_event_form.vars.valid %}
+          <div class="alert alert-danger mb-4">
+            {{ form_errors(create_event_form) }}
+          </div>
+        {% endif %}
+
+        <div class="form-field-row">
+          <label for="{{ create_event_form.name.vars.id }}" class="form-label">Event Name</label>
+          <div class="form-widget-container">
+            {{ form_widget(create_event_form.name, {
+                attr: {
+                  placeholder: 'Please enter the name of your event',
+                  class: form_errors(create_event_form.name) ? 'is-invalid' : ''
+                }
+            }) }}
+            {{ form_errors(create_event_form.name) }}
+            <div class="form-help">Choose a clear, descriptive name for your event</div>
+          </div>
+        </div>
+
+        <div class="form-field-row">
+          <label for="{{ create_event_form.description.vars.id }}" class="form-label">Description</label>
+          <div class="form-widget-container">
+            {{ form_widget(create_event_form.description, {
+                attr: {
+                  placeholder: 'Describe your event',
+                  rows: 5,
+                  class: form_errors(create_event_form.description) ? 'is-invalid' : ''
+                }
+            }) }}
+            {{ form_errors(create_event_form.description) }}
+            <div class="form-help">Provide details about what participants can expect</div>
+          </div>
+        </div>
+
+        <div class="form-field-row">
+          <label class="form-label">Event Dates</label>
+          <div class="form-widget-container">
+            <div class="date-time-container d-flex gap-3">
+              <div class="date-input-group flex-fill">
+                <label>Start day</label>
+                {{ form_widget(create_event_form.startTime, {
+                    attr: {
+                      class: form_errors(create_event_form.startTime) ? 'is-invalid' : ''
+                    }
+                }) }}
+                {{ form_errors(create_event_form.startTime) }}
+              </div>
+              <div class="date-input-group flex-fill">
+                <label>End day</label>
+                {{ form_widget(create_event_form.endTime, {
+                    attr: {
+                      class: form_errors(create_event_form.endTime) ? 'is-invalid' : ''
+                    }
+                }) }}
+                {{ form_errors(create_event_form.endTime) }}
+              </div>
+            </div>
+            <div class="form-help">Select the start and end dates/times of your event</div>
+          </div>
+        </div>
+
+        <div class="form-field-row">
+          <label for="{{ create_event_form.location.vars.id }}" class="form-label">Location</label>
+          <div class="form-widget-container">
+            {{ form_widget(create_event_form.location, {
+                attr: {
+                  placeholder: 'Location',
+                  class: form_errors(create_event_form.location) ? 'is-invalid' : ''
+                }
+            }) }}
+            {{ form_errors(create_event_form.location) }}
+            <div class="form-help">Enter the physical or virtual location of the event</div>
+          </div>
+        </div>
+
+        <div class="form-field-row">
+          <label for="{{ create_event_form.points.vars.id }}" class="form-label">Points</label>
+          <div class="form-widget-container">
+            {{ form_widget(create_event_form.points, {
+                attr: {
+                  placeholder: 'Points awarded',
+                  class: form_errors(create_event_form.points) ? 'is-invalid' : ''
+                }
+            }) }}
+            {{ form_errors(create_event_form.points) }}
+            <div class="form-help">Number of points participants will earn</div>
+          </div>
+        </div>
+
+        <div class="form-field-row">
+          <label for="{{ create_event_form.categoryId.vars.id }}" class="form-label">Category</label>
+          <div class="form-widget-container">
+            {{ form_widget(create_event_form.categoryId, {
+                attr: {
+                  class: form_errors(create_event_form.categoryId) ? 'is-invalid' : ''
+                }
+            }) }}
+            {{ form_errors(create_event_form.categoryId) }}
+            <div class="form-help">Select the most appropriate category for your event</div>
+          </div>
+        </div>
+
+        <div class="form-field-row">
+          <label class="form-label">Event Image</label>
+          <div class="form-widget-container">
+            <label
+              for="{{ create_event_form.image.vars.id }}"
+              class="file-upload-label {{ form_errors(create_event_form.image) ? 'is-invalid' : '' }}"
+            >Upload Image</label>
+            {{ form_widget(create_event_form.image) }}
+            <span id="file-chosen-display">No file chosen</span>
+            {{ form_errors(create_event_form.image) }}
+            <div class="form-help">Upload an image to represent your event (1200×630px recommended)</div>
+          </div>
+        </div>
+
+        <div class="form-buttons d-flex gap-3 mt-4">
+          <a href="{{ path('app_events') }}" class="btn btn-secondary btn-cancel-event">Cancel</a>
+          <button type="submit" id="save-event-btn" class="btn btn-primary btn-save-event">Save Event</button>
+        </div>
+
+      {{ form_end(create_event_form) }}
+    </div>
+  </main>
+
+  <!-- ORIGINAL FOOTER -->
+  <footer class="site-footer mt-5">
+    <div class="footer-content container">
+      <div class="footer-column">
+        <h4>ConnectSphere</h4>
+        <p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p>
+      </div>
+      <div class="footer-column">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="{{ path('app_home') }}">Home</a></li>
+          <li><a href="{{ path('app_events') }}">Events</a></li>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="footer-column footer-contact">
+        <h4>Contact Us</h4>
+        <p><i class="fas fa-phone"></i><a href="tel:+21692160411">+216 92 160 411</a></p>
+        <p><i class="fas fa-envelope"></i><a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p>
+      </div>
+      <div class="footer-column">
+        <h4>Follow Us</h4>
+        <div class="footer-social-icons">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom text-center py-3">
+      © {{ "now"|date("Y") }} ConnectSphere. All rights reserved.
+    </div>
+  </footer>
+
+  {# Bootstrap JS bundle #}
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-+++"
+    crossorigin="anonymous"
+  ></script>
+
+  {# Page-specific JavaScript #}
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // File name display
+    const fileInput = document.getElementById('{{ create_event_form.image.vars.id }}');
+    const fileChosen = document.getElementById('file-chosen-display');
+    if (fileInput && fileChosen) {
+      fileInput.addEventListener('change', function(){
+        if (this.files.length > 0) {
+          let name = this.files[0].name;
+          if (name.length > 30) {
+            name = name.slice(0,15) + '…' + name.slice(-10);
+          }
+          fileChosen.textContent = name;
+        } else {
+          fileChosen.textContent = 'No file chosen';
+        }
+      });
+    }
+
+    // Button loading effect
+    const form = document.querySelector('.add-event-form');
+    const btnSave = document.getElementById('save-event-btn');
+    if (form && btnSave) {
+      form.addEventListener('submit', function() {
+        btnSave.classList.add('loading');
+        btnSave.textContent = 'Saving...';
+      });
+    }
+  });
+  </script>
+
+</body>
+</html>

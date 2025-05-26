@@ -1,0 +1,6671 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+================================================================
+File Summary
+================================================================
+
+Purpose:
+--------
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+
+File Format:
+------------
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Multiple file entries, each consisting of:
+  a. A separator line (================)
+  b. The file path (File: path/to/file)
+  c. Another separator line
+  d. The full contents of the file
+  e. A blank line
+
+Usage Guidelines:
+-----------------
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+
+Notes:
+------
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+
+Additional Info:
+----------------
+
+================================================================
+Directory Structure
+================================================================
+.env.test
+.gitignore
+bin/console
+bin/phpunit
+compose.override.yaml
+compose.yaml
+composer.json
+config/bundles.php
+config/packages/cache.yaml
+config/packages/debug.yaml
+config/packages/doctrine_migrations.yaml
+config/packages/doctrine.yaml
+config/packages/framework.yaml
+config/packages/mailer.yaml
+config/packages/messenger.yaml
+config/packages/monolog.yaml
+config/packages/notifier.yaml
+config/packages/routing.yaml
+config/packages/security.yaml
+config/packages/translation.yaml
+config/packages/twig.yaml
+config/packages/validator.yaml
+config/packages/web_profiler.yaml
+config/preload.php
+config/routes.yaml
+config/routes/framework.yaml
+config/routes/web_profiler.yaml
+config/services.yaml
+LICENSE
+migrations/Version20250416151753.php
+migrations/Version20250416213512.php
+phpunit.xml.dist
+public/css/create_job_form.css
+public/css/root.css
+public/index.php
+src/Controller/auth/AuthController.php
+src/Controller/chatbot/ChatbotController.php
+src/Controller/create_job/CreateJobController.php
+src/Controller/events/EventsController.php
+src/Controller/explore/ExploreController.php
+src/Controller/group/GroupController.php
+src/Controller/jobapplications/JobApplicationsController.php
+src/Controller/jobfeed/JobFeedController.php
+src/Controller/organizer/OrganizerController.php
+src/Controller/profile/ProfileController.php
+src/Controller/RootController.php
+src/Controller/social/SocialController.php
+src/Entity/Applications.php
+src/Entity/Category.php
+src/Entity/Comments.php
+src/Entity/Conversion.php
+src/Entity/Events.php
+src/Entity/FeedPosts.php
+src/Entity/GroupFeedPosts.php
+src/Entity/GroupMembers.php
+src/Entity/HistoriquePoints.php
+src/Entity/Jobs.php
+src/Entity/Likes.php
+src/Entity/Messages.php
+src/Entity/Participation.php
+src/Entity/Reviews.php
+src/Entity/Rewards.php
+src/Entity/Roulette.php
+src/Entity/Shares.php
+src/Entity/TransactionArgent.php
+src/Entity/UserGroups.php
+src/Entity/UserIntrests.php
+src/Entity/UserMessages.php
+src/Entity/UserProfile.php
+src/Entity/UserRewards.php
+src/Entity/Users.php
+src/Entity/VisiteUtilisateur.php
+src/Entity/WorkerRaitings.php
+src/Form/CreateJobFormType.php
+src/Kernel.php
+src/Repository/ApplicationsRepository.php
+src/Repository/CategoryRepository.php
+src/Repository/CommentsRepository.php
+src/Repository/ConversionRepository.php
+src/Repository/EventsRepository.php
+src/Repository/FeedPostsRepository.php
+src/Repository/GroupFeedPostsRepository.php
+src/Repository/GroupMembersRepository.php
+src/Repository/HistoriquePointsRepository.php
+src/Repository/JobsRepository.php
+src/Repository/LikesRepository.php
+src/Repository/MessagesRepository.php
+src/Repository/ParticipationRepository.php
+src/Repository/ReviewsRepository.php
+src/Repository/RewardsRepository.php
+src/Repository/RouletteRepository.php
+src/Repository/SharesRepository.php
+src/Repository/TransactionArgentRepository.php
+src/Repository/UserGroupsRepository.php
+src/Repository/UserIntrestsRepository.php
+src/Repository/UserMessagesRepository.php
+src/Repository/UserProfileRepository.php
+src/Repository/UserRewardsRepository.php
+src/Repository/UsersRepository.php
+src/Repository/VisiteUtilisateurRepository.php
+src/Repository/WorkerRaitingsRepository.php
+symfony.lock
+templates/auth/auth.html.twig
+templates/base.html.twig
+templates/chatbot/chatbot.html.twig
+templates/create_job/createjob.html.twig
+templates/events/events.html.twig
+templates/explore/explore.html.twig
+templates/group/group.html.twig
+templates/jobapplications/jobapplications.html.twig
+templates/jobfeed/jobfeed.html.twig
+templates/organizer/organizer.html.twig
+templates/profile/profile.html.twig
+templates/social/social.html.twig
+tests/bootstrap.php
+
+================================================================
+Files
+================================================================
+
+================
+File: .env.test
+================
+# define your env variables for the test env here
+KERNEL_CLASS='App\Kernel'
+APP_SECRET='$ecretf0rt3st'
+SYMFONY_DEPRECATIONS_HELPER=999999
+PANTHER_APP_ENV=panther
+PANTHER_ERROR_SCREENSHOT_DIR=./var/error-screenshots
+
+================
+File: .gitignore
+================
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+/.env
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+================
+File: bin/console
+================
+#!/usr/bin/env php
+<?php
+
+use App\Kernel;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+
+if (!is_dir(dirname(__DIR__).'/vendor')) {
+    throw new LogicException('Dependencies are missing. Try running "composer install".');
+}
+
+if (!is_file(dirname(__DIR__).'/vendor/autoload_runtime.php')) {
+    throw new LogicException('Symfony Runtime is missing. Try running "composer require symfony/runtime".');
+}
+
+require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
+
+return function (array $context) {
+    $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+
+    return new Application($kernel);
+};
+
+================
+File: bin/phpunit
+================
+#!/usr/bin/env php
+<?php
+
+if (!ini_get('date.timezone')) {
+    ini_set('date.timezone', 'UTC');
+}
+
+if (is_file(dirname(__DIR__).'/vendor/phpunit/phpunit/phpunit')) {
+    if (PHP_VERSION_ID >= 80000) {
+        require dirname(__DIR__).'/vendor/phpunit/phpunit/phpunit';
+    } else {
+        define('PHPUNIT_COMPOSER_INSTALL', dirname(__DIR__).'/vendor/autoload.php');
+        require PHPUNIT_COMPOSER_INSTALL;
+        PHPUnit\TextUI\Command::main();
+    }
+} else {
+    if (!is_file(dirname(__DIR__).'/vendor/symfony/phpunit-bridge/bin/simple-phpunit.php')) {
+        echo "Unable to find the `simple-phpunit.php` script in `vendor/symfony/phpunit-bridge/bin/`.\n";
+        exit(1);
+    }
+
+    require dirname(__DIR__).'/vendor/symfony/phpunit-bridge/bin/simple-phpunit.php';
+}
+
+================
+File: compose.override.yaml
+================
+services:
+###> doctrine/doctrine-bundle ###
+  database:
+    ports:
+      - "5432"
+###< doctrine/doctrine-bundle ###
+
+###> symfony/mailer ###
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "1025"
+      - "8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+###< symfony/mailer ###
+
+================
+File: compose.yaml
+================
+services:
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
+volumes:
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###
+
+================
+File: composer.json
+================
+{
+    "name": "symfony/website-skeleton",
+    "type": "project",
+    "license": "MIT",
+    "description": "A skeleton to start a new Symfony website",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.1",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "doctrine/dbal": "^3",
+        "doctrine/doctrine-bundle": "^2.13",
+        "doctrine/doctrine-migrations-bundle": "^3.4",
+        "doctrine/orm": "^3.3",
+        "phpdocumentor/reflection-docblock": "^5.6",
+        "phpstan/phpdoc-parser": "1.22",
+        "symfony/asset": "6.1.*",
+        "symfony/console": "6.1.*",
+        "symfony/doctrine-messenger": "6.1.*",
+        "symfony/dotenv": "6.1.*",
+        "symfony/expression-language": "6.1.*",
+        "symfony/flex": "^2",
+        "symfony/form": "6.1.*",
+        "symfony/framework-bundle": "6.1.*",
+        "symfony/http-client": "6.1.*",
+        "symfony/intl": "6.1.*",
+        "symfony/mailer": "6.1.*",
+        "symfony/mime": "6.1.*",
+        "symfony/monolog-bundle": "^3.0",
+        "symfony/notifier": "6.1.*",
+        "symfony/process": "6.1.*",
+        "symfony/property-access": "6.1.*",
+        "symfony/property-info": "6.1.*",
+        "symfony/runtime": "6.1.*",
+        "symfony/security-bundle": "6.1.*",
+        "symfony/serializer": "6.1.*",
+        "symfony/string": "6.1.*",
+        "symfony/translation": "6.1.*",
+        "symfony/twig-bundle": "6.1.*",
+        "symfony/validator": "6.1.*",
+        "symfony/web-link": "6.1.*",
+        "symfony/yaml": "6.1.*",
+        "twig/extra-bundle": "^2.12|^3.0",
+        "twig/twig": "^2.12|^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "symfony/browser-kit": "6.1.*",
+        "symfony/css-selector": "6.1.*",
+        "symfony/debug-bundle": "6.1.*",
+        "symfony/maker-bundle": "^1.50",
+        "symfony/phpunit-bridge": "^7.2",
+        "symfony/stopwatch": "6.1.*",
+        "symfony/web-profiler-bundle": "6.1.*"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "symfony/flex": true,
+            "symfony/runtime": true
+        },
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "replace": {
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php74": "*",
+        "symfony/polyfill-php80": "*",
+        "symfony/polyfill-php81": "*"
+    },
+    "scripts": {
+        "auto-scripts": {
+            "cache:clear": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+        },
+        "post-install-cmd": [
+            "@auto-scripts"
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ]
+    },
+    "conflict": {
+        "symfony/symfony": "*"
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "6.1.*"
+        }
+    }
+}
+
+================
+File: config/bundles.php
+================
+<?php
+
+return [
+    Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
+    Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class => ['all' => true],
+    Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle::class => ['all' => true],
+    Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true],
+    Symfony\Bundle\TwigBundle\TwigBundle::class => ['all' => true],
+    Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
+    Twig\Extra\TwigExtraBundle\TwigExtraBundle::class => ['all' => true],
+    Symfony\Bundle\SecurityBundle\SecurityBundle::class => ['all' => true],
+    Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
+    Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
+];
+
+================
+File: config/packages/cache.yaml
+================
+framework:
+    cache:
+        # Unique name of your app: used to compute stable namespaces for cache keys.
+        #prefix_seed: your_vendor_name/app_name
+
+        # The "app" cache stores to the filesystem by default.
+        # The data in this cache should persist between deploys.
+        # Other options include:
+
+        # Redis
+        #app: cache.adapter.redis
+        #default_redis_provider: redis://localhost
+
+        # APCu (not recommended with heavy random-write workloads as memory fragmentation can cause perf issues)
+        #app: cache.adapter.apcu
+
+        # Namespaced pools use the above "app" backend by default
+        #pools:
+            #my.dedicated.cache: null
+
+================
+File: config/packages/debug.yaml
+================
+when@dev:
+    debug:
+        # Forwards VarDumper Data clones to a centralized server allowing to inspect dumps on CLI or in your browser.
+        # See the "server:dump" command to start a new server.
+        dump_destination: "tcp://%env(VAR_DUMPER_SERVER)%"
+
+================
+File: config/packages/doctrine_migrations.yaml
+================
+doctrine_migrations:
+    migrations_paths:
+        # namespace is arbitrary but should be different from App\Migrations
+        # as migrations classes should NOT be autoloaded
+        'DoctrineMigrations': '%kernel.project_dir%/migrations'
+    enable_profiler: false
+
+================
+File: config/packages/doctrine.yaml
+================
+doctrine:
+    dbal:
+        url: '%env(resolve:DATABASE_URL)%'
+
+        # IMPORTANT: You MUST configure your server version,
+        # either here or in the DATABASE_URL env var (see .env file)
+        #server_version: '16'
+        use_savepoints: true
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
+                alias: App
+
+when@test:
+    doctrine:
+        dbal:
+            # "TEST_TOKEN" is typically set by ParaTest
+            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+
+when@prod:
+    doctrine:
+        orm:
+            auto_generate_proxy_classes: false
+            proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
+            query_cache_driver:
+                type: pool
+                pool: doctrine.system_cache_pool
+            result_cache_driver:
+                type: pool
+                pool: doctrine.result_cache_pool
+
+    framework:
+        cache:
+            pools:
+                doctrine.result_cache_pool:
+                    adapter: cache.app
+                doctrine.system_cache_pool:
+                    adapter: cache.system
+
+================
+File: config/packages/framework.yaml
+================
+# see https://symfony.com/doc/current/reference/configuration/framework.html
+framework:
+    secret: '%env(APP_SECRET)%'
+    #csrf_protection: true
+    http_method_override: false
+
+    # Enables session support. Note that the session will ONLY be started if you read or write from it.
+    # Remove or comment this section to explicitly disable session support.
+    session:
+        handler_id: null
+        cookie_secure: auto
+        cookie_samesite: lax
+        storage_factory_id: session.storage.factory.native
+
+    #esi: true
+    #fragments: true
+    php_errors:
+        log: true
+
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file
+
+================
+File: config/packages/mailer.yaml
+================
+framework:
+    mailer:
+        dsn: '%env(MAILER_DSN)%'
+
+================
+File: config/packages/messenger.yaml
+================
+framework:
+    messenger:
+        failure_transport: failed
+
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    use_notify: true
+                    check_delayed_interval: 60000
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+            failed: 'doctrine://default?queue_name=failed'
+            # sync: 'sync://'
+
+        default_bus: messenger.bus.default
+
+        buses:
+            messenger.bus.default: []
+
+        routing:
+            Symfony\Component\Mailer\Messenger\SendEmailMessage: async
+            Symfony\Component\Notifier\Message\ChatMessage: async
+            Symfony\Component\Notifier\Message\SmsMessage: async
+
+            # Route your messages to the transports
+            # 'App\Message\YourMessage': async
+
+================
+File: config/packages/monolog.yaml
+================
+monolog:
+    channels:
+        - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+
+when@dev:
+    monolog:
+        handlers:
+            main:
+                type: stream
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                level: debug
+                channels: ["!event"]
+            # uncomment to get logging in your browser
+            # you may have to allow bigger header sizes in your Web server configuration
+            #firephp:
+            #    type: firephp
+            #    level: info
+            #chromephp:
+            #    type: chromephp
+            #    level: info
+            console:
+                type: console
+                process_psr_3_messages: false
+                channels: ["!event", "!doctrine", "!console"]
+
+when@test:
+    monolog:
+        handlers:
+            main:
+                type: fingers_crossed
+                action_level: error
+                handler: nested
+                excluded_http_codes: [404, 405]
+                channels: ["!event"]
+            nested:
+                type: stream
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                level: debug
+
+when@prod:
+    monolog:
+        handlers:
+            main:
+                type: fingers_crossed
+                action_level: error
+                handler: nested
+                excluded_http_codes: [404, 405]
+                buffer_size: 50 # How many messages should be saved? Prevent memory leaks
+            nested:
+                type: stream
+                path: php://stderr
+                level: debug
+                formatter: monolog.formatter.json
+            console:
+                type: console
+                process_psr_3_messages: false
+                channels: ["!event", "!doctrine"]
+            deprecation:
+                type: stream
+                channels: [deprecation]
+                path: php://stderr
+                formatter: monolog.formatter.json
+
+================
+File: config/packages/notifier.yaml
+================
+framework:
+    notifier:
+        chatter_transports:
+        texter_transports:
+        channel_policy:
+            # use chat/slack, chat/telegram, sms/twilio or sms/nexmo
+            urgent: ['email']
+            high: ['email']
+            medium: ['email']
+            low: ['email']
+        admin_recipients:
+            - { email: admin@example.com }
+
+================
+File: config/packages/routing.yaml
+================
+framework:
+    router:
+        utf8: true
+
+        # Configure how to generate URLs in non-HTTP contexts, such as CLI commands.
+        # See https://symfony.com/doc/current/routing.html#generating-urls-in-commands
+        #default_uri: http://localhost
+
+when@prod:
+    framework:
+        router:
+            strict_requirements: null
+
+================
+File: config/packages/security.yaml
+================
+security:
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    providers:
+        users_in_memory: { memory: null }
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: users_in_memory
+        #anonymous: true
+        #security: false # 👈 Allows anonymous access for routes under this firewall
+
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#the-firewall
+
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }
+         #- { path: ^/create/job, roles: PUBLIC_ACCESS }
+
+when@test:
+    security:
+        password_hashers:
+            # By default, password hashers are resource intensive and take time. This is
+            # important to generate secure password hashes. In tests however, secure hashes
+            # are not important, waste resources and increase test times. The following
+            # reduces the work factor to the lowest possible values.
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4 # Lowest possible value for bcrypt
+                time_cost: 3 # Lowest possible value for argon
+                memory_cost: 10 # Lowest possible value for argon
+
+================
+File: config/packages/translation.yaml
+================
+framework:
+    default_locale: en
+    translator:
+        default_path: '%kernel.project_dir%/translations'
+        fallbacks:
+            - en
+        providers:
+
+================
+File: config/packages/twig.yaml
+================
+twig:
+    default_path: '%kernel.project_dir%/templates'
+
+when@test:
+    twig:
+        strict_variables: true
+
+================
+File: config/packages/validator.yaml
+================
+framework:
+    validation:
+        email_validation_mode: html5
+
+        # Enables validator auto-mapping support.
+        # For instance, basic validation constraints will be inferred from Doctrine's metadata.
+        #auto_mapping:
+        #    App\Entity\: []
+
+when@test:
+    framework:
+        validation:
+            not_compromised_password: false
+
+================
+File: config/packages/web_profiler.yaml
+================
+when@dev:
+    web_profiler:
+        toolbar: true
+
+    framework:
+        profiler:
+            collect_serializer_data: true
+
+when@test:
+    framework:
+        profiler: { collect: false }
+
+================
+File: config/preload.php
+================
+<?php
+
+if (file_exists(dirname(__DIR__).'/var/cache/prod/App_KernelProdContainer.preload.php')) {
+    require dirname(__DIR__).'/var/cache/prod/App_KernelProdContainer.preload.php';
+}
+
+================
+File: config/routes.yaml
+================
+controllers:
+    resource: ../src/Controller/
+    type: attribute
+
+================
+File: config/routes/framework.yaml
+================
+when@dev:
+    _errors:
+        resource: '@FrameworkBundle/Resources/config/routing/errors.xml'
+        prefix: /_error
+
+================
+File: config/routes/web_profiler.yaml
+================
+when@dev:
+    web_profiler_wdt:
+        resource: '@WebProfilerBundle/Resources/config/routing/wdt.xml'
+        prefix: /_wdt
+
+    web_profiler_profiler:
+        resource: '@WebProfilerBundle/Resources/config/routing/profiler.xml'
+        prefix: /_profiler
+
+================
+File: config/services.yaml
+================
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+================
+File: LICENSE
+================
+Copyright (c) Fabien Potencier
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is furnished
+to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+================
+File: migrations/Version20250416151753.php
+================
+<?php
+
+declare(strict_types=1);
+
+namespace DoctrineMigrations;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
+
+/**
+ * Auto-generated Migration: Please modify to your needs!
+ */
+final class Version20250416151753 extends AbstractMigration
+{
+    public function getDescription(): string
+    {
+        return '';
+    }
+
+    public function up(Schema $schema): void
+    {
+        // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql(<<<'SQL'
+            ALTER TABLE events CHANGE points points INT NOT NULL
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE jobs CHANGE user_id_id user_id_id INT DEFAULT NULL
+        SQL);
+    }
+
+    public function down(Schema $schema): void
+    {
+        // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql(<<<'SQL'
+            ALTER TABLE events CHANGE points points INT DEFAULT 0 NOT NULL
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE jobs CHANGE user_id_id user_id_id INT NOT NULL
+        SQL);
+    }
+}
+
+================
+File: migrations/Version20250416213512.php
+================
+<?php
+
+declare(strict_types=1);
+
+namespace DoctrineMigrations;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
+
+/**
+ * Auto-generated Migration: Please modify to your needs!
+ */
+final class Version20250416213512 extends AbstractMigration
+{
+    public function getDescription(): string
+    {
+        return '';
+    }
+
+    public function up(Schema $schema): void
+    {
+        // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql(<<<'SQL'
+            ALTER TABLE jobs CHANGE created_at created_at DATETIME DEFAULT NULL
+        SQL);
+    }
+
+    public function down(Schema $schema): void
+    {
+        // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql(<<<'SQL'
+            ALTER TABLE jobs CHANGE created_at created_at VARCHAR(255) DEFAULT NULL
+        SQL);
+    }
+}
+
+================
+File: phpunit.xml.dist
+================
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         backupGlobals="false"
+         colors="true"
+         bootstrap="tests/bootstrap.php"
+         convertDeprecationsToExceptions="false"
+>
+    <php>
+        <ini name="display_errors" value="1" />
+        <ini name="error_reporting" value="-1" />
+        <server name="APP_ENV" value="test" force="true" />
+        <server name="SHELL_VERBOSITY" value="-1" />
+        <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
+        <server name="SYMFONY_PHPUNIT_VERSION" value="9.5" />
+    </php>
+
+    <testsuites>
+        <testsuite name="Project Test Suite">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </coverage>
+
+    <listeners>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
+    </listeners>
+
+    <extensions>
+    </extensions>
+</phpunit>
+
+================
+File: public/css/create_job_form.css
+================
+/* Page background */
+body {
+    background-color: var(--primary-bg);
+    color: var(--text-white);
+    font-family: var(--body-font);
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  
+  /* Form container background */
+  .create-job-wrapper {
+    background-color: var(--secondary-bg); /* Dark background */
+    padding: 2rem;
+    max-width: 800px;
+    margin: 3rem auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Heading */
+  .create-job-wrapper h1 {
+    font-family: var(--heading-font);
+    font-size: 2rem;
+    color: var(--text-white);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  /* Labels */
+  form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-white);
+  }
+  
+  /* White input fields */
+  form input[type="text"],
+  form input[type="email"],
+  form input[type="number"],
+  form input[type="datetime-local"],
+  form textarea,
+  form select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #ffffff; /* White input background */
+    color: #1a202c;             /* Dark text */
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+    font-family: var(--body-font);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* Input focus effect */
+  form input:focus,
+  form textarea:focus,
+  form select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(249, 99, 88, 0.2);
+  }
+  
+  /* Textarea specific styles */
+  form textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  
+  /* Submit button */
+  button.submit-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--text-white);
+    padding: 0.8rem 1.6rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  
+  button.submit-btn:hover {
+    background: #e74f49;
+    transform: translateY(-2px);
+  }
+
+================
+File: public/css/root.css
+================
+:root {
+    /* Dark Modern Palette */
+    --primary-bg: #0A0F1C; /* Very dark navy */
+    --secondary-bg: #1B2232; /* Slightly lighter dark background */
+    --accent: #F96358;       /* Vibrant orange-red for calls to action */
+    --text-white: #FFFFFF;
+    --text-muted: #A0AEC0;   /* Soft gray for muted text */
+    --heading-font: 'Poppins', sans-serif; /* or your preferred heading font */
+    --body-font: 'Poppins', sans-serif;    /* or your preferred body font */
+    
+    --container-max-width: 1200px;
+  }
+  
+  /* Reset & Base */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    background-color: var(--primary-bg);
+    color: var(--text-white);
+    font-family: var(--body-font);
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  
+  /* Header */
+  .header {
+    background-color: var(--secondary-bg);
+    padding: 1rem 2rem;
+  }
+  
+  .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+  }
+  
+  .logo-img {
+    height: 40px;
+    width: auto;
+    transition: transform 0.3s ease;
+  }
+  
+  .logo-img:hover {
+    transform: scale(1.05);
+  }
+  
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .nav-link {
+    color: var(--text-white);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    color: var(--accent);
+  }
+  
+  .contact-btn {
+    background: var(--accent);
+    color: var(--text-white);
+    padding: 0.7rem 1.2rem;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .contact-btn:hover {
+    background: #e74f49; /* slightly darker shade for hover */
+    transform: translateY(-2px);
+  }
+  
+  /* Hero Section
+     -----------------------------------------
+     Suggested HTML structure for your hero:
+     <section class="hero">
+       <div class="hero-content">
+         <div class="hero-text">
+           <h1>...</h1>
+           <p>...</p>
+           <a href="#" class="cta-btn">Get Started</a>
+         </div>
+         <div class="hero-illustration">
+           <img src="path-to-hero-image.png" alt="Hero Illustration">
+         </div>
+       </div>
+     </section>
+  */
+  .hero {
+    padding: 4rem 2rem;
+    position: relative;
+    background-color: var(--primary-bg);
+  }
+  
+  .hero-content {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* text on left, image on right */
+    align-items: center;
+    gap: 2rem;
+  }
+  
+  .hero-text h1 {
+    font-family: var(--heading-font);
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  
+  .hero-text p {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .cta-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--text-white);
+    padding: 0.8rem 1.6rem;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+  
+  .cta-btn:hover {
+    background: #e74f49;
+    transform: translateY(-2px);
+  }
+  
+  .hero-illustration img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  /* Example sub-section
+     -----------------------------------------
+     This could be for “How It Works” or “What Happens Next” 
+     with large headings, big icons/illustrations, etc.
+  */
+  .section {
+    padding: 4rem 2rem;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .section-subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 3rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Example content layout (cards, steps, etc.) */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  
+  .card {
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    padding: 2rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .card p {
+    color: var(--text-muted);
+  }
+  
+  /* Footer */
+  .footer {
+    background-color: var(--secondary-bg);
+    padding: 2rem;
+    text-align: center;
+    margin-top: 4rem;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .hero-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    
+    .hero-illustration {
+      margin-top: 2rem;
+    }
+  
+    .nav-links {
+      display: none; /* For a hamburger menu, you'd handle it separately */
+    }
+  }
+
+================
+File: public/index.php
+================
+<?php
+
+use App\Kernel;
+
+require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
+
+return function (array $context) {
+    return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+};
+
+================
+File: src/Controller/auth/AuthController.php
+================
+<?php
+
+namespace App\Controller\auth;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class AuthController extends AbstractController
+{
+    #[Route('/auth', name: 'app_auth')]
+    public function index(): Response
+    {
+        return $this->render('auth/auth.html.twig', [
+            'controller_name' => 'AuthController',
+        ]);
+    }
+}
+
+================
+File: src/Controller/chatbot/ChatbotController.php
+================
+<?php
+
+namespace App\Controller\chatbot;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class ChatbotController extends AbstractController
+{
+    #[Route('/chatbot', name: 'app_chatbot')]
+    public function index(): Response
+    {
+        return $this->render('chatbot/chatbot.html.twig', [
+            'controller_name' => 'ChatbotController',
+        ]);
+    }
+}
+
+================
+File: src/Controller/create_job/CreateJobController.php
+================
+<?php
+
+namespace App\Controller\create_job;
+
+use App\Entity\Jobs;
+use App\Form\CreateJobFormType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+// class CreateJobController extends AbstractController
+// {
+//     #[Route('/create/job', name: 'app_create_job')]
+//     public function index(Request $request, EntityManagerInterface $entityManager): Response
+//     {
+//         $job = new Jobs();
+//         $form = $this->createForm(CreateJobFormType::class, $job);
+
+//         $form->handleRequest($request);
+
+//         if ($form->isSubmitted() && $form->isValid()) {
+//             $user = $this->getUser(); // currently authenticated user
+//             if (!$user) {
+//                 throw $this->createAccessDeniedException('You must be logged in.');
+//             }
+//             $job->setUserId($user instanceof \App\Entity\Users ? $user : null); // set the user who created the job
+            
+//             $entityManager->persist($job);
+//             $entityManager->flush();
+
+//             // You can redirect to a success page or back to the form
+//             return $this->redirectToRoute('app-root');
+//         }
+
+//         return $this->render('create_job/root.html.twig', [
+//             'form' => $form->createView(),
+//         ]);
+//     }
+// }
+
+namespace App\Controller\create_job;
+
+use App\Entity\Jobs;
+use App\Form\CreateJobFormType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class CreateJobController extends AbstractController
+{
+    #[Route('/create/job', name: 'app_create_job')]
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $job = new Jobs();
+        $form = $this->createForm(CreateJobFormType::class, $job);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($job);
+            $entityManager->flush();
+
+            // You can redirect to a success page or back to the form
+            return $this->redirectToRoute('app_create_job');
+        }
+
+        return $this->render('create_job/createjob.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+}
+
+================
+File: src/Controller/events/EventsController.php
+================
+<?php
+
+namespace App\Controller\events;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class EventsController extends AbstractController
+{
+    #[Route('/events', name: 'app_events')]
+    public function index(): Response
+    {
+        return $this->render('events/events.html.twig', [
+            'controller_name' => 'EventsController',
+        ]);
+    }
+}
+
+================
+File: src/Controller/explore/ExploreController.php
+================
+<?php
+
+namespace App\Controller\explore;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class ExploreController extends AbstractController
+{
+    #[Route('/explore', name: 'app_explore')]
+    public function index(): Response
+    {
+        return $this->render('explore/explore.html.twig', [
+            'controller_name' => 'ExploreController',
+        ]);
+    }
+}
+
+================
+File: src/Controller/group/GroupController.php
+================
+<?php
+
+namespace App\Controller\group;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class GroupController extends AbstractController
+{
+    #[Route('/group', name: 'app_group')]
+    public function index(): Response
+    {
+        return $this->render('group/group.html.twig', [
+            'controller_name' => 'GroupController',
+        ]);
+    }
+}
+
+================
+File: src/Controller/jobapplications/JobApplicationsController.php
+================
+<?php
+
+namespace App\Controller\jobapplications;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class JobApplicationsController extends AbstractController
+{
+    #[Route('/job/applications', name: 'app_job_applications')]
+    public function index(): Response
+    {
+        return $this->render('jobapplications/jobapplications.html.twig', [
+            'controller_name' => 'JobApplicationsController',
+        ]);
+    }
+}
+
+================
+File: src/Controller/jobfeed/JobFeedController.php
+================
+<?php
+
+namespace App\Controller\jobfeed;
+
+use App\Repository\JobsRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class JobFeedController extends AbstractController
+{
+    #[Route('/job/feed', name: 'app_job_feed')]
+    public function index(JobsRepository $jobsRepository): Response
+    {
+        // Using the specific sorting method
+        $jobs = $jobsRepository->findAllSortedByTitle();
+
+        // Or using the generic sorting method:
+        // $jobs = $jobsRepository->findAllWithSorting('jobTitle', 'ASC');
+       
+
+        return $this->render('jobfeed/jobFeed.html.twig', [
+            'jobs' => $jobs,
+        ]);
+    }
+}
+
+================
+File: src/Controller/organizer/OrganizerController.php
+================
+<?php
+
+namespace App\Controller\organizer;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class OrganizerController extends AbstractController
+{
+    #[Route('/organizer', name: 'app_organizer')]
+    public function index(): Response
+    {
+        return $this->render('organizer/organizer.html.twig', [
+            'controller_name' => 'OrganizerController',
+        ]);
+    }
+}
+
+================
+File: src/Controller/profile/ProfileController.php
+================
+<?php
+
+namespace App\Controller\profile;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class ProfileController extends AbstractController
+{
+    #[Route('/profile', name: 'app_profile')]
+    public function index(): Response
+    {
+        return $this->render('profile/profile.html.twig', [
+            'controller_name' => 'ProfileController',
+        ]);
+    }
+}
+
+================
+File: src/Controller/RootController.php
+================
+<?php
+
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class RootController extends AbstractController
+{
+    #[Route('', name: 'app-root')]
+    public function index(): Response
+    {
+        return $this->render('base.html.twig');
+    }
+}
+
+================
+File: src/Controller/social/SocialController.php
+================
+<?php
+
+namespace App\Controller\social;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class SocialController extends AbstractController
+{
+    #[Route('/social', name: 'app_social')]
+    public function index(): Response
+    {
+        return $this->render('social/social.html.twig', [
+            'controller_name' => 'SocialController',
+        ]);
+    }
+}
+
+================
+File: src/Entity/Applications.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\ApplicationsRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: ApplicationsRepository::class)]
+class Applications
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $user_id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Events $enevt_id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Jobs $job_id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $status = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $appliedAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $rewarded = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $cover_letter = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $resume_path = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $coverRating = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?Users $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getEnevtId(): ?Events
+    {
+        return $this->enevt_id;
+    }
+
+    public function setEnevtId(?Events $enevt_id): static
+    {
+        $this->enevt_id = $enevt_id;
+
+        return $this;
+    }
+
+    public function getJobId(): ?Jobs
+    {
+        return $this->job_id;
+    }
+
+    public function setJobId(?Jobs $job_id): static
+    {
+        $this->job_id = $job_id;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getAppliedAt(): ?string
+    {
+        return $this->appliedAt;
+    }
+
+    public function setAppliedAt(?string $appliedAt): static
+    {
+        $this->appliedAt = $appliedAt;
+
+        return $this;
+    }
+
+    public function getRewarded(): ?int
+    {
+        return $this->rewarded;
+    }
+
+    public function setRewarded(?int $rewarded): static
+    {
+        $this->rewarded = $rewarded;
+
+        return $this;
+    }
+
+    public function getCoverLetter(): ?string
+    {
+        return $this->cover_letter;
+    }
+
+    public function setCoverLetter(string $cover_letter): static
+    {
+        $this->cover_letter = $cover_letter;
+
+        return $this;
+    }
+
+    public function getResumePath(): ?string
+    {
+        return $this->resume_path;
+    }
+
+    public function setResumePath(string $resume_path): static
+    {
+        $this->resume_path = $resume_path;
+
+        return $this;
+    }
+
+    public function getCoverRating(): ?int
+    {
+        return $this->coverRating;
+    }
+
+    public function setCoverRating(?int $coverRating): static
+    {
+        $this->coverRating = $coverRating;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Category.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\CategoryRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: CategoryRepository::class)]
+class Category
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Comments.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\CommentsRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: CommentsRepository::class)]
+class Comments
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?FeedPosts $postId = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $user_id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $content = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $timeStamp = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $isDeleted = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getPostId(): ?FeedPosts
+    {
+        return $this->postId;
+    }
+
+    public function setPostId(?FeedPosts $postId): static
+    {
+        $this->postId = $postId;
+
+        return $this;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?Users $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(string $content): static
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function getTimeStamp(): ?string
+    {
+        return $this->timeStamp;
+    }
+
+    public function setTimeStamp(string $timeStamp): static
+    {
+        $this->timeStamp = $timeStamp;
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?int
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?int $isDeleted): static
+    {
+        $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Conversion.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\ConversionRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: ConversionRepository::class)]
+class Conversion
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne(inversedBy: 'conversions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $userId = null;
+
+    #[ORM\Column]
+    private ?int $pointsConvertis = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $montant = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $devise = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(?Users $userId): static
+    {
+        $this->userId = $userId;
+
+        return $this;
+    }
+
+    public function getPointsConvertis(): ?int
+    {
+        return $this->pointsConvertis;
+    }
+
+    public function setPointsConvertis(int $pointsConvertis): static
+    {
+        $this->pointsConvertis = $pointsConvertis;
+
+        return $this;
+    }
+
+    public function getMontant(): ?string
+    {
+        return $this->montant;
+    }
+
+    public function setMontant(string $montant): static
+    {
+        $this->montant = $montant;
+
+        return $this;
+    }
+
+    public function getDevise(): ?string
+    {
+        return $this->devise;
+    }
+
+    public function setDevise(string $devise): static
+    {
+        $this->devise = $devise;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Events.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\EventsRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: EventsRepository::class)]
+class Events
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $startTime = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $endTime = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $location = null;
+
+    #[ORM\ManyToOne(inversedBy: 'events')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $organizerId = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $categoryId = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $image = null;
+
+    #[ORM\Column]
+    private ?int $points = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getStartTime(): ?string
+    {
+        return $this->startTime;
+    }
+
+    public function setStartTime(string $startTime): static
+    {
+        $this->startTime = $startTime;
+
+        return $this;
+    }
+
+    public function getEndTime(): ?string
+    {
+        return $this->endTime;
+    }
+
+    public function setEndTime(string $endTime): static
+    {
+        $this->endTime = $endTime;
+
+        return $this;
+    }
+
+    public function getLocation(): ?string
+    {
+        return $this->location;
+    }
+
+    public function setLocation(string $location): static
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    public function getOrganizerId(): ?Users
+    {
+        return $this->organizerId;
+    }
+
+    public function setOrganizerId(?Users $organizerId): static
+    {
+        $this->organizerId = $organizerId;
+
+        return $this;
+    }
+
+    public function getCategoryId(): ?Category
+    {
+        return $this->categoryId;
+    }
+
+    public function setCategoryId(?Category $categoryId): static
+    {
+        $this->categoryId = $categoryId;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getPoints(): ?int
+    {
+        return $this->points;
+    }
+
+    public function setPoints(int $points): static
+    {
+        $this->points = $points;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/FeedPosts.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\FeedPostsRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: FeedPostsRepository::class)]
+class FeedPosts
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $userId = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $content = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $timeStamp = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $eventId = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $isDeleted = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $createdAt = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $updatedAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $scorePopularite = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $imagePath = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $groupId = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(?Users $userId): static
+    {
+        $this->userId = $userId;
+
+        return $this;
+    }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(string $content): static
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function getTimeStamp(): ?string
+    {
+        return $this->timeStamp;
+    }
+
+    public function setTimeStamp(string $timeStamp): static
+    {
+        $this->timeStamp = $timeStamp;
+
+        return $this;
+    }
+
+    public function getEventId(): ?Users
+    {
+        return $this->eventId;
+    }
+
+    public function setEventId(?Users $eventId): static
+    {
+        $this->eventId = $eventId;
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?int
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?int $isDeleted): static
+    {
+        $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(string $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?string
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(string $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getScorePopularite(): ?int
+    {
+        return $this->scorePopularite;
+    }
+
+    public function setScorePopularite(?int $scorePopularite): static
+    {
+        $this->scorePopularite = $scorePopularite;
+
+        return $this;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return $this->imagePath;
+    }
+
+    public function setImagePath(string $imagePath): static
+    {
+        $this->imagePath = $imagePath;
+
+        return $this;
+    }
+
+    public function getGroupId(): ?int
+    {
+        return $this->groupId;
+    }
+
+    public function setGroupId(?int $groupId): static
+    {
+        $this->groupId = $groupId;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/GroupFeedPosts.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\GroupFeedPostsRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: GroupFeedPostsRepository::class)]
+class GroupFeedPosts
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?UserGroups $group_id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $user_id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $content = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $timestamp = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $media_url = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $is_deleted = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getGroupId(): ?UserGroups
+    {
+        return $this->group_id;
+    }
+
+    public function setGroupId(?UserGroups $group_id): static
+    {
+        $this->group_id = $group_id;
+
+        return $this;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?Users $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(string $content): static
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function getTimestamp(): ?string
+    {
+        return $this->timestamp;
+    }
+
+    public function setTimestamp(string $timestamp): static
+    {
+        $this->timestamp = $timestamp;
+
+        return $this;
+    }
+
+    public function getMediaUrl(): ?string
+    {
+        return $this->media_url;
+    }
+
+    public function setMediaUrl(string $media_url): static
+    {
+        $this->media_url = $media_url;
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?int
+    {
+        return $this->is_deleted;
+    }
+
+    public function setIsDeleted(?int $is_deleted): static
+    {
+        $this->is_deleted = $is_deleted;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/GroupMembers.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\GroupMembersRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: GroupMembersRepository::class)]
+class GroupMembers
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?UserGroups $group_it = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $user_id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $role = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getGroupIt(): ?UserGroups
+    {
+        return $this->group_it;
+    }
+
+    public function setGroupIt(?UserGroups $group_it): static
+    {
+        $this->group_it = $group_it;
+
+        return $this;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?Users $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function setRole(string $role): static
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/HistoriquePoints.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\HistoriquePointsRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: HistoriquePointsRepository::class)]
+class HistoriquePoints
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $user_id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $type = null;
+
+    #[ORM\Column]
+    private ?int $points = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $raison = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?Users $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getPoints(): ?int
+    {
+        return $this->points;
+    }
+
+    public function setPoints(int $points): static
+    {
+        $this->points = $points;
+
+        return $this;
+    }
+
+    public function getRaison(): ?string
+    {
+        return $this->raison;
+    }
+
+    public function setRaison(string $raison): static
+    {
+        $this->raison = $raison;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Jobs.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\JobsRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: JobsRepository::class)]
+class Jobs
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $jobTitle = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $eventTitle = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $jobLocation = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $employmentType = null;
+
+    #[ORM\Column(length: 255 , nullable: true)]
+    private ?string $applicationDeadLine = null;
+
+    #[ORM\Column]
+    private ?int $minSalary = null;
+
+    #[ORM\Column]
+    private ?int $maxSalary = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $currency = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $jobDescreption = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $recruiterName = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $recruiterEmail = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $createdAt = null;
+    
+    #[ORM\ManyToOne(inversedBy: 'jobs')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Users $userId = null;
+
+    #[ORM\ManyToOne]
+    private ?Events $eventId = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getJobTitle(): ?string
+    {
+        return $this->jobTitle;
+    }
+
+    public function setJobTitle(string $jobTitle): static
+    {
+        $this->jobTitle = $jobTitle;
+
+        return $this;
+    }
+
+    public function getEventTitle(): ?string
+    {
+        return $this->eventTitle;
+    }
+
+    public function setEventTitle(?string $eventTitle): static
+    {
+        $this->eventTitle = $eventTitle;
+
+        return $this;
+    }
+
+    public function getJobLocation(): ?string
+    {
+        return $this->jobLocation;
+    }
+
+    public function setJobLocation(string $jobLocation): static
+    {
+        $this->jobLocation = $jobLocation;
+
+        return $this;
+    }
+
+    public function getEmploymentType(): ?string
+    {
+        return $this->employmentType;
+    }
+
+    public function setEmploymentType(string $employmentType): static
+    {
+        $this->employmentType = $employmentType;
+
+        return $this;
+    }
+
+    public function getApplicationDeadLine(): ?string
+    {
+        return $this->applicationDeadLine;
+    }
+
+    public function setApplicationDeadLine(string $applicationDeadLine): static
+    {
+        $this->applicationDeadLine = $applicationDeadLine;
+
+        return $this;
+    }
+
+    public function getMinSalary(): ?int
+    {
+        return $this->minSalary;
+    }
+
+    public function setMinSalary(int $minSalary): static
+    {
+        $this->minSalary = $minSalary;
+
+        return $this;
+    }
+
+    public function getMaxSalary(): ?int
+    {
+        return $this->maxSalary;
+    }
+
+    public function setMaxSalary(int $maxSalary): static
+    {
+        $this->maxSalary = $maxSalary;
+
+        return $this;
+    }
+
+    public function getCurrency(): ?string
+    {
+        return $this->currency;
+    }
+
+    public function setCurrency(string $currency): static
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    public function getJobDescreption(): ?string
+    {
+        return $this->jobDescreption;
+    }
+
+    public function setJobDescreption(string $jobDescreption): static
+    {
+        $this->jobDescreption = $jobDescreption;
+
+        return $this;
+    }
+
+    public function getRecruiterName(): ?string
+    {
+        return $this->recruiterName;
+    }
+
+    public function setRecruiterName(string $recruiterName): static
+    {
+        $this->recruiterName = $recruiterName;
+
+        return $this;
+    }
+
+    public function getRecruiterEmail(): ?string
+    {
+        return $this->recruiterEmail;
+    }
+
+    public function setRecruiterEmail(string $recruiterEmail): static
+    {
+        $this->recruiterEmail = $recruiterEmail;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?string $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+  
+
+    public function getUserId(): ?Users
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(?Users $userId): static
+    {
+        $this->userId = $userId;
+
+        return $this;
+    }
+
+    public function getEventId(): ?Events
+    {
+        return $this->eventId;
+    }
+
+    public function setEventId(?Events $eventId): static
+    {
+        $this->eventId = $eventId;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Likes.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\LikesRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: LikesRepository::class)]
+class Likes
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?FeedPosts $postId = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $user_id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $timeStamp = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getPostId(): ?FeedPosts
+    {
+        return $this->postId;
+    }
+
+    public function setPostId(?FeedPosts $postId): static
+    {
+        $this->postId = $postId;
+
+        return $this;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?Users $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getTimeStamp(): ?string
+    {
+        return $this->timeStamp;
+    }
+
+    public function setTimeStamp(string $timeStamp): static
+    {
+        $this->timeStamp = $timeStamp;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Messages.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\MessagesRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: MessagesRepository::class)]
+class Messages
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column]
+    private ?int $sender_id = null;
+
+    #[ORM\Column]
+    private ?int $recipient_id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $content = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $timestamp = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $type = null;
+
+    #[ORM\Column]
+    private ?int $read_status = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getSenderId(): ?int
+    {
+        return $this->sender_id;
+    }
+
+    public function setSenderId(int $sender_id): static
+    {
+        $this->sender_id = $sender_id;
+
+        return $this;
+    }
+
+    public function getRecipientId(): ?int
+    {
+        return $this->recipient_id;
+    }
+
+    public function setRecipientId(int $recipient_id): static
+    {
+        $this->recipient_id = $recipient_id;
+
+        return $this;
+    }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(string $content): static
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function getTimestamp(): ?\DateTimeInterface
+    {
+        return $this->timestamp;
+    }
+
+    public function setTimestamp(\DateTimeInterface $timestamp): static
+    {
+        $this->timestamp = $timestamp;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getReadStatus(): ?int
+    {
+        return $this->read_status;
+    }
+
+    public function setReadStatus(int $read_status): static
+    {
+        $this->read_status = $read_status;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Participation.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\ParticipationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: ParticipationRepository::class)]
+class Participation
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToMany(targetEntity: Events::class)]
+    private Collection $event_id;
+
+    #[ORM\ManyToMany(targetEntity: Users::class)]
+    private Collection $participant_id;
+
+    public function __construct()
+    {
+        $this->event_id = new ArrayCollection();
+        $this->participant_id = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return Collection<int, Events>
+     */
+    public function getEventId(): Collection
+    {
+        return $this->event_id;
+    }
+
+    public function addEventId(Events $eventId): static
+    {
+        if (!$this->event_id->contains($eventId)) {
+            $this->event_id->add($eventId);
+        }
+
+        return $this;
+    }
+
+    public function removeEventId(Events $eventId): static
+    {
+        $this->event_id->removeElement($eventId);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Users>
+     */
+    public function getParticipantId(): Collection
+    {
+        return $this->participant_id;
+    }
+
+    public function addParticipantId(Users $participantId): static
+    {
+        if (!$this->participant_id->contains($participantId)) {
+            $this->participant_id->add($participantId);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipantId(Users $participantId): static
+    {
+        $this->participant_id->removeElement($participantId);
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Reviews.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\ReviewsRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: ReviewsRepository::class)]
+class Reviews
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $user_id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Events $event_id = null;
+
+    #[ORM\Column]
+    private ?int $rating = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $comment = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $creatid_at = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?Users $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getEventId(): ?Events
+    {
+        return $this->event_id;
+    }
+
+    public function setEventId(?Events $event_id): static
+    {
+        $this->event_id = $event_id;
+
+        return $this;
+    }
+
+    public function getRating(): ?int
+    {
+        return $this->rating;
+    }
+
+    public function setRating(int $rating): static
+    {
+        $this->rating = $rating;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(string $comment): static
+    {
+        $this->comment = $comment;
+
+        return $this;
+    }
+
+    public function getCreatidAt(): ?string
+    {
+        return $this->creatid_at;
+    }
+
+    public function setCreatidAt(?string $creatid_at): static
+    {
+        $this->creatid_at = $creatid_at;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Rewards.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\RewardsRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: RewardsRepository::class)]
+class Rewards
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $action_type = null;
+
+    #[ORM\Column]
+    private ?int $points = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getActionType(): ?string
+    {
+        return $this->action_type;
+    }
+
+    public function setActionType(string $action_type): static
+    {
+        $this->action_type = $action_type;
+
+        return $this;
+    }
+
+    public function getPoints(): ?int
+    {
+        return $this->points;
+    }
+
+    public function setPoints(int $points): static
+    {
+        $this->points = $points;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Roulette.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\RouletteRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: RouletteRepository::class)]
+class Roulette
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    private ?Users $user_id = null;
+
+    #[ORM\Column]
+    private ?int $points_gagnes = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?Users $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getPointsGagnes(): ?int
+    {
+        return $this->points_gagnes;
+    }
+
+    public function setPointsGagnes(int $points_gagnes): static
+    {
+        $this->points_gagnes = $points_gagnes;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Shares.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\SharesRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: SharesRepository::class)]
+class Shares
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    private ?FeedPosts $post_id = null;
+
+    #[ORM\ManyToOne]
+    private ?Users $user_id = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $created_at = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getPostId(): ?FeedPosts
+    {
+        return $this->post_id;
+    }
+
+    public function setPostId(?FeedPosts $post_id): static
+    {
+        $this->post_id = $post_id;
+
+        return $this;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?Users $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/TransactionArgent.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\TransactionArgentRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: TransactionArgentRepository::class)]
+class TransactionArgent
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+}
+
+================
+File: src/Entity/UserGroups.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\UserGroupsRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: UserGroupsRepository::class)]
+class UserGroups
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $profile_picture = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $rules = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $created_at = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $creator_id = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getProfilePicture(): ?string
+    {
+        return $this->profile_picture;
+    }
+
+    public function setProfilePicture(string $profile_picture): static
+    {
+        $this->profile_picture = $profile_picture;
+
+        return $this;
+    }
+
+    public function getRules(): ?string
+    {
+        return $this->rules;
+    }
+
+    public function setRules(string $rules): static
+    {
+        $this->rules = $rules;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(string $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getCreatorId(): ?Users
+    {
+        return $this->creator_id;
+    }
+
+    public function setCreatorId(?Users $creator_id): static
+    {
+        $this->creator_id = $creator_id;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/UserIntrests.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\UserIntrestsRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: UserIntrestsRepository::class)]
+class UserIntrests
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    private ?users $user_id = null;
+
+    #[ORM\ManyToOne]
+    private ?Category $category_id = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?users
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?users $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getCategoryId(): ?Category
+    {
+        return $this->category_id;
+    }
+
+    public function setCategoryId(?Category $category_id): static
+    {
+        $this->category_id = $category_id;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/UserMessages.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\UserMessagesRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: UserMessagesRepository::class)]
+class UserMessages
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    private ?Users $user_id = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $sent_at = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $lastMessage = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $username = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?Users
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?Users $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getSentAt(): ?\DateTimeInterface
+    {
+        return $this->sent_at;
+    }
+
+    public function setSentAt(?\DateTimeInterface $sent_at): static
+    {
+        $this->sent_at = $sent_at;
+
+        return $this;
+    }
+
+    public function getLastMessage(): ?string
+    {
+        return $this->lastMessage;
+    }
+
+    public function setLastMessage(?string $lastMessage): static
+    {
+        $this->lastMessage = $lastMessage;
+
+        return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/UserProfile.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\UserProfileRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: UserProfileRepository::class)]
+class UserProfile
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column]
+    private ?int $user_id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $bio = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $profilePicture = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $intrests = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(int $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getBio(): ?string
+    {
+        return $this->bio;
+    }
+
+    public function setBio(string $bio): static
+    {
+        $this->bio = $bio;
+
+        return $this;
+    }
+
+    public function getProfilePicture(): ?string
+    {
+        return $this->profilePicture;
+    }
+
+    public function setProfilePicture(string $profilePicture): static
+    {
+        $this->profilePicture = $profilePicture;
+
+        return $this;
+    }
+
+    public function getIntrests(): ?string
+    {
+        return $this->intrests;
+    }
+
+    public function setIntrests(string $intrests): static
+    {
+        $this->intrests = $intrests;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/UserRewards.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\UserRewardsRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: UserRewardsRepository::class)]
+class UserRewards
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column]
+    private ?int $user_id = null;
+
+    #[ORM\Column]
+    private ?int $reward_id = null;
+
+    #[ORM\Column]
+    private ?int $event_id = null;
+
+    #[ORM\Column]
+    private ?int $points_earned = null;
+
+    #[ORM\Column (length: 255)]
+    private ?string $erned_at = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(int $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getRewardId(): ?int
+    {
+        return $this->reward_id;
+    }
+
+    public function setRewardId(int $reward_id): static
+    {
+        $this->reward_id = $reward_id;
+
+        return $this;
+    }
+
+    public function getEventId(): ?int
+    {
+        return $this->event_id;
+    }
+
+    public function setEventId(int $event_id): static
+    {
+        $this->event_id = $event_id;
+
+        return $this;
+    }
+
+    public function getPointsEarned() : ?int
+    {
+        return $this->points_earned;
+    }
+
+    public function setPointsEarned(int $points_earned): static
+    {
+        $this->points_earned = $points_earned;
+
+        return $this;
+    }
+
+    public function getErnedAt(): ?string
+    {
+        return $this->erned_at;
+    }
+
+    public function setErnedAt(string $erned_at): static
+    {
+        $this->erned_at = $erned_at;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/Users.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\UsersRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: UsersRepository::class)]
+class Users
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = 1;
+
+    #[ORM\Column(length: 255)]
+    private ?string $username = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $password = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
+
+    #[ORM\Column(length: 255 , nullable: true)]
+    private ?string $createdAt = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $updatedAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $points = null;
+
+    #[ORM\Column]
+    private ?int $age = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $gender = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $argent = null;
+
+    #[ORM\OneToMany(targetEntity: Conversion::class, mappedBy: 'userId')]
+    private Collection $conversions;
+
+    #[ORM\OneToMany(targetEntity: Events::class, mappedBy: 'organizerId')]
+    private Collection $events;
+
+    #[ORM\OneToMany(targetEntity: Jobs::class, mappedBy: 'userId', orphanRemoval: true)]
+    private Collection $jobs;
+
+    public function __construct()
+    {
+        $this->conversions = new ArrayCollection();
+        $this->events = new ArrayCollection();
+        $this->jobs = new ArrayCollection();
+    }
+
+    
+
+   
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(string $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?string
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?string $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getPoints(): ?int
+    {
+        return $this->points;
+    }
+
+    public function setPoints(?int $points): static
+    {
+        $this->points = $points;
+
+        return $this;
+    }
+
+    public function getAge(): ?int
+    {
+        return $this->age;
+    }
+
+    public function setAge(int $age): static
+    {
+        $this->age = $age;
+
+        return $this;
+    }
+
+    public function getGender(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function setGender(string $gender): static
+    {
+        $this->gender = $gender;
+
+        return $this;
+    }
+
+    public function getArgent(): ?int
+    {
+        return $this->argent;
+    }
+
+    public function setArgent(?int $argent): static
+    {
+        $this->argent = $argent;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Conversion>
+     */
+    public function getConversions(): Collection
+    {
+        return $this->conversions;
+    }
+
+    public function addConversion(Conversion $conversion): static
+    {
+        if (!$this->conversions->contains($conversion)) {
+            $this->conversions->add($conversion);
+            $conversion->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConversion(Conversion $conversion): static
+    {
+        if ($this->conversions->removeElement($conversion)) {
+            // set the owning side to null (unless already changed)
+            if ($conversion->getUserId() === $this) {
+                $conversion->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Events>
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Events $event): static
+    {
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
+            $event->setOrganizerId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Events $event): static
+    {
+        if ($this->events->removeElement($event)) {
+            // set the owning side to null (unless already changed)
+            if ($event->getOrganizerId() === $this) {
+                $event->setOrganizerId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Jobs>
+     */
+    public function getJobs(): Collection
+    {
+        return $this->jobs;
+    }
+
+    public function addJob(Jobs $job): static
+    {
+        if (!$this->jobs->contains($job)) {
+            $this->jobs->add($job);
+            $job->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJob(Jobs $job): static
+    {
+        if ($this->jobs->removeElement($job)) {
+            // set the owning side to null (unless already changed)
+            if ($job->getUserId() === $this) {
+                $job->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    
+
+   
+
+}
+
+================
+File: src/Entity/VisiteUtilisateur.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\VisiteUtilisateurRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: VisiteUtilisateurRepository::class)]
+class VisiteUtilisateur
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $dernier_visite = null;
+
+    #[ORM\Column]
+    private ?int $serie = null;
+
+    #[ORM\Column]
+    private ?int $user_id = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getDernierVisite(): ?\DateTimeInterface
+    {
+        return $this->dernier_visite;
+    }
+
+    public function setDernierVisite(\DateTimeInterface $dernier_visite): static
+    {
+        $this->dernier_visite = $dernier_visite;
+
+        return $this;
+    }
+
+    public function getSerie(): ?int
+    {
+        return $this->serie;
+    }
+
+    public function setSerie(int $serie): static
+    {
+        $this->serie = $serie;
+
+        return $this;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(int $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+}
+
+================
+File: src/Entity/WorkerRaitings.php
+================
+<?php
+
+namespace App\Entity;
+
+use App\Repository\WorkerRaitingsRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: WorkerRaitingsRepository::class)]
+class WorkerRaitings
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column]
+    private ?int $user_id = null;
+
+    #[ORM\Column]
+    private ?int $rater_id = null;
+
+    #[ORM\Column]
+    private ?int $job_id = null;
+
+    #[ORM\Column]
+    private ?int $raiting = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $comment = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $created_at = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(int $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getRaterId(): ?int
+    {
+        return $this->rater_id;
+    }
+
+    public function setRaterId(int $rater_id): static
+    {
+        $this->rater_id = $rater_id;
+
+        return $this;
+    }
+
+    public function getJobId(): ?int
+    {
+        return $this->job_id;
+    }
+
+    public function setJobId(int $job_id): static
+    {
+        $this->job_id = $job_id;
+
+        return $this;
+    }
+
+    public function getRaiting(): ?int
+    {
+        return $this->raiting;
+    }
+
+    public function setRaiting(int $raiting): static
+    {
+        $this->raiting = $raiting;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(string $comment): static
+    {
+        $this->comment = $comment;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+}
+
+================
+File: src/Form/CreateJobFormType.php
+================
+<?php
+
+namespace App\Form;
+
+use App\Entity\Jobs;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+class CreateJobFormType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('jobTitle')
+            ->add('eventTitle')
+            ->add('jobLocation')
+            ->add('employmentType')
+            ->add('applicationDeadLine')
+            ->add('minSalary')
+            ->add('maxSalary')
+            ->add('currency')
+            ->add('jobDescreption')
+            ->add('recruiterName')
+            ->add('recruiterEmail')
+            ->add('createdAt')
+            #->add('userId')
+            
+        ;
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Jobs::class,
+        ]);
+    }
+}
+
+================
+File: src/Kernel.php
+================
+<?php
+
+namespace App;
+
+use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Component\HttpKernel\Kernel as BaseKernel;
+
+class Kernel extends BaseKernel
+{
+    use MicroKernelTrait;
+}
+
+================
+File: src/Repository/ApplicationsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Applications;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Applications>
+ *
+ * @method Applications|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Applications|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Applications[]    findAll()
+ * @method Applications[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class ApplicationsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Applications::class);
+    }
+
+//    /**
+//     * @return Applications[] Returns an array of Applications objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('a')
+//            ->andWhere('a.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('a.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Applications
+//    {
+//        return $this->createQueryBuilder('a')
+//            ->andWhere('a.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/CategoryRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Category;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Category>
+ *
+ * @method Category|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Category|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Category[]    findAll()
+ * @method Category[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class CategoryRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Category::class);
+    }
+
+//    /**
+//     * @return Category[] Returns an array of Category objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('c')
+//            ->andWhere('c.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('c.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Category
+//    {
+//        return $this->createQueryBuilder('c')
+//            ->andWhere('c.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/CommentsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Comments;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Comments>
+ *
+ * @method Comments|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Comments|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Comments[]    findAll()
+ * @method Comments[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class CommentsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Comments::class);
+    }
+
+//    /**
+//     * @return Comments[] Returns an array of Comments objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('c')
+//            ->andWhere('c.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('c.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Comments
+//    {
+//        return $this->createQueryBuilder('c')
+//            ->andWhere('c.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/ConversionRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Conversion;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Conversion>
+ *
+ * @method Conversion|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Conversion|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Conversion[]    findAll()
+ * @method Conversion[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class ConversionRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Conversion::class);
+    }
+
+//    /**
+//     * @return Conversion[] Returns an array of Conversion objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('c')
+//            ->andWhere('c.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('c.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Conversion
+//    {
+//        return $this->createQueryBuilder('c')
+//            ->andWhere('c.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/EventsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Events;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Events>
+ *
+ * @method Events|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Events|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Events[]    findAll()
+ * @method Events[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class EventsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Events::class);
+    }
+
+//    /**
+//     * @return Events[] Returns an array of Events objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('e')
+//            ->andWhere('e.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('e.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Events
+//    {
+//        return $this->createQueryBuilder('e')
+//            ->andWhere('e.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/FeedPostsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\FeedPosts;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<FeedPosts>
+ *
+ * @method FeedPosts|null find($id, $lockMode = null, $lockVersion = null)
+ * @method FeedPosts|null findOneBy(array $criteria, array $orderBy = null)
+ * @method FeedPosts[]    findAll()
+ * @method FeedPosts[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class FeedPostsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, FeedPosts::class);
+    }
+
+//    /**
+//     * @return FeedPosts[] Returns an array of FeedPosts objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('f')
+//            ->andWhere('f.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('f.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?FeedPosts
+//    {
+//        return $this->createQueryBuilder('f')
+//            ->andWhere('f.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/GroupFeedPostsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\GroupFeedPosts;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<GroupFeedPosts>
+ *
+ * @method GroupFeedPosts|null find($id, $lockMode = null, $lockVersion = null)
+ * @method GroupFeedPosts|null findOneBy(array $criteria, array $orderBy = null)
+ * @method GroupFeedPosts[]    findAll()
+ * @method GroupFeedPosts[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class GroupFeedPostsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, GroupFeedPosts::class);
+    }
+
+//    /**
+//     * @return GroupFeedPosts[] Returns an array of GroupFeedPosts objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('g')
+//            ->andWhere('g.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('g.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?GroupFeedPosts
+//    {
+//        return $this->createQueryBuilder('g')
+//            ->andWhere('g.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/GroupMembersRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\GroupMembers;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<GroupMembers>
+ *
+ * @method GroupMembers|null find($id, $lockMode = null, $lockVersion = null)
+ * @method GroupMembers|null findOneBy(array $criteria, array $orderBy = null)
+ * @method GroupMembers[]    findAll()
+ * @method GroupMembers[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class GroupMembersRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, GroupMembers::class);
+    }
+
+//    /**
+//     * @return GroupMembers[] Returns an array of GroupMembers objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('g')
+//            ->andWhere('g.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('g.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?GroupMembers
+//    {
+//        return $this->createQueryBuilder('g')
+//            ->andWhere('g.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/HistoriquePointsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\HistoriquePoints;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<HistoriquePoints>
+ *
+ * @method HistoriquePoints|null find($id, $lockMode = null, $lockVersion = null)
+ * @method HistoriquePoints|null findOneBy(array $criteria, array $orderBy = null)
+ * @method HistoriquePoints[]    findAll()
+ * @method HistoriquePoints[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class HistoriquePointsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, HistoriquePoints::class);
+    }
+
+//    /**
+//     * @return HistoriquePoints[] Returns an array of HistoriquePoints objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('h')
+//            ->andWhere('h.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('h.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?HistoriquePoints
+//    {
+//        return $this->createQueryBuilder('h')
+//            ->andWhere('h.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/JobsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Jobs;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Jobs>
+ */
+class JobsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Jobs::class);
+    }
+
+    /**
+ * @return Jobs[] Returns all jobs sorted alphabetically by title
+ */
+public function findAllSortedByTitle(): array
+{
+    return $this->createQueryBuilder('j')
+        ->orderBy('j.jobTitle', 'ASC')
+        ->getQuery()
+        ->getResult();
+}
+
+    /**
+     * @return Jobs[] //Returns all jobs with optional sorting
+     */
+    public function findAllWithSorting(string $sortField = 'jobTitle', string $sortDirection = 'ASC'): array
+    {
+        return $this->createQueryBuilder('j')
+            ->orderBy('j.'.$sortField, $sortDirection)
+            ->getQuery()
+            ->getResult();
+    } 
+
+
+// In JobsRepository.php
+
+// // Find jobs by event
+// public function findByEvent(Events $event): array
+// {
+//     return $this->createQueryBuilder('j')
+//         ->andWhere('j.eventId = :event')
+//         ->setParameter('event', $event)
+//         ->orderBy('j.jobTitle', 'ASC')
+//         ->getQuery()
+//         ->getResult();
+// }
+
+// // Find jobs with salary range
+// public function findBySalaryRange(int $min, int $max): array
+// {
+//     return $this->createQueryBuilder('j')
+//         ->andWhere('j.minSalary >= :min')
+//         ->andWhere('j.maxSalary <= :max')
+//         ->setParameter('min', $min)
+//         ->setParameter('max', $max)
+//         ->orderBy('j.jobTitle', 'ASC')
+//         ->getQuery()
+//         ->getResult();
+// }
+
+// // Search jobs by title or description
+// public function searchJobs(string $query): array
+// {
+//     return $this->createQueryBuilder('j')
+//         ->andWhere('j.jobTitle LIKE :query OR j.jobDescreption LIKE :query')
+//         ->setParameter('query', '%'.$query.'%')
+//         ->orderBy('j.jobTitle', 'ASC')
+//         ->getQuery()
+//         ->getResult();
+// }
+//}
+
+// src/Repository/JobsRepository.php
+// namespace App\Repository;
+
+// use App\Entity\Jobs;
+// use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+// use Doctrine\Persistence\ManagerRegistry;
+// use Psr\Log\LoggerInterface;
+
+// class JobsRepository extends ServiceEntityRepository
+// {
+//     private $logger;
+
+//     public function __construct(ManagerRegistry $registry, LoggerInterface $logger)
+//     {
+//         parent::__construct($registry, Jobs::class);
+//         $this->logger = $logger;
+//     }
+
+//     public function findAllSortedByTitle(): array
+//     {
+//         $query = $this->createQueryBuilder('j')
+//             ->orderBy('j.jobTitle', 'ASC')
+//             ->getQuery();
+
+//         // Log the generated SQL
+//         $this->logger->debug('Jobs Query: '.$query->getSQL());
+
+//         return $query->getResult();
+//     }
+ }
+
+================
+File: src/Repository/LikesRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Likes;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Likes>
+ *
+ * @method Likes|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Likes|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Likes[]    findAll()
+ * @method Likes[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class LikesRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Likes::class);
+    }
+
+//    /**
+//     * @return Likes[] Returns an array of Likes objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('l')
+//            ->andWhere('l.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('l.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Likes
+//    {
+//        return $this->createQueryBuilder('l')
+//            ->andWhere('l.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/MessagesRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Messages;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Messages>
+ *
+ * @method Messages|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Messages|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Messages[]    findAll()
+ * @method Messages[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class MessagesRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Messages::class);
+    }
+
+//    /**
+//     * @return Messages[] Returns an array of Messages objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('m')
+//            ->andWhere('m.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('m.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Messages
+//    {
+//        return $this->createQueryBuilder('m')
+//            ->andWhere('m.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/ParticipationRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Participation;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Participation>
+ *
+ * @method Participation|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Participation|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Participation[]    findAll()
+ * @method Participation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class ParticipationRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Participation::class);
+    }
+
+//    /**
+//     * @return Participation[] Returns an array of Participation objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('p')
+//            ->andWhere('p.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('p.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Participation
+//    {
+//        return $this->createQueryBuilder('p')
+//            ->andWhere('p.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/ReviewsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Reviews;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Reviews>
+ *
+ * @method Reviews|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Reviews|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Reviews[]    findAll()
+ * @method Reviews[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class ReviewsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Reviews::class);
+    }
+
+//    /**
+//     * @return Reviews[] Returns an array of Reviews objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('r')
+//            ->andWhere('r.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('r.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Reviews
+//    {
+//        return $this->createQueryBuilder('r')
+//            ->andWhere('r.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/RewardsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Rewards;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Rewards>
+ *
+ * @method Rewards|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Rewards|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Rewards[]    findAll()
+ * @method Rewards[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class RewardsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Rewards::class);
+    }
+
+//    /**
+//     * @return Rewards[] Returns an array of Rewards objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('r')
+//            ->andWhere('r.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('r.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Rewards
+//    {
+//        return $this->createQueryBuilder('r')
+//            ->andWhere('r.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/RouletteRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Roulette;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Roulette>
+ *
+ * @method Roulette|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Roulette|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Roulette[]    findAll()
+ * @method Roulette[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class RouletteRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Roulette::class);
+    }
+
+//    /**
+//     * @return Roulette[] Returns an array of Roulette objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('r')
+//            ->andWhere('r.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('r.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Roulette
+//    {
+//        return $this->createQueryBuilder('r')
+//            ->andWhere('r.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/SharesRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Shares;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Shares>
+ *
+ * @method Shares|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Shares|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Shares[]    findAll()
+ * @method Shares[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class SharesRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Shares::class);
+    }
+
+//    /**
+//     * @return Shares[] Returns an array of Shares objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('s')
+//            ->andWhere('s.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('s.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Shares
+//    {
+//        return $this->createQueryBuilder('s')
+//            ->andWhere('s.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/TransactionArgentRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\TransactionArgent;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<TransactionArgent>
+ *
+ * @method TransactionArgent|null find($id, $lockMode = null, $lockVersion = null)
+ * @method TransactionArgent|null findOneBy(array $criteria, array $orderBy = null)
+ * @method TransactionArgent[]    findAll()
+ * @method TransactionArgent[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class TransactionArgentRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, TransactionArgent::class);
+    }
+
+//    /**
+//     * @return TransactionArgent[] Returns an array of TransactionArgent objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('t')
+//            ->andWhere('t.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('t.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?TransactionArgent
+//    {
+//        return $this->createQueryBuilder('t')
+//            ->andWhere('t.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/UserGroupsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\UserGroups;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<UserGroups>
+ *
+ * @method UserGroups|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UserGroups|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UserGroups[]    findAll()
+ * @method UserGroups[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class UserGroupsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, UserGroups::class);
+    }
+
+//    /**
+//     * @return UserGroups[] Returns an array of UserGroups objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('u.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?UserGroups
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/UserIntrestsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\UserIntrests;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<UserIntrests>
+ *
+ * @method UserIntrests|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UserIntrests|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UserIntrests[]    findAll()
+ * @method UserIntrests[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class UserIntrestsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, UserIntrests::class);
+    }
+
+//    /**
+//     * @return UserIntrests[] Returns an array of UserIntrests objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('u.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?UserIntrests
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/UserMessagesRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\UserMessages;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<UserMessages>
+ *
+ * @method UserMessages|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UserMessages|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UserMessages[]    findAll()
+ * @method UserMessages[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class UserMessagesRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, UserMessages::class);
+    }
+
+//    /**
+//     * @return UserMessages[] Returns an array of UserMessages objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('u.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?UserMessages
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/UserProfileRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\UserProfile;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<UserProfile>
+ *
+ * @method UserProfile|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UserProfile|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UserProfile[]    findAll()
+ * @method UserProfile[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class UserProfileRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, UserProfile::class);
+    }
+
+//    /**
+//     * @return UserProfile[] Returns an array of UserProfile objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('u.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?UserProfile
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/UserRewardsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\UserRewards;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<UserRewards>
+ *
+ * @method UserRewards|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UserRewards|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UserRewards[]    findAll()
+ * @method UserRewards[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class UserRewardsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, UserRewards::class);
+    }
+
+//    /**
+//     * @return UserRewards[] Returns an array of UserRewards objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('u.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?UserRewards
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/UsersRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Users;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Users>
+ *
+ * @method Users|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Users|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Users[]    findAll()
+ * @method Users[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class UsersRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Users::class);
+    }
+
+//    /**
+//     * @return Users[] Returns an array of Users objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('u.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?Users
+//    {
+//        return $this->createQueryBuilder('u')
+//            ->andWhere('u.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/VisiteUtilisateurRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\VisiteUtilisateur;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<VisiteUtilisateur>
+ *
+ * @method VisiteUtilisateur|null find($id, $lockMode = null, $lockVersion = null)
+ * @method VisiteUtilisateur|null findOneBy(array $criteria, array $orderBy = null)
+ * @method VisiteUtilisateur[]    findAll()
+ * @method VisiteUtilisateur[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class VisiteUtilisateurRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, VisiteUtilisateur::class);
+    }
+
+//    /**
+//     * @return VisiteUtilisateur[] Returns an array of VisiteUtilisateur objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('v')
+//            ->andWhere('v.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('v.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?VisiteUtilisateur
+//    {
+//        return $this->createQueryBuilder('v')
+//            ->andWhere('v.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: src/Repository/WorkerRaitingsRepository.php
+================
+<?php
+
+namespace App\Repository;
+
+use App\Entity\WorkerRaitings;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<WorkerRaitings>
+ *
+ * @method WorkerRaitings|null find($id, $lockMode = null, $lockVersion = null)
+ * @method WorkerRaitings|null findOneBy(array $criteria, array $orderBy = null)
+ * @method WorkerRaitings[]    findAll()
+ * @method WorkerRaitings[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class WorkerRaitingsRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, WorkerRaitings::class);
+    }
+
+//    /**
+//     * @return WorkerRaitings[] Returns an array of WorkerRaitings objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('w')
+//            ->andWhere('w.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('w.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?WorkerRaitings
+//    {
+//        return $this->createQueryBuilder('w')
+//            ->andWhere('w.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}
+
+================
+File: symfony.lock
+================
+{
+    "doctrine/doctrine-bundle": {
+        "version": "2.13",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.4",
+            "ref": "91690c0a440faba1a3676256bcca2b4aa9f55b72"
+        },
+        "files": [
+            "./config/packages/doctrine.yaml",
+            "./src/Entity/.gitignore",
+            "./src/Repository/.gitignore"
+        ]
+    },
+    "doctrine/doctrine-migrations-bundle": {
+        "version": "3.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.1",
+            "ref": "1d01ec03c6ecbd67c3375c5478c9a423ae5d6a33"
+        },
+        "files": [
+            "./config/packages/doctrine_migrations.yaml",
+            "./migrations/.gitignore"
+        ]
+    },
+    "phpunit/phpunit": {
+        "version": "9.6",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "9.6",
+            "ref": "6a9341aa97d441627f8bd424ae85dc04c944f8b4"
+        },
+        "files": [
+            "./.env.test",
+            "./phpunit.xml.dist",
+            "./tests/bootstrap.php"
+        ]
+    },
+    "symfony/console": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.3",
+            "ref": "1781ff40d8a17d87cf53f8d4cf0c8346ed2bb461"
+        },
+        "files": [
+            "./bin/console"
+        ]
+    },
+    "symfony/debug-bundle": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.3",
+            "ref": "5aa8aa48234c8eb6dbdd7b3cd5d791485d2cec4b"
+        },
+        "files": [
+            "./config/packages/debug.yaml"
+        ]
+    },
+    "symfony/flex": {
+        "version": "2.5",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.4",
+            "ref": "52e9754527a15e2b79d9a610f98185a1fe46622a"
+        },
+        "files": [
+            "./.env",
+            "./.env.dev"
+        ]
+    },
+    "symfony/framework-bundle": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.4",
+            "ref": "3cd216a4d007b78d8554d44a5b1c0a446dab24fb"
+        },
+        "files": [
+            "./config/packages/cache.yaml",
+            "./config/packages/framework.yaml",
+            "./config/preload.php",
+            "./config/routes/framework.yaml",
+            "./config/services.yaml",
+            "./public/index.php",
+            "./src/Controller/.gitignore",
+            "./src/Kernel.php"
+        ]
+    },
+    "symfony/mailer": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "4.3",
+            "ref": "09051cfde49476e3c12cd3a0e44289ace1c75a4f"
+        },
+        "files": [
+            "./config/packages/mailer.yaml"
+        ]
+    },
+    "symfony/maker-bundle": {
+        "version": "1.50",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
+        }
+    },
+    "symfony/messenger": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.0",
+            "ref": "ba1ac4e919baba5644d31b57a3284d6ba12d52ee"
+        },
+        "files": [
+            "./config/packages/messenger.yaml"
+        ]
+    },
+    "symfony/monolog-bundle": {
+        "version": "3.10",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.7",
+            "ref": "aff23899c4440dd995907613c1dd709b6f59503f"
+        },
+        "files": [
+            "./config/packages/monolog.yaml"
+        ]
+    },
+    "symfony/notifier": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.0",
+            "ref": "178877daf79d2dbd62129dd03612cb1a2cb407cc"
+        },
+        "files": [
+            "./config/packages/notifier.yaml"
+        ]
+    },
+    "symfony/phpunit-bridge": {
+        "version": "7.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.3",
+            "ref": "a411a0480041243d97382cac7984f7dce7813c08"
+        },
+        "files": [
+            "./.env.test",
+            "./bin/phpunit",
+            "./phpunit.xml.dist",
+            "./tests/bootstrap.php"
+        ]
+    },
+    "symfony/routing": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.1",
+            "ref": "a44010c0d06989bd4f154aa07d2542d47caf5b83"
+        },
+        "files": [
+            "./config/packages/routing.yaml",
+            "./config/routes.yaml"
+        ]
+    },
+    "symfony/security-bundle": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.0",
+            "ref": "8a5b112826f7d3d5b07027f93786ae11a1c7de48"
+        },
+        "files": [
+            "./config/packages/security.yaml"
+        ]
+    },
+    "symfony/translation": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.3",
+            "ref": "e28e27f53663cc34f0be2837aba18e3a1bef8e7b"
+        },
+        "files": [
+            "./config/packages/translation.yaml",
+            "./translations/.gitignore"
+        ]
+    },
+    "symfony/twig-bundle": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.4",
+            "ref": "bb2178c57eee79e6be0b297aa96fc0c0def81387"
+        },
+        "files": [
+            "./config/packages/twig.yaml",
+            "./templates/base.html.twig"
+        ]
+    },
+    "symfony/validator": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.3",
+            "ref": "c32cfd98f714894c4f128bb99aa2530c1227603c"
+        },
+        "files": [
+            "./config/packages/validator.yaml"
+        ]
+    },
+    "symfony/web-profiler-bundle": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.1",
+            "ref": "8b51135b84f4266e3b4c8a6dc23c9d1e32e543b7"
+        },
+        "files": [
+            "./config/packages/web_profiler.yaml",
+            "./config/routes/web_profiler.yaml"
+        ]
+    },
+    "twig/extra-bundle": {
+        "version": "v3.8.0"
+    }
+}
+
+================
+File: templates/auth/auth.html.twig
+================
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AuthController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code><a href="{{ 'C:/Users/user/PiSymfony/src/Controller/AuthController.php'|file_link(0) }}">src/Controller/AuthController.php</a></code></li>
+        <li>Your template at <code><a href="{{ 'C:/Users/user/PiSymfony/templates/auth/index.html.twig'|file_link(0) }}">templates/auth/index.html.twig</a></code></li>
+    </ul>
+</div>
+{% endblock %}
+
+================
+File: templates/base.html.twig
+================
+{# templates/pages/landing.html.twig #}
+{% block stylesheets %}
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Your compiled CSS (from Symfony Encore) -->
+    <link rel="stylesheet" href="{{ asset('css/root.css') }}">
+{% endblock %}
+
+{% block body %}
+<header class="header">
+    <nav class="nav-container">
+        <div class="logo">
+            <img src="{{ asset('images/logo.svg') }}" alt="Connect Sphere" class="logo-img">
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link">About</a>
+            <a href="#" class="nav-link">Events</a>
+            <a href="#" class="nav-link">Speakers</a>
+            <a href="#" class="nav-link">Tickets</a>
+            <a href="#" class="nav-link">Blogs</a>
+            <a href="#" class="contact-btn nav-link">Contact</a>
+            <i class="fas fa-search"></i>
+        </div>
+    </nav>
+</header>
+
+<main>
+    {# HERO SECTION #}
+    <section class="hero">
+        <div class="hero-content">
+            <!-- Left Column: Text -->
+            <div class="hero-text">
+                <!-- You can incorporate date/limited seats info here if desired -->
+                <p class="event-date" style="color: #F96358; font-weight: 600;">
+                    9 June 2023 | Limited Seats
+                </p>
+                <h1 class="hero-title">
+                    The Ultimate Platform for Planning and Promoting Successful Events
+                </h1>
+                <p class="hero-subtitle">
+                    Connect Sphere helps you create unforgettable experiences with our comprehensive event management tools.
+                </p>
+                <!-- Primary Call-to-Action -->
+                <a href="#" class="cta-btn">Buy Tickets</a>
+            </div>
+
+            <!-- Right Column: Illustration/Image -->
+            <div class="hero-illustration">
+                <!-- Replace with your actual hero image -->
+                <img src="{{ asset('images/hero-illustration.png') }}" alt="Hero Illustration">
+            </div>
+        </div>
+
+        {# Optional: Social Icons, absolutely positioned in hero #}
+        <div class="social-icons">
+            <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </section>
+
+    {# WHO WE ARE SECTION #}
+    <section class="section">
+        <h2 class="section-title">WHO WE ARE</h2>
+        <p class="section-subtitle">
+            We are a leading event management platform dedicated to helping you create exceptional experiences through innovative technology and expert support.
+        </p>
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon"><i class="fas fa-globe"></i></div>
+                <h3>Global Network</h3>
+                <p>Connect with event professionals worldwide</p>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fas fa-tools"></i></div>
+                <h3>Advanced Tools</h3>
+                <p>Powerful features for event management</p>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fas fa-palette"></i></div>
+                <h3>Customizable Pages</h3>
+                <p>Create unique event pages easily</p>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fas fa-bullhorn"></i></div>
+                <h3>Powerful Marketing</h3>
+                <p>Reach your target audience effectively</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <button class="contact-btn">Contact Us</button>
+</footer>
+{% endblock %}
+
+================
+File: templates/chatbot/chatbot.html.twig
+================
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ChatbotController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code><a href="{{ 'C:/Users/user/PiSymfony/src/Controller/ChatbotController.php'|file_link(0) }}">src/Controller/ChatbotController.php</a></code></li>
+        <li>Your template at <code><a href="{{ 'C:/Users/user/PiSymfony/templates/chatbot/index.html.twig'|file_link(0) }}">templates/chatbot/index.html.twig</a></code></li>
+    </ul>
+</div>
+{% endblock %}
+
+================
+File: templates/create_job/createjob.html.twig
+================
+{% extends 'base.html.twig' %}
+
+{% block title %}Create a Job{% endblock %}
+
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/create_job_form.css') }}">
+{% endblock %}
+
+
+{% block body %}
+<div class="create-job-wrapper">
+    <h1>Create Job</h1>
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="submit-btn">Post Job</button>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
+
+================
+File: templates/events/events.html.twig
+================
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello EventsController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code><a href="{{ 'C:/Users/user/PiSymfony/src/Controller/EventsController.php'|file_link(0) }}">src/Controller/EventsController.php</a></code></li>
+        <li>Your template at <code><a href="{{ 'C:/Users/user/PiSymfony/templates/events/index.html.twig'|file_link(0) }}">templates/events/index.html.twig</a></code></li>
+    </ul>
+</div>
+{% endblock %}
+
+================
+File: templates/explore/explore.html.twig
+================
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ExploreController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code><a href="{{ 'C:/Users/user/PiSymfony/src/Controller/ExploreController.php'|file_link(0) }}">src/Controller/ExploreController.php</a></code></li>
+        <li>Your template at <code><a href="{{ 'C:/Users/user/PiSymfony/templates/explore/index.html.twig'|file_link(0) }}">templates/explore/index.html.twig</a></code></li>
+    </ul>
+</div>
+{% endblock %}
+
+================
+File: templates/group/group.html.twig
+================
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello GroupController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code><a href="{{ 'C:/Users/user/PiSymfony/src/Controller/GroupController.php'|file_link(0) }}">src/Controller/GroupController.php</a></code></li>
+        <li>Your template at <code><a href="{{ 'C:/Users/user/PiSymfony/templates/group/index.html.twig'|file_link(0) }}">templates/group/index.html.twig</a></code></li>
+    </ul>
+</div>
+{% endblock %}
+
+================
+File: templates/jobapplications/jobapplications.html.twig
+================
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello JobApplicationsController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code><a href="{{ 'C:/Users/user/PiSymfony/src/Controller/JobApplicationsController.php'|file_link(0) }}">src/Controller/JobApplicationsController.php</a></code></li>
+        <li>Your template at <code><a href="{{ 'C:/Users/user/PiSymfony/templates/job_applications/index.html.twig'|file_link(0) }}">templates/job_applications/index.html.twig</a></code></li>
+    </ul>
+</div>
+{% endblock %}
+
+================
+File: templates/jobfeed/jobfeed.html.twig
+================
+{% extends 'base.html.twig' %}
+
+{% block title %}All Job Opportunities{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .job-card {
+            transition: transform 0.2s;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .salary-badge {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .deadline-alert {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <h1 class="text-center mb-5 display-4">All Available Jobs</h1>
+    
+    <div class="row">
+        {% if jobs|length > 0 %}
+            {% for job in jobs %}
+            <div class="col-12 mb-4">
+                <div class="card job-card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="h4 mb-0">{{ job.jobTitle }}</h2>
+                                {% if job.eventTitle %}
+                                <p class="mb-0 text-muted mt-1">
+                                    <i class="bi bi-calendar-event"></i> {{ job.eventTitle }}
+                                </p>
+                                {% endif %}
+                            </div>
+                            <span class="salary-badge">
+                                {{ job.currency }} {{ job.minSalary }} - {{ job.currency }} {{ job.maxSalary }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="mb-3">Job Details</h5>
+                                <div class="row mb-4">
+                                    <div class="col-6">
+                                        <p class="mb-2">
+                                            <i class="bi bi-geo-alt"></i> <strong>Location:</strong><br>
+                                            {{ job.jobLocation }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <i class="bi bi-clock-history"></i> <strong>Type:</strong><br>
+                                            {{ job.employmentType }}
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="mb-2">
+                                            <i class="bi bi-person"></i> <strong>Recruiter:</strong><br>
+                                            {{ job.recruiterName }}
+                                        </p>
+                                        <p class="mb-0">
+                                            <i class="bi bi-envelope"></i> <strong>Contact:</strong><br>
+                                            {{ job.recruiterEmail }}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <h5 class="mb-3">Description</h5>
+                                <p class="card-text">{{ job.jobDescreption }}</p>
+                            </div>
+                            
+                            <div class="col-md-4 border-start">
+                                <div class="ps-md-3">
+                                    <h5 class="mb-3">Key Information</h5>
+                                    {% if job.applicationDeadLine %}
+                                    <div class="deadline-alert mb-3">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        Application Deadline:<br>
+                                        <strong>{{ job.applicationDeadLine }}</strong>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="mb-3">
+                                        <p class="mb-1">
+                                            <i class="bi bi-calendar-plus"></i> Posted: 
+                                            {% if job.createdAt %}
+                                                {{ job.createdAt }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary btn-lg">
+                                            <i class="bi bi-send"></i> Apply Now
+                                        </button>
+                                        <button class="btn btn-outline-secondary">
+                                            <i class="bi bi-share"></i> Share Job
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-warning text-center py-4">
+                    <h2 class="h4 mb-3"><i class="bi bi-exclamation-circle"></i> No Jobs Available</h2>
+                    <p class="mb-0">Check back later for new opportunities!</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
+
+<h1>🔥 Job Feed Works!</h1>
+
+<ul>
+    {% for job in jobs %}
+        <li>{{ job.jobTitle }}</li>
+    {% else %}
+        <li>No jobs found.</li>
+    {% endfor %}
+</ul>
+
+================
+File: templates/organizer/organizer.html.twig
+================
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello OrganizerController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code><a href="{{ 'C:/Users/user/PiSymfony/src/Controller/OrganizerController.php'|file_link(0) }}">src/Controller/OrganizerController.php</a></code></li>
+        <li>Your template at <code><a href="{{ 'C:/Users/user/PiSymfony/templates/organizer/index.html.twig'|file_link(0) }}">templates/organizer/index.html.twig</a></code></li>
+    </ul>
+</div>
+{% endblock %}
+
+================
+File: templates/profile/profile.html.twig
+================
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ProfileController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code><a href="{{ 'C:/Users/user/PiSymfony/src/Controller/ProfileController.php'|file_link(0) }}">src/Controller/ProfileController.php</a></code></li>
+        <li>Your template at <code><a href="{{ 'C:/Users/user/PiSymfony/templates/profile/index.html.twig'|file_link(0) }}">templates/profile/index.html.twig</a></code></li>
+    </ul>
+</div>
+{% endblock %}
+
+================
+File: templates/social/social.html.twig
+================
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello SocialController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code><a href="{{ 'C:/Users/user/PiSymfony/src/Controller/SocialController.php'|file_link(0) }}">src/Controller/SocialController.php</a></code></li>
+        <li>Your template at <code><a href="{{ 'C:/Users/user/PiSymfony/templates/social/index.html.twig'|file_link(0) }}">templates/social/index.html.twig</a></code></li>
+    </ul>
+</div>
+{% endblock %}
+
+================
+File: tests/bootstrap.php
+================
+<?php
+
+use Symfony\Component\Dotenv\Dotenv;
+
+require dirname(__DIR__).'/vendor/autoload.php';
+
+if (method_exists(Dotenv::class, 'bootEnv')) {
+    (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
+}
+
+
+
+================================================================
+End of Codebase
+================================================================

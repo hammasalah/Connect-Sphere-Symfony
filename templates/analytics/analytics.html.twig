@@ -1,0 +1,381 @@
+{# {% extends 'base.html.twig' %} #} {# Uncomment this if you create and use a base.html.twig file #}
+
+
+{% block stylesheets %}
+    {# Stylesheets from your original analytics page #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    {# Added for header/footer icons and font #}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* CSS Variables for header/footer (ensure these are defined if coming from a global scope) */
+        :root {
+            --theme-primary-pink: #E83E8C;
+            --theme-text-dark: #343A40;
+            --theme-border-color: #DEE2E6;
+            --body-font: 'Poppins', sans-serif;
+        }
+
+        body {
+            font-family: var(--body-font);
+            display: flex; /* For sticky footer */
+            flex-direction: column; /* For sticky footer */
+            min-height: 100vh; /* For sticky footer */
+            margin: 0; /* Basic reset */
+        }
+
+        .page-content-wrapper { /* Wrapper for content between header and footer */
+            flex: 1; /* Allows footer to stick to bottom */
+        }
+
+        /* --- Header Styles (from your provided CSS) --- */
+        .header {
+           background: #fff;
+           box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+           padding: .8rem 1rem;
+           border-bottom: 1px solid var(--theme-border-color);
+        }
+        .header .nav-container {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           max-width: 1140px;
+           margin: 0 auto;
+           padding: 0 15px;
+        }
+        .header .logo-img {
+           height: 50px; /* Adjusted for proportion */
+        }
+         .header .logo a span {
+            vertical-align: middle;
+        }
+        .header .nav-links {
+           display: flex;
+           align-items: center;
+           gap: 1.5rem;
+        }
+        .header .nav-link {
+           font-weight: 500;
+           transition: color .2s;
+           color: var(--theme-text-dark);
+           text-decoration: none;
+           padding: 0.5rem 0;
+        }
+        .header .nav-link:hover {
+           color: var(--theme-primary-pink);
+           text-decoration: none;
+        }
+        .header .contact-btn {
+           background: var(--theme-primary-pink);
+           color: white !important;
+           padding: .5rem 1.2rem;
+           border-radius: 20px;
+           font-weight: 500;
+           text-decoration: none;
+           transition: background .2s;
+        }
+        .header .contact-btn:hover {
+           background: #d0367c;
+           color: white !important;
+        }
+
+        /* --- Footer Styles (from your provided CSS) --- */
+        .site-footer {
+           background: #343a40;
+           color: rgba(255,255,255,.75);
+           padding: 3rem 1rem 1.5rem;
+           margin-top: auto; /* For sticky footer with flexbox */
+        }
+        .site-footer .footer-content {
+           display: flex;
+           flex-wrap: wrap;
+           justify-content: space-between;
+           gap: 2rem;
+           max-width: 1140px;
+           margin: 0 auto;
+           padding: 0 15px;
+        }
+        .site-footer .footer-column {
+           flex: 1 1 200px; /* Allow columns to grow/shrink, base width 200px */
+        }
+        .site-footer .footer-column h4 {
+           color: #fff;
+           margin-bottom: 1rem;
+           font-weight: 600;
+           border-bottom: 2px solid var(--theme-primary-pink);
+           display: inline-block;
+           padding-bottom: .5rem;
+        }
+        .site-footer .footer-column ul { list-style: none; padding: 0; }
+        .site-footer .footer-column ul li { margin-bottom: .6rem; }
+        .site-footer .footer-column ul li a { color: rgba(255,255,255,.75); transition: color .2s; text-decoration: none; }
+        .site-footer .footer-column ul li a:hover { color: var(--theme-primary-pink); text-decoration: none; }
+        .site-footer .footer-contact i { margin-right: .5rem; color: var(--theme-primary-pink); }
+        .site-footer .footer-social-icons a { color: rgba(255,255,255,.75); margin-right: 1rem; font-size: 1.5rem; transition: color .2s; text-decoration: none; }
+        .site-footer .footer-social-icons a:hover { color: var(--theme-primary-pink); text-decoration: none; }
+        .site-footer .footer-bottom { text-align: center; margin-top: 2rem; font-size: .85rem; color: rgba(255,255,255,.55); border-top: 1px solid #495057; padding-top: 1rem; max-width: 1140px; margin-left: auto; margin-right: auto;}
+
+
+        /* Styles from your original analytics page */
+        .chart-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 30px auto;
+            /* min-height is important if canvas might not render immediately or if it's empty */
+            min-height: 405px; /* Give it some space */
+        }
+
+        #averageAgeChart,
+        #genderChart {
+            width: 100% !important; /* Chart.js needs !important for canvas dimensions sometimes */
+            height: 400px !important;
+            background-color: #f8f9fa; /* Light bg to see if canvas is there */
+        }
+
+        /* Responsive adjustments from your general CSS */
+        @media (max-width: 768px) {
+           .header .nav-container {
+               flex-direction: column;
+               align-items: flex-start;
+           }
+           .header .nav-links {
+               margin-top: 1rem;
+               flex-direction: column;
+               align-items: flex-start;
+               width: 100%;
+           }
+           .header .nav-link, .header .contact-btn {
+               padding: 0.5rem;
+               width: 100%;
+               text-align: left;
+           }
+           .header .contact-btn { margin-top: 0.5rem; }
+
+           .site-footer .footer-content {
+               flex-direction: column;
+               align-items: center;
+               text-align: center;
+           }
+           .site-footer .footer-column { min-width: 100%; margin-bottom: 1rem; }
+           .site-footer .footer-column h4 { display: block; }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {# --- HEADER --- #}
+    <header class="header">
+        <nav class="nav-container">
+          <div class="logo">
+            <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+              <img src="{{ asset('images/logo.png') }}" alt="Logo ConnectSphere" class="logo-img">
+              <span style="font-weight:bold;font-size:1.5rem;color:black;margin-left:10px;">ConnectSphere</span>
+            </a>
+          </div>
+         <div class="nav-links">
+        <a href="{{ path('app_events') }}" class="nav-link">Events</a>
+        <a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
+        <a href="{{ path('app_analytics') }}" class="nav-link">Analytics</a>
+        <a href="{{ path('app_groups') }}" class="nav-link">Groups</a>
+        <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+        <a href="{{ path('app_profile') }}" class="nav-link">Profile</a>
+        <a href="{{ path('app_social') }}" class="nav-link">Social</a>
+        </nav>
+    </header>
+
+    {# --- Main Content Area --- #}
+    <div class="page-content-wrapper">
+        {# This is your original analytics page content #}
+        <div class="container mt-5">
+            <h2 class="text-center mb-4">📈 Moyenne d’âge par événement</h2>
+
+            {% if eventAverages is empty %}
+                <div class="alert alert-info">Aucun événement ou participant trouvé.</div>
+            {% else %}
+                <!-- 🎯 Line Chart -->
+                <div class="chart-container">
+                    <canvas id="averageAgeChart"></canvas>
+                </div>
+
+                <!-- 🧾 Average Age Table -->
+                <table class="table table-striped mt-5">
+                    <thead>
+                        <tr>
+                            <th>Événement</th>
+                            <th>Âge moyen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in eventAverages %}
+                            <tr>
+                                <td>{{ item.event.name }}</td>
+                                <td>{{ item.average_age|round(1) }}</td> {# Added rounding from previous suggestion #}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            <!-- 🕽 Dropdown for Gender Chart -->
+            {% if events is defined and events is not empty %}
+                <form method="get" class="my-5 text-center">
+                    <label for="event_id" class="form-label fw-bold">Choisir un événement :</label>
+                    <select name="event_id" id="event_id" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
+                        <option value="">-- Sélectionner --</option> {# Added a default empty option #}
+                        {% for event in events %}
+                            <option value="{{ event.id }}" {% if selectedEventId is defined and event.id == selectedEventId %}selected{% endif %}>
+                                {{ event.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            {% endif %}
+
+
+            <!-- 👥 Gender Bar Chart -->
+            {# Only render canvas if an event is selected AND there is gender data for it #}
+            {% if selectedEventId is defined and selectedEventId is not null and genderData is defined and genderData is not empty %}
+                 <div class="chart-container">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            {% elseif selectedEventId is defined and selectedEventId is not null %}
+                <div class="alert alert-info text-center">Aucune donnée de genre à afficher pour l'événement "{{ selectedEventName|default('sélectionné') }}".</div>
+            {% elseif events is defined and events is not empty %}
+                {# Prompt to select an event if dropdown is visible but nothing selected #}
+                <div class="alert alert-info text-center">Sélectionnez un événement ci-dessus pour voir la répartition par genre.</div>
+            {% endif %}
+        </div>
+    </div> {# End of page-content-wrapper #}
+
+
+    {# --- FOOTER --- #}
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>ConnectSphere</h4>
+                <p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p>
+            </div>
+            <div class="footer-column">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{{ path('app_home') }}">Home</a></li>
+                    <li><a href="{{ path('app_events') }}">Events</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-column footer-contact">
+                <h4>Contact Us</h4>
+                <p><i class="fas fa-phone"></i> <a href="tel:+21692160411">+216 92 160 411</a></p>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p>
+            </div>
+            <div class="footer-column">
+                <h4>Follow Us</h4>
+                <div class="footer-social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
+    </footer>
+{% endblock %}
+
+{% block javascripts %}
+    {# Chart.js library from your original analytics page #}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    {# Script content from your original analytics page, with checks for element existence #}
+    {% if eventAverages is defined and eventAverages is not empty %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ageCtx = document.getElementById('averageAgeChart');
+        if (ageCtx) { // Check if the canvas element exists
+            new Chart(ageCtx, {
+                type: 'line',
+                data: {
+                    labels: {{ eventAverages|map(e => e.event.name)|json_encode|raw }},
+                    datasets: [{
+                        label: 'Âge moyen des participants',
+                        data: {{ eventAverages|map(e => e.average_age)|json_encode|raw }},
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: 'rgba(255, 99, 132, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Important for custom height
+                    scales: {
+                        y: {
+                            beginAtZero: false, // Age average doesn't need to start at 0
+                            ticks: {
+                                precision: 1, // Allow for one decimal place
+                                callback: function(value) { return value.toFixed(1); }
+                            },
+                            title: { display: true, text: 'Âge moyen' }
+                        },
+                        x: { title: { display: true, text: 'Événements' } }
+                    },
+                    plugins: {
+                        title: { display: true, text: 'Moyenne d’âge par événement' }
+                    }
+                }
+            });
+        }
+
+        const genderCtx = document.getElementById('genderChart');
+        {# Only initialize gender chart if its canvas exists (i.e., an event is selected and has data) #}
+        {% if selectedEventId is defined and selectedEventId is not null and genderData is defined and genderData is not empty %}
+            if (genderCtx) { // Check if the canvas element exists
+                new Chart(genderCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Hommes', 'Femmes'],
+                        datasets: [{
+                            label: 'Participants',
+                            data: [{{ genderData.male ?? 0 }}, {{ genderData.female ?? 0 }}], // Use null coalescing
+                            backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+                            borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Important for custom height
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    precision: 0,
+                                    callback: function(value) { return Number.isInteger(value) ? value : null; }
+                                },
+                                title: { display: true, text: 'Nombre de Participants' }
+                            },
+                            x: { title: { display: true, text: 'Genre' } }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            title: {
+                                display: true,
+                                text: 'Répartition par genre pour : {{ selectedEventName|default("Événement sélectionné")|escape('js') }}'
+                            }
+                        }
+                    }
+                });
+            }
+        {% endif %}
+    });
+    </script>
+    {% endif %}
+{% endblock %}

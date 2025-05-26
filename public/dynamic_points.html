@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversion Dynamique de Points</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #F5F5FF;
+            color: #1F2937;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #6B46C1;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        
+        .info-card {
+            background: linear-gradient(135deg, #7C3AED, #A855F7);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
+        }
+        
+        .info-card p {
+            margin: 10px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background-color: #F9FAFB;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card h3 {
+            margin-top: 0;
+            color: #6B46C1;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1F2937;
+            margin: 10px 0;
+        }
+        
+        .conversion-form {
+            background-color: #F9FAFB;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .conversion-form h2 {
+            margin-top: 0;
+            color: #6B46C1;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #4B5563;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #7C3AED;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #7C3AED, #A855F7);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+        
+        .result-section {
+            margin-top: 25px;
+            display: none;
+        }
+        
+        .result-card {
+            background-color: #F0FDF4;
+            border: 1px solid #86EFAC;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .result-card.error {
+            background-color: #FEF2F2;
+            border-color: #FCA5A5;
+        }
+        
+        .result-card h3 {
+            margin-top: 0;
+            color: #15803D;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .result-card.error h3 {
+            color: #B91C1C;
+        }
+        
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .detail-item {
+            background-color: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .detail-item h4 {
+            margin: 0 0 5px 0;
+            color: #4B5563;
+            font-size: 14px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1F2937;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #7C3AED;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #6B46C1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background-color: #D1FAE5;
+            color: #065F46;
+            border-left: 4px solid #10B981;
+        }
+        
+        .alert-error {
+            background-color: #FEE2E2;
+            color: #991B1B;
+            border-left: 4px solid #EF4444;
+        }
+        
+        .currency-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .currency-tnd {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+        }
+        
+        .currency-eur {
+            background-color: rgba(79, 70, 229, 0.2);
+            color: #4F46E5;
+        }
+        
+        .currency-usd {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Conversion Dynamique de Points</h1>
+        
+        <div class="info-card">
+            <p><strong>Taux de conversion:</strong> 1 point = 0.325 TND</p>
+            <p><strong>Équivalences:</strong> 1 TND = 0.29 EUR = 0.32 USD</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Points Disponibles</h3>
+                <div class="stat-value" id="available-points">--</div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Argent Total</h3>
+                <div class="stat-value" id="total-money">--</div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Conversions Effectuées</h3>
+                <div class="stat-value" id="conversion-count">--</div>
+            </div>
+        </div>
+        
+        <div class="conversion-form">
+            <h2>Convertir des Points en Argent</h2>
+            
+            <form id="convert-form">
+                <input type="hidden" id="user-id" value="1">
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="points">Points à Convertir</label>
+                        <input type="number" id="points" class="form-control" value="100" min="1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="devise">Devise</label>
+                        <select id="devise" class="form-control" required>
+                            <option value="TND">TND</option>
+                            <option value="EUR">EUR</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="conversion-preview" class="alert alert-success" style="display: none;">
+                    Prévisualisation: <span id="preview-text"></span>
+                </div>
+                
+                <button type="submit" class="btn">Convertir</button>
+            </form>
+            
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Conversion en cours...</p>
+            </div>
+        </div>
+        
+        <div id="result-section" class="result-section">
+            <div id="result-card" class="result-card">
+                <h3 id="result-title">Conversion Réussie!</h3>
+                
+                <div class="result-details">
+                    <div class="detail-item">
+                        <h4>Points Convertis</h4>
+                        <div class="detail-value" id="result-points">--</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <h4>Montant Reçu</h4>
+                        <div class="detail-value">
+                            <span id="result-amount">--</span>
+                            <span class="currency-badge" id="result-currency">TND</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <h4>Points Restants</h4>
+                        <div class="detail-value" id="result-remaining">--</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <h4>Nouvel Argent Total</h4>
+                        <div class="detail-value" id="result-new-money">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <a href="/points/convert" class="back-link">Retour à la page de conversion</a>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Éléments du DOM
+            const form = document.getElementById('convert-form');
+            const pointsInput = document.getElementById('points');
+            const deviseSelect = document.getElementById('devise');
+            const userIdInput = document.getElementById('user-id');
+            const loadingDiv = document.querySelector('.loading');
+            const resultSection = document.getElementById('result-section');
+            const resultCard = document.getElementById('result-card');
+            const resultTitle = document.getElementById('result-title');
+            const resultPoints = document.getElementById('result-points');
+            const resultAmount = document.getElementById('result-amount');
+            const resultCurrency = document.getElementById('result-currency');
+            const resultRemaining = document.getElementById('result-remaining');
+            const resultNewMoney = document.getElementById('result-new-money');
+            const conversionPreview = document.getElementById('conversion-preview');
+            const previewText = document.getElementById('preview-text');
+            
+            // Charger les données utilisateur
+            loadUserData();
+            
+            // Prévisualisation de la conversion
+            pointsInput.addEventListener('input', updatePreview);
+            deviseSelect.addEventListener('change', updatePreview);
+            
+            // Mise à jour de la prévisualisation
+            function updatePreview() {
+                const points = parseInt(pointsInput.value) || 0;
+                const devise = deviseSelect.value;
+                
+                if (points <= 0) {
+                    conversionPreview.style.display = 'none';
+                    return;
+                }
+                
+                // Calculer le montant en TND (1 point = 0.325 TND)
+                const montantTND = points * 0.325;
+                
+                // Convertir en devise demandée
+                let montant;
+                switch (devise) {
+                    case 'EUR':
+                        montant = (montantTND * 0.29).toFixed(2); // 1 TND = 0.29 EUR
+                        break;
+                    case 'USD':
+                        montant = (montantTND * 0.32).toFixed(2); // 1 TND = 0.32 USD
+                        break;
+                    default:
+                        montant = montantTND.toFixed(2);
+                }
+                
+                previewText.textContent = `${points} points = ${montant} ${devise}`;
+                conversionPreview.style.display = 'block';
+            }
+            
+            // Charger les données utilisateur
+            function loadUserData() {
+                // Simuler le chargement des données (à remplacer par un appel AJAX réel)
+                document.getElementById('available-points').textContent = '3800';
+                document.getElementById('total-money').textContent = '705.24';
+                document.getElementById('conversion-count').textContent = '12';
+            }
+            
+            // Soumission du formulaire
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const points = parseInt(pointsInput.value);
+                const devise = deviseSelect.value;
+                const userId = userIdInput.value;
+                
+                if (points <= 0) {
+                    showError('Le nombre de points doit être supérieur à 0.');
+                    return;
+                }
+                
+                // Afficher le chargement
+                loadingDiv.style.display = 'block';
+                resultSection.style.display = 'none';
+                
+                // Appel AJAX pour la conversion
+                const formData = new FormData();
+                formData.append('user_id', userId);
+                formData.append('points', points);
+                formData.append('devise', devise);
+                
+                fetch('dynamic_convert.php', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadingDiv.style.display = 'none';
+                    
+                    if (data.success) {
+                        // Afficher le résultat de la conversion
+                        resultCard.classList.remove('error');
+                        resultTitle.textContent = 'Conversion Réussie!';
+                        resultTitle.style.color = '#15803D';
+                        
+                        resultPoints.textContent = data.data.points_convertis;
+                        resultAmount.textContent = data.data.montant;
+                        resultCurrency.textContent = data.data.devise;
+                        resultCurrency.className = 'currency-badge currency-' + data.data.devise.toLowerCase();
+                        resultRemaining.textContent = data.data.new_points;
+                        resultNewMoney.textContent = data.data.new_money;
+                        
+                        // Mettre à jour les statistiques
+                        document.getElementById('available-points').textContent = data.data.new_points;
+                        document.getElementById('total-money').textContent = data.data.new_money;
+                        
+                        // Incrémenter le compteur de conversions
+                        const convCount = parseInt(document.getElementById('conversion-count').textContent) || 0;
+                        document.getElementById('conversion-count').textContent = convCount + 1;
+                    } else {
+                        // Afficher l'erreur
+                        resultCard.classList.add('error');
+                        resultTitle.textContent = 'Erreur de Conversion';
+                        resultTitle.style.color = '#B91C1C';
+                        
+                        // Afficher le message d'erreur
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'alert alert-error';
+                        errorDiv.textContent = data.message;
+                        
+                        resultCard.innerHTML = '';
+                        resultCard.appendChild(resultTitle);
+                        resultCard.appendChild(errorDiv);
+                    }
+                    
+                    resultSection.style.display = 'block';
+                })
+                .catch(error => {
+                    loadingDiv.style.display = 'none';
+                    showError('Erreur de communication avec le serveur: ' + error.message);
+                });
+            });
+            
+            // Afficher une erreur
+            function showError(message) {
+                resultCard.classList.add('error');
+                resultTitle.textContent = 'Erreur de Conversion';
+                resultTitle.style.color = '#B91C1C';
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'alert alert-error';
+                errorDiv.textContent = message;
+                
+                resultCard.innerHTML = '';
+                resultCard.appendChild(resultTitle);
+                resultCard.appendChild(errorDiv);
+                
+                resultSection.style.display = 'block';
+            }
+            
+            // Initialiser la prévisualisation
+            updatePreview();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+
+{% block stylesheets %}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/chatbot.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="chatbot-page-container">
+    <!-- Header from home page - UNCHANGED -->
+    <header class="header">
+        <nav class="nav-container container">
+            <div class="logo">
+                <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:10px;">
+                    <span style="font-weight:bold;font-size:1.5rem;color:black;">ConnectSphere</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="{{ path('app_home') }}" class="nav-link">Home</a>
+                <a href="{{ path('app_events') }}" class="nav-link">Events</a>
+                <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+                <a href="#" class="nav-link">Speakers</a>
+                <a href="#" class="nav-link">Tickets</a>
+                <a href="#" class="nav-link">Blogs</a>
+                <a href="#" class="contact-btn nav-link">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Enhanced Chatbot Content -->
+    <main class="chatbot-main-content">
+        <div class="chatbot-container">
+            <!-- New Chatbot Header -->
+            <div class="chatbot-header">
+                <div class="chatbot-header-left">
+                    <div class="chatbot-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h1 class="chatbot-title">ConnectSphere Assistant</h1>
+                </div>
+                <div class="chatbot-header-right">
+                    <button class="chatbot-header-button" title="Clear chat">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    <button class="chatbot-header-button" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Improved Chat Response Area -->
+            <div id="chatbot-response-area">
+                <!-- Welcome message -->
+                <div class="message bot">
+                    <div class="chatbot-info-panel">
+                        <div class="info-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Welcome to ConnectSphere Assistant!</h4>
+                            <p>I can help you find events, get ticket information, learn about speakers, and more.</p>
+                        </div>
+                    </div>
+                    <p>Bonjour! Comment puis-je vous aider avec ConnectSphere aujourd'hui?</p>
+                    <div class="message-time">Just now</div>
+                    
+                    <!-- Suggested questions -->
+                    <div class="suggestions-container">
+                        <div class="suggestion-chip"><i class="fas fa-calendar-alt"></i> Upcoming events</div>
+                        <div class="suggestion-chip"><i class="fas fa-ticket-alt"></i> Ticket prices</div>
+                        <div class="suggestion-chip"><i class="fas fa-user-tie"></i> Featured speakers</div>
+                        <div class="suggestion-chip"><i class="fas fa-map-marker-alt"></i> Event venues</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Loading indicator with icon -->
+            <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                <i class="fas fa-circle-notch"></i>
+                <span>Thinking...</span>
+            </div>
+            
+            <!-- Error message area -->
+            <div id="error-message-area" class="error-message"></div>
+            
+            <!-- Enhanced Input Area -->
+            <div class="chatbot-input-container">
+                <form id="chatbot-form" class="chatbot-input-area">
+                    <div class="input-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <input type="text" id="chatbot-input" placeholder="Ask me anything about ConnectSphere..." required autocomplete="off">
+                    <div class="input-icon">
+                        <i class="far fa-smile"></i>
+                    </div>
+                    <button type="submit" id="chatbot-send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer from home page - UNCHANGED -->
+    <footer class="site-footer">
+        <div class="footer-content container">
+            <div class="footer-column">
+                <h4>ConnectSphere</h4>
+                <p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p>
+            </div>
+            <div class="footer-column">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{{ path('app_home') }}">Home</a></li>
+                    <li><a href="{{ path('app_events') }}">Events</a></li>
+                    <li><a href="{{ path('app_chatbot') }}">Chatbot</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-column footer-contact">
+                <h4>Contact Us</h4>
+                <p><i class="fas fa-phone"></i><a href="tel:+21692160411">+216 92 160 411</a></p>
+                <p><i class="fas fa-envelope"></i><a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p>
+            </div>
+            <div class="footer-column">
+                <h4>Follow Us</h4>
+                <div class="footer-social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM Loaded. Finding elements...");
+
+            // Core elements
+            const form = document.getElementById('chatbot-form');
+            const inputField = document.getElementById('chatbot-input');
+            const sendButton = document.getElementById('chatbot-send-btn');
+            const responseArea = document.getElementById('chatbot-response-area');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const errorArea = document.getElementById('error-message-area');
+            
+            // New elements
+            const clearChatButton = document.querySelector('.chatbot-header-button[title="Clear chat"]');
+            const suggestionChips = document.querySelectorAll('.suggestion-chip');
+            const emojiButton = document.querySelector('.input-icon .fa-smile');
+            const micButton = document.querySelector('.input-icon .fa-microphone');
+
+            // Element validation with improved logging
+            const elements = {
+                'chatbot-form': form,
+                'chatbot-input': inputField,
+                'chatbot-send-btn': sendButton,
+                'chatbot-response-area': responseArea,
+                'loading-indicator': loadingIndicator,
+                'error-message-area': errorArea
+            };
+
+            let allElementsFound = true;
+            for (const [id, element] of Object.entries(elements)) {
+                if (!element) {
+                    console.error(`ERROR: Could not find element with ID '${id}'`);
+                    allElementsFound = false;
+                } else {
+                    console.log(`Element '${id}' found:`, element);
+                }
+            }
+
+            if (allElementsFound) {
+                console.log("All required elements found. Setting up event listeners...");
+                
+                // Format current time for message timestamps
+                function getCurrentTime() {
+                    const now = new Date();
+                    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+                
+                // Add user message to chat
+                function addUserMessage(message) {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message', 'user');
+                    messageDiv.innerHTML = `
+                        <p>${message}</p>
+                        <div class="message-time">${getCurrentTime()}</div>
+                    `;
+                    responseArea.appendChild(messageDiv);
+                    scrollToBottom();
+                }
+                
+                // Create typing indicator
+                function showTypingIndicator() {
+                    const typingDiv = document.createElement('div');
+                    typingDiv.classList.add('bot-typing');
+                    typingDiv.id = 'typing-indicator';
+                    
+                    for (let i = 0; i < 3; i++) {
+                        const dot = document.createElement('div');
+                        dot.classList.add('typing-dot');
+                        typingDiv.appendChild(dot);
+                    }
+                    
+                    responseArea.appendChild(typingDiv);
+                    scrollToBottom();
+                }
+                
+                // Remove typing indicator
+                function removeTypingIndicator() {
+                    const typingIndicator = document.getElementById('typing-indicator');
+                    if (typingIndicator) {
+                        typingIndicator.remove();
+                    }
+                }
+                
+                // Scroll chat to bottom
+                function scrollToBottom() {
+                    responseArea.scrollTop = responseArea.scrollHeight;
+                }
+                
+                // Show error with animation
+                function showError(message) {
+                    errorArea.textContent = `⚠️ ${message}`;
+                    errorArea.style.display = 'block';
+                    // Reset animation to trigger it again
+                    errorArea.style.animation = 'none';
+                    errorArea.offsetHeight; // Trigger reflow
+                    errorArea.style.animation = 'shake 0.5s';
+                    scrollToBottom();
+                    console.log("Displayed error message:", message);
+                }
+                
+                // Submit handler with enhanced UI feedback
+                form.addEventListener('submit', async (event) => {
+                    console.log("Submit event listener triggered!");
+                    event.preventDefault();
+                    
+                    const userPrompt = inputField.value.trim();
+                    console.log("User prompt captured:", userPrompt);
+                    if (!userPrompt) {
+                        console.log("Prompt is empty, exiting listener.");
+                        return;
+                    }
+                    
+                    // Clear input and disable elements
+                    inputField.value = '';
+                    sendButton.disabled = true;
+                    inputField.disabled = true;
+                    errorArea.style.display = 'none';
+                    
+                    // Add user message to chat
+                    addUserMessage(userPrompt);
+                    
+                    // Show typing indicator instead of loading indicator
+                    showTypingIndicator();
+                    
+                    try {
+                        console.log("Sending fetch request to /api/chatbot/ask...");
+                        const response = await fetch("{{ path('api_chatbot_ask') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/x-ndjson'
+                            },
+                            body: JSON.stringify({ prompt: userPrompt })
+                        });
+                        
+                        console.log("Fetch response received. Status:", response.status, "Ok:", response.ok);
+                        
+                        if (!response.ok) {
+                            let errorMsg = `Server Error: ${response.status} ${response.statusText}`;
+                            try {
+                                const errorData = await response.json();
+                                errorMsg = errorData.error || errorMsg;
+                                console.log("Parsed error response from server:", errorData);
+                            } catch(e) {
+                                console.log("Could not parse error response as JSON.");
+                            }
+                            throw new Error(errorMsg);
+                        }
+                        
+                        if (!response.body) {
+                            throw new Error('Response body is missing, cannot read stream.');
+                        }
+                        
+                        console.log("Starting to process response stream...");
+                        const reader = response.body.getReader();
+                        const decoder = new TextDecoder();
+                        let buffer = '';
+                        
+                        // Remove typing indicator before showing actual response
+                        removeTypingIndicator();
+                        
+                        let currentBotMessageDiv = document.createElement('div');
+                        currentBotMessageDiv.classList.add('message', 'bot');
+                        responseArea.appendChild(currentBotMessageDiv);
+                        
+                        while (true) {
+                            const { value, done } = await reader.read();
+                            if (done) {
+                                console.log('Response stream finished.');
+                                // Add timestamp to the bot message
+                                const timeDiv = document.createElement('div');
+                                timeDiv.classList.add('message-time');
+                                timeDiv.textContent = getCurrentTime();
+                                currentBotMessageDiv.appendChild(timeDiv);
+                                break;
+                            }
+                            
+                            buffer += decoder.decode(value, { stream: true });
+                            let lines = buffer.split('\n');
+                            buffer = lines.pop();
+                            
+                            lines.forEach(line => {
+                                if (line.trim() === '') return;
+                                console.log("Processing received line:", line);
+                                try {
+                                    const data = JSON.parse(line);
+                                    if (data.html) {
+                                        currentBotMessageDiv.innerHTML += data.html;
+                                        scrollToBottom();
+                                    } else if (data.error) {
+                                        console.error('Received error from backend stream:', data.error);
+                                        showError(data.error);
+                                    } else if (data.done) {
+                                        console.log('Received done signal from backend stream.');
+                                    }
+                                } catch (e) {
+                                    console.error('Error parsing JSON line:', e, 'Received line:', line);
+                                }
+                            });
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error during fetch or streaming:', error);
+                        removeTypingIndicator();
+                        showError(error.message || 'An unexpected error occurred.');
+                    } finally {
+                        console.log("Fetch process finished (finally block).");
+                        loadingIndicator.style.display = 'none';
+                        sendButton.disabled = false;
+                        inputField.disabled = false;
+                        inputField.focus();
+                        console.log("UI Reset: Button/input enabled, loading hidden.");
+                    }
+                });
+                
+                // Event listener for suggestion chips
+                suggestionChips.forEach(chip => {
+                    chip.addEventListener('click', () => {
+                        const chipText = chip.textContent.trim();
+                        inputField.value = chipText;
+                        // Trigger the submit event
+                        const submitEvent = new Event('submit');
+                        form.dispatchEvent(submitEvent);
+                    });
+                });
+                
+                // Event listener for clear chat button
+                if (clearChatButton) {
+                    clearChatButton.addEventListener('click', () => {
+                        // Keep only the welcome message (first child)
+                        while (responseArea.childNodes.length > 1) {
+                            responseArea.removeChild(responseArea.lastChild);
+                        }
+                    });
+                }
+                
+                // Emoji button (just for show in this demo)
+                if (emojiButton) {
+                    emojiButton.addEventListener('click', () => {
+                        alert('Emoji picker would open here!');
+                    });
+                }
+                
+                // Microphone button (just for show in this demo)
+                if (micButton) {
+                    micButton.addEventListener('click', () => {
+                        alert('Voice input would activate here!');
+                    });
+                }
+                
+                // Focus the input field on page load
+                inputField.focus();
+                
+            } else {
+                console.error("ERROR: One or more required elements were not found. Cannot initialize chatbot functionality.");
+            }
+        });
+    </script>
+{% endblock %}
+

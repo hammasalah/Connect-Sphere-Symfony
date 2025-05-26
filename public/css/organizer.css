@@ -1,0 +1,400 @@
+/* public/css/organizer.css */
+
+/* This file assumes events_page.css is loaded first and provides :root variables */
+
+/* --- General Body & HTML (using theme variables) --- */
+body, html {
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+    background-color: var(--light-bg, #f8f9fa);
+    color: var(--theme-text-dark, #343A40);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* --- Organizer Page Container (replaces app-container) --- */
+.organizer-page-container {
+    /* This container can be used for overall page padding if needed,
+       but main content padding is handled by .dashboard-container for now.
+       It no longer needs flex properties related to a sidebar. */
+    padding-top: 20px; /* Add some space below the fixed header */
+    padding-bottom: 20px;
+}
+
+
+/* --- Main Content Area --- */
+.main-content {
+    /* No longer needs margin-left for sidebar */
+    padding: 0; /* Padding will be handled by .dashboard-container or other children */
+    background-color: var(--light-bg, #f8f9fa); /* Consistent background */
+    font-family: var(--body-font, 'Poppins', sans-serif);
+    width: 100%; /* Takes full width available */
+}
+
+.dashboard-container {
+    /* max-width: 1140px; / / Previous value (or similar) */
+    max-width: 1320px; /* INCREASED VALUE - Adjust as needed */
+    margin: 0 auto 20px auto; /* Centered, with some bottom margin */
+    background-color: #ffffff;
+    border-radius: var(--border-radius, 10px);
+    box-shadow: var(--card-shadow, 0 4px 8px rgba(0,0,0,0.06));
+    padding: 25px 30px; /* Padding remains, content area increases */
+    font-family: var(--body-font, 'Poppins', sans-serif);
+}
+
+/* --- Active Header Link Styling (add to events_page.css or here) --- */
+.header .nav-links .nav-link.active-header-link {
+    color: var(--theme-primary-pink, #E83E8C); /* Or your primary active color */
+    font-weight: 700; /* Bold for active link */
+    /* Add a bottom border or other indicator if desired */
+    /* border-bottom: 2px solid var(--theme-primary-pink, #E83E8C); */
+}
+
+
+/* --- Headings (Copied from previous themed CSS, ensure consistency) --- */
+h1.dashboard-page-title {
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    color: var(--primary-color, #1c2b5d) !important;
+    margin: 0 0 25px 0 !important;
+    position: relative;
+    padding-bottom: 10px !important;
+}
+
+h1.dashboard-page-title::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 50px !important;
+    height: 3px !important;
+    background: var(--secondary-color, #d54d67) !important;
+    border-radius: 3px !important;
+}
+
+.section-header {
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: var(--primary-color, #1c2b5d) !important;
+    margin: 30px 0 20px 0 !important;
+    padding-bottom: 8px !important;
+    border-bottom: 2px solid var(--theme-border-color, #DEE2E6) !important;
+}
+
+/* --- Table Navigation Buttons --- */
+.table-nav-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--theme-border-color, #DEE2E6);
+}
+
+.btn-dashboard-nav {
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+    padding: 8px 18px !important;
+    border-radius: 6px !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    background-color: #e9ecef !important;
+    color: #495057 !important;
+    border: 1px solid #ced4da !important;
+    cursor: pointer;
+    transition: var(--transition-fast, 0.2s ease) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+}
+
+.btn-dashboard-nav:hover {
+    background-color: #ced4da !important;
+    color: var(--primary-color, #1c2b5d) !important;
+    border-color: #adb5bd !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-dashboard-nav.active {
+    background-color: var(--primary-color, #1c2b5d) !important;
+    color: white !important;
+    border-color: var(--primary-color, #1c2b5d) !important;
+    font-weight: 600 !important;
+    box-shadow: 0 3px 6px rgba(28, 43, 93, 0.2) !important;
+}
+
+.table-section {
+    display: none;
+    animation: fadeIn 0.5s ease-out;
+    font-family: var(--body-font, 'Poppins', sans-serif);
+}
+
+/* --- Data Table Styling --- */
+.table-container {
+    overflow-x: auto;
+    border: 1px solid var(--theme-border-color, #DEE2E6);
+    border-radius: var(--border-radius, 10px);
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow, 0 4px 8px rgba(0,0,0,0.06));
+    background-color: #fff;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+}
+
+.data-table th,
+.data-table td {
+    padding: 12px 15px !important;
+    text-align: left;
+    border-bottom: 1px solid var(--theme-border-color, #DEE2E6) !important;
+    vertical-align: middle;
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+}
+
+.data-table th {
+    background-color: var(--primary-color, #1c2b5d) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.5px;
+}
+
+.data-table tbody tr:nth-child(even) td {
+    background-color: #fdfdfe;
+}
+
+.data-table tbody tr:hover td {
+    background-color: #f1f3f5;
+}
+
+.data-table td a {
+    color: var(--primary-color, #1c2b5d) !important;
+    text-decoration: none;
+    font-weight: 500;
+}
+.data-table td a:hover {
+    color: var(--primary-hover, #3d5472) !important;
+    text-decoration: underline;
+}
+
+.data-table .actions-cell {
+    white-space: nowrap;
+    text-align: right;
+}
+.data-table .actions-cell form {
+    margin: 0 2px !important;
+}
+
+/* --- Action Buttons in Tables --- */
+.data-table .btn.btn-action,
+.actions-cell .btn {
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+    font-size: 0.85rem !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    border: none !important;
+    transition: var(--transition-fast, 0.2s ease) !important;
+    font-weight: 500 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    text-decoration: none !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+    color: white !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    margin: 2px;
+}
+.data-table .btn.btn-action:hover,
+.actions-cell .btn:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.12) !important;
+}
+
+.btn-edit, .data-table .btn-primary {
+    background-color: var(--primary-color, #1c2b5d) !important;
+}
+.btn-edit:hover, .data-table .btn-primary:hover {
+    background-color: var(--primary-hover, #3d5472) !important;
+}
+
+.btn-delete, .btn-reject, .data-table .btn-danger {
+    background-color: var(--secondary-color, #d54d67) !important;
+}
+.btn-delete:hover, .btn-reject:hover, .data-table .btn-danger:hover {
+    background-color: var(--secondary-hover, #b03c54) !important;
+}
+
+.btn-save, .btn-approve, .data-table .btn-success {
+    background-color: var(--joined-event-color, #20C997) !important;
+}
+.btn-save:hover, .btn-approve:hover, .data-table .btn-success:hover {
+    background-color: var(--joined-event-hover, #16826a) !important;
+}
+.btn-cancel, .data-table .btn-secondary {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+.btn-cancel:hover, .data-table .btn-secondary:hover {
+    background-color: #5a6268 !important;
+}
+
+/* --- Status Badges --- */
+.status-badge {
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+    padding: 4px 10px !important;
+    border-radius: 20px !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    color: white !important;
+    text-transform: capitalize;
+    display: inline-block;
+}
+.status-pending { background-color: #ffc107 !important; color: #333 !important;}
+.status-approved, .status-accepted { background-color: var(--joined-event-color, #20C997) !important; }
+.status-rejected, .status-cancelled { background-color: var(--secondary-color, #d54d67) !important; }
+.status-interviewing { background-color: var(--primary-color, #1c2b5d) !important; }
+
+/* --- Edit Form Rows in Table --- */
+.edit-form-row td {
+    background-color: #f9f9fc !important;
+    padding: 20px !important;
+}
+.dashboard-edit-form {
+    padding: 10px;
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+}
+.dashboard-edit-form div { margin-bottom: 15px; }
+.dashboard-edit-form label {
+    display: block;
+    font-weight: 500 !important;
+    margin-bottom: 5px;
+    color: var(--primary-color, #1c2b5d) !important;
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+}
+.dashboard-edit-form input[type="text"],
+.dashboard-edit-form input[type="number"],
+.dashboard-edit-form input[type="date"],
+.dashboard-edit-form input[type="datetime-local"],
+.dashboard-edit-form select,
+.dashboard-edit-form textarea {
+    width: 100%;
+    font-size: 0.95rem !important;
+    padding: 8px 15px !important;
+    border: 1px solid var(--theme-border-color, #DEE2E6) !important;
+    border-radius: 6px !important;
+    background-color: #fff !important;
+    height: 40px;
+    transition: var(--transition-fast, 0.2s ease) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+}
+.dashboard-edit-form input[type="text"]:focus,
+.dashboard-edit-form input[type="number"]:focus,
+.dashboard-edit-form input[type="date"]:focus,
+.dashboard-edit-form input[type="datetime-local"]:focus,
+.dashboard-edit-form select:focus,
+.dashboard-edit-form textarea:focus {
+    border-color: var(--primary-color, #1c2b5d) !important;
+    box-shadow: 0 0 0 3px rgba(28, 43, 93, 0.15) !important;
+    outline: none !important;
+}
+.dashboard-edit-form textarea { min-height: 80px; height: auto; }
+.dashboard-edit-form .btn-save,
+.dashboard-edit-form .btn-cancel { margin-top: 10px; margin-right: 10px; }
+
+/* --- No Data Message --- */
+.no-data {
+    font-family: var(--body-font, 'Poppins', sans-serif) !important;
+    text-align: center;
+    padding: 2rem !important;
+    color: #6c757d !important;
+    font-size: 1.05rem !important;
+    width: 100%;
+    background: #fff !important;
+    border-radius: var(--border-radius, 10px) !important;
+    box-shadow: var(--card-shadow, 0 4px 8px rgba(0,0,0,0.06)) !important;
+    margin: 20px 0;
+    border: 1px dashed var(--theme-border-color, #DEE2E6) !important;
+}
+.no-data a {
+    color: var(--primary-color, #1c2b5d) !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    position: relative;
+}
+.no-data a::after {
+    content: ''; position: absolute; bottom: -2px; left: 0;
+    width: 100%; height: 2px; background: var(--primary-color, #1c2b5d);
+    transform: scaleX(0); transition: transform 0.3s ease; transform-origin: right;
+}
+.no-data a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+/* --- Responsive Adjustments --- */
+/* Styles for sidebar are removed. Adjustments for header if it becomes too crowded. */
+@media (max-width: 992px) {
+    .header .nav-links {
+        /* This is from events_page.css. You might need a mobile menu for the main header.
+           If the header becomes too crowded, these links might need to hide
+           and be accessible via a hamburger menu for the main header.
+           For now, they will wrap if 'gap' and 'flex-wrap' allow in events_page.css header style.
+        */
+        gap: 1rem; /* Reduce gap slightly if too many items */
+    }
+     .header .nav-link, .header .contact-btn {
+        font-size: 0.9rem; /* Slightly smaller font for more items */
+        padding: .4rem .8rem; /* Adjust padding if needed */
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container { padding: 15px; }
+    h1.dashboard-page-title { font-size: 1.5rem !important; }
+    .section-header { font-size: 1.3rem !important; }
+
+    /* Responsive table: stack cells */
+    .data-table thead { display: none; }
+    .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
+    .data-table tr {
+        margin-bottom: 15px; border: 1px solid var(--theme-border-color, #DEE2E6);
+        border-radius: var(--border-radius, 10px); overflow: hidden;
+    }
+    .data-table td {
+        text-align: right; padding-left: 50% !important; position: relative;
+        border-bottom: 1px solid var(--theme-border-color, #DEE2E6) !important;
+    }
+    .data-table td:last-child { border-bottom: none; }
+    .data-table td::before {
+        content: attr(data-label); position: absolute; left: 10px;
+        width: calc(50% - 20px); padding-right: 10px; font-weight: 600 !important;
+        text-align: left; color: var(--primary-color, #1c2b5d) !important;
+        font-family: var(--body-font, 'Poppins', sans-serif) !important;
+    }
+    .data-table .actions-cell { text-align: center !important; padding-left: 15px !important; }
+    .data-table .actions-cell::before { display: none; }
+    .data-table .actions-cell .btn,
+    .data-table .actions-cell form .btn {
+        display: block !important; margin: 8px auto !important;
+        width: calc(100% - 30px) !important; max-width: 220px !important;
+    }
+    .data-table .actions-cell form { display: block; margin: 0 auto !important; width: 100%; }
+}
+
+@media (max-width: 576px) {
+    .table-nav-buttons { flex-direction: column; align-items: stretch; }
+    .btn-dashboard-nav { width: 100%; text-align: center; }
+}
+
+/* Ensure the header from events_page.css is responsive.
+   If not, you might need to add specific rules here or in events_page.css
+   for a mobile hamburger menu for the main header. Example: */
+@media (max-width: 992px) { /* Or your chosen breakpoint for header collapse */
+    /* .header .nav-links { display: none; flex-direction: column; ... } */
+    /* .header .nav-links.active { display: flex; ... } */
+    /* .main-header-mobile-toggle { display: block; ... } */
+}

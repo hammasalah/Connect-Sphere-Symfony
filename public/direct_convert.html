@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversion Directe de Points</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #0069d9;
+        }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .quick-links {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .quick-links h3 {
+            margin-bottom: 15px;
+        }
+        
+        .quick-links-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .quick-link {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .quick-link:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Conversion Directe de Points</h1>
+        
+        <form action="/execute_conversion.php" method="get">
+            <div class="form-group">
+                <label for="points">Points à Convertir</label>
+                <input type="number" id="points" name="points" value="100" min="100" step="100" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="devise">Devise</label>
+                <select id="devise" name="devise" required>
+                    <option value="TND">TND</option>
+                    <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                </select>
+            </div>
+            
+            <button type="submit">Convertir</button>
+        </form>
+        
+        <div class="quick-links">
+            <h3>Conversions Rapides</h3>
+            <div class="quick-links-container">
+                <a href="/execute_conversion.php?points=100&devise=TND" class="quick-link">100 points → TND</a>
+                <a href="/execute_conversion.php?points=100&devise=EUR" class="quick-link">100 points → EUR</a>
+                <a href="/execute_conversion.php?points=100&devise=USD" class="quick-link">100 points → USD</a>
+                <a href="/execute_conversion.php?points=200&devise=TND" class="quick-link">200 points → TND</a>
+                <a href="/execute_conversion.php?points=200&devise=EUR" class="quick-link">200 points → EUR</a>
+                <a href="/execute_conversion.php?points=200&devise=USD" class="quick-link">200 points → USD</a>
+            </div>
+        </div>
+        
+        <a href="/points/convert" class="back-link">Retour à la page de conversion</a>
+    </div>
+</body>
+</html>

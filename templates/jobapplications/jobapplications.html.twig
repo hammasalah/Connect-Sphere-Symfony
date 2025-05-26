@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Job Applications{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/organizer.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<!-- Sidebar Toggle Button (Mobile) -->
+<button class="sidebar-toggle" id="sidebarToggle">
+    <i class="fas fa-bars"></i>
+</button>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{{ path('app-root') }}" class="sidebar-logo">
+                <i class="fas fa-briefcase"></i>
+                <span>Maysem</span>
+            </a>
+        </div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{{ path('app-root') }}" class="{{ app.request.get('_route') == '/root' ? 'active' : '' }}">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_organizer') }}" class="{{ app.request.get('_route') == '/organizer' ? 'active' : '' }}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_create_job') }}" class="{{ app.request.get('_route') == '/create/job' ? 'active' : '' }}">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Create Job</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_job_feed') }}" class="{{ app.request.get('_route') == '/job/feed' ? 'active' : '' }}">
+                    <i class="fas fa-list-alt"></i>
+                    <span>Job Feed</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_job_applications') }}" class="active">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Applications</span>
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            &copy; {{ "now"|date("Y") }} Maysem Platform
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="dashboard-container">
+            <h1>Job Applications</h1>
+
+            {% if applications|length > 0 %}
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Job Title</th>
+                                <th>Status</th>
+                                <th>Applied At</th>
+                                <th>Cover Letter</th>
+                                <th>Resume</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in applications %}
+                            <tr>
+                                <td>{{ app.userId.username }}</td>
+                                <td>{{ app.jobId.jobTitle }}</td>
+                                <td>{{ app.status }}</td>
+                                <td>{{ app.appliedAt }}</td>
+                                <td>{{ app.coverLetter }}</td>
+                                <td><a href="{{ asset('uploads/resumes/' ~ app.resumePath) }}" target="_blank">View Resume</a></td>
+                                <td>{{ app.coverRating ?? 'N/A' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="no-data">No applications found.</div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

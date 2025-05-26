@@ -1,0 +1,427 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Profile - Connect Sphere{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# <link rel="stylesheet" href="{{ asset('css/profile.css') }}"> -- CSS will be embedded #}
+
+    {# Added for header/footer icons and font if not in base.html.twig #}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- ROOT CSS Variables (Consistent with other pages) --- */
+        :root {
+            /* Variables for Header/Footer theme & general site theme */
+            --theme-primary-pink: #E83E8C;
+            --theme-primary-pink-hover: #d0367c;
+            --theme-secondary-action: #6c757d;
+            --theme-secondary-action-hover: #5a6268;
+
+            --theme-text-dark: #343A40;
+            --theme-text-light: #6c757d;
+            --theme-text-muted: #8898aa;
+            --theme-border-color: #DEE2E6;
+            --theme-border-color-strong: #ced4da; /* For inputs */
+
+            --pill-radius: 50px;
+            --card-radius: 8px;
+            --input-radius: 6px;
+
+            --card-bg: white;
+            --page-bg: #f8f9fa;
+            --card-header-bg-accent: var(--theme-primary-pink); /* Pink for card headers */
+
+            /* General Variables */
+            --body-font: 'Poppins', sans-serif;
+            --transition-fast: 0.2s ease-in-out;
+            --transition-medium: 0.3s ease;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: var(--body-font);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--page-bg);
+            color: var(--theme-text-dark);
+            line-height: 1.6;
+        }
+        .page-content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header Styles --- */
+        .header { background: var(--card-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: .8rem 1rem; border-bottom: 1px solid var(--theme-border-color); }
+        .header .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1140px; margin: 0 auto; padding: 0 15px; }
+        .header .logo-img { height: 50px; vertical-align: middle; }
+        .header .logo a span { vertical-align: middle; font-weight:bold; font-size:1.5rem; color:var(--theme-text-dark); margin-left:10px; }
+        .header .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+        .header .nav-link { font-weight: 500; transition: color var(--transition-fast); color: var(--theme-text-dark); text-decoration: none; padding: 0.5rem 0; }
+        .header .nav-link:hover, .header .nav-link.active { color: var(--theme-primary-pink); text-decoration: none; }
+        .header .contact-btn { background: var(--theme-primary-pink); color: white !important; padding: .5rem 1.2rem; border-radius: var(--pill-radius); font-weight: 500; text-decoration: none; transition: background-color var(--transition-fast); }
+        .header .contact-btn:hover { background: var(--theme-primary-pink-hover); }
+
+        /* --- Footer Styles --- */
+        .site-footer { background: #343a40; color: rgba(255,255,255,.75); padding: 3rem 1rem 1.5rem; margin-top: auto; }
+        .site-footer .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; max-width: 1140px; margin: 0 auto; padding: 0 15px; }
+        .site-footer .footer-column { flex: 1 1 200px; }
+        .site-footer .footer-column h4 { color: #fff; margin-bottom: 1rem; font-weight: 600; border-bottom: 2px solid var(--theme-primary-pink); display: inline-block; padding-bottom: .5rem; }
+        .site-footer .footer-column ul { list-style: none; padding: 0; }
+        .site-footer .footer-column ul li { margin-bottom: .6rem; }
+        .site-footer .footer-column ul li a { color: rgba(255,255,255,.75); transition: color var(--transition-fast); text-decoration: none; }
+        .site-footer .footer-column ul li a:hover { color: var(--theme-primary-pink); }
+        .site-footer .footer-contact i { margin-right: .5rem; color: var(--theme-primary-pink); }
+        .site-footer .footer-social-icons a { color: rgba(255,255,255,.75); margin-right: 1rem; font-size: 1.5rem; transition: color var(--transition-fast); text-decoration: none; }
+        .site-footer .footer-social-icons a:hover { color: var(--theme-primary-pink); }
+        .site-footer .footer-bottom { text-align: center; margin-top: 2rem; font-size: .85rem; color: rgba(255,255,255,.55); border-top: 1px solid #495057; padding-top: 1rem; max-width: 1140px; margin-left: auto; margin-right: auto;}
+
+        /* --- Profile Edit Page Styles (Adapted from profile.css) --- */
+        .profile-container { /* This class is used in your HTML */
+            max-width: 800px; /* Max width for the form container */
+            margin: 2rem auto;
+            padding: 0 15px;
+            flex-grow: 1;
+        }
+
+        .profile-card { /* This class is used in your HTML */
+            background-color: var(--card-bg);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            border: 1px solid var(--theme-border-color);
+        }
+
+        .profile-card .card-header {
+            background-color: var(--card-header-bg-accent); /* Pink header */
+            color: white;
+            padding: 1.5rem;
+        }
+
+        .profile-card .card-header h3 {
+            font-weight: 600;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .profile-card .card-body {
+            padding: 2rem;
+        }
+
+        /* Form Specific Styles (Adapted from profile.css form section) */
+        form { /* Targeting the form element directly */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Spacing between form groups */
+        }
+
+        .form-group {
+            margin-bottom: 0; /* Gap is handled by parent form flex */
+        }
+
+        .form-row { /* For side-by-side fields like Age and Gender */
+            display: flex;
+            gap: 1.5rem; /* Spacing between items in the row */
+            /* margin: 0 -10px; -- Original from profile.css, replaced by gap */
+            /* margin-bottom: 1.5rem; -- Gap handles this */
+        }
+
+        .form-group.half { /* For items in .form-row */
+            flex: 1; /* Each takes half the space */
+            /* width: 50%; -- Replaced by flex:1 */
+            /* padding: 0 10px; -- Gap handles this */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--theme-text-dark);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="file"],
+        select,
+        textarea { /* Target textarea correctly */
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--theme-border-color-strong);
+            border-radius: var(--input-radius);
+            font-size: 1rem;
+            color: var(--theme-text-dark);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            background-color: var(--card-bg); /* Or a very light gray like #f8f9fa */
+            box-sizing: border-box;
+        }
+        /* Special handling for file input if needed to look more like others */
+        input[type="file"] {
+            padding: 0.6rem 1rem; /* Adjust if it looks too tall */
+        }
+
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        input[type="file"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--theme-primary-pink); /* Pink focus highlight */
+            box-shadow: 0 0 0 0.2rem rgba(232, 62, 140, 0.25); /* Pink glow */
+        }
+        textarea { /* Explicitly target textarea */
+             min-height: 80px; /* Adjust as needed */
+             resize: vertical;
+        }
+
+
+        /* Form Actions (Save, Cancel buttons) */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end; /* Align buttons to the right */
+            gap: 1rem;
+            margin-top: 1.5rem; /* Space above buttons */
+            padding-top: 1.5rem; /* Space from content above, if any */
+            border-top: 1px solid var(--theme-border-color);
+        }
+
+        .form-actions .btn { /* General style for form action buttons */
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--input-radius);
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.95rem;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+        .form-actions .btn i {
+             margin-right: 0.5rem;
+        }
+
+
+        .form-actions .btn-primary { /* "Save Changes" button */
+            background-color: var(--theme-primary-pink);
+            color: white;
+            border-color: var(--theme-primary-pink);
+        }
+        .form-actions .btn-primary:hover {
+            background-color: var(--theme-primary-pink-hover);
+            border-color: var(--theme-primary-pink-hover);
+            transform: translateY(-1px);
+        }
+
+        .form-actions .btn-cancel { /* "Cancel" button */
+            background-color: transparent;
+            color: var(--theme-text-light);
+            border-color: var(--theme-border-color-strong);
+        }
+        .form-actions .btn-cancel:hover {
+            background-color: var(--page-bg); /* Light hover */
+            color: var(--theme-text-dark);
+            border-color: var(--theme-text-muted);
+        }
+
+        /* Image preview style from your original My Profile page */
+        #profilePicturePreview { /* Using a more specific ID for edit page preview */
+            margin-top: 1rem;
+            max-height: 150px; /* Max height for preview */
+            max-width: 150px; /* Max width for preview, can be 100% if you prefer */
+            border-radius: var(--input-radius); /* Match input radius */
+            display: block; /* Changed from none to block to always take space, hide with visibility or opacity */
+            visibility: hidden; /* Initially hidden */
+            opacity: 0;
+            transition: opacity var(--transition-fast), visibility var(--transition-fast);
+            border: 1px solid var(--theme-border-color);
+            object-fit: cover;
+        }
+        #profilePicturePreview.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column; /* Stack age and gender */
+                gap: 1.5rem; /* Keep consistent gap */
+            }
+            .form-group.half {
+                width: 100%; /* Full width when stacked */
+            }
+            .form-actions {
+                flex-direction: column-reverse; /* Stack buttons, primary on bottom */
+                gap: 1rem;
+            }
+            .form-actions .btn {
+                width: 100%;
+            }
+
+            /* Header responsive */
+           .header .nav-container { flex-direction: column; align-items: flex-start; }
+           .header .nav-links { margin-top: 1rem; flex-direction: column; align-items: flex-start; width: 100%; }
+           .header .nav-link, .header .contact-btn { padding: 0.5rem; width: 100%; text-align: left; }
+           .header .contact-btn { margin-top: 0.5rem; }
+           /* Footer responsive */
+           .site-footer .footer-content { flex-direction: column; align-items: center; text-align: center; }
+           .site-footer .footer-column { min-width: 100%; margin-bottom: 1rem; }
+           .site-footer .footer-column h4 { display: block; }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {# --- HEADER --- #}
+    <header class="header">
+        <nav class="nav-container">
+          <div class="logo">
+            <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+              <img src="{{ asset('images/logo.png') }}" alt="Logo ConnectSphere" class="logo-img">
+              <span>ConnectSphere</span>
+            </a>
+          </div>
+          <div class="nav-links">
+            <a href="{{ path('app_home') }}" class="nav-link">Home</a>
+            <a href="{{ path('app_events') }}" class="nav-link">Events</a>
+            <a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
+            <a href="{{ path('app_dashboard') }}" class="nav-link">Dashboard</a>
+            <a href="{{ path('app_groups') }}" class="nav-link">Groups</a>
+            <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+            <a href="{{ path('app_profile') }}" class="nav-link active">Profile</a> {# Profile section is active #}
+            <a href="{{ path('app_logout') }}" class="contact-btn nav-link">Logout</a>
+          </div>
+        </nav>
+    </header>
+
+    {# --- Main Content Area --- #}
+    <div class="page-content-wrapper">
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="card-header">
+                    <h3>Edit Profile</h3>
+                </div>
+                <div class="card-body">
+                    {# Display flash messages if any #}
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" class="form-control" value="{{ user.username }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label for="age">Age</label>
+                                <input type="number" id="age" name="age" class="form-control" value="{{ user.age }}" required min="1">
+                            </div>
+                            <div class="form-group half">
+                                <label for="gender">Gender</label>
+                                <select id="gender" name="gender" class="form-control" required>
+                                    <option value="" disabled {% if user.gender is null or user.gender == '' %}selected{% endif %}>Select gender</option>
+                                    <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                                    <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                                    <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bio">Bio</label>
+                            {# Changed input to textarea for bio #}
+                            <textarea id="bio" name="bio" class="form-control" rows="4" placeholder="Tell us a little about yourself...">{{ profile.bio|default('') }}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profilePictureFile">Profile Picture</label> {# Changed ID and name for clarity #}
+                            <input type="file" id="profilePictureFile" name="profilePictureFile" class="form-control" accept="image/jpeg, image/png, image/gif">
+                            <img id="profilePicturePreview" alt="New Profile Picture Preview" />
+                             {% if profile and profile.profilePicture %}
+                                <p class="mt-2"><small>Current picture: {{ profile.profilePicture }}. Leave empty to keep current.</small></p>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-actions">
+                            <a href="{{ path('app_profile') }}" class="btn btn-cancel">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# --- FOOTER --- #}
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-column"><h4>ConnectSphere</h4><p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p></div>
+            <div class="footer-column"><h4>Quick Links</h4><ul><li><a href="{{ path('app_home') }}">Home</a></li><li><a href="{{ path('app_events') }}">Events</a></li><li><a href="#">About Us</a></li><li><a href="#">Blog</a></li><li><a href="#">Contact</a></li><li><a href="#">Terms of Service</a></li></ul></div>
+            <div class="footer-column footer-contact"><h4>Contact Us</h4><p><i class="fas fa-phone"></i> <a href="tel:+21692160411">+216 92 160 411</a></p><p><i class="fas fa-envelope"></i> <a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p></div>
+            <div class="footer-column"><h4>Follow Us</h4><div class="footer-social-icons"><a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a><a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a><a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a><a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a></div></div>
+        </div>
+        <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
+    </footer>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profilePictureInput = document.getElementById('profilePictureFile');
+            const previewImage = document.getElementById('profilePicturePreview');
+
+            if (profilePictureInput && previewImage) {
+                profilePictureInput.addEventListener('change', function () {
+                    if (this.files && this.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewImage.src = e.target.result;
+                            previewImage.classList.add('visible'); // Use class to show
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    } else {
+                        previewImage.src = ''; // Clear src
+                        previewImage.classList.remove('visible'); // Use class to hide
+                    }
+                });
+            }
+
+            // Dismissible alerts (if Bootstrap JS is loaded)
+            var alertList = document.querySelectorAll('.alert');
+            alertList.forEach(function (alert) {
+              new bootstrap.Alert(alert);
+            });
+        });
+    </script>
+    {# Ensure Bootstrap JS is loaded in base.html.twig for alert dismissal #}
+    {# Example: <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> #}
+{% endblock %}

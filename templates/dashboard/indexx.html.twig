@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+    <div class="dashboard-menu">
+        <div class="user-profile">
+            <div class="avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h2>Welcome, <span class="username">{{ app.session.get('user').username }}</span>!</h2>
+        </div>
+        <ul class="menu-items">
+            <li class="menu-item active" data-content="groups">
+                <a href="{{ path('app_groups') }}">
+                    <i class="fas fa-users"></i>
+                    <span>Groups</span>
+                </a>
+            </li>
+            <li class="menu-item" data-content="profile">
+                <a href="{{ path('app_profile') }}">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="menu-item logout">
+                <a href="{{ path('app_logout') }}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="dashboard-content">
+        <div class="welcome-message">
+            <h1>Your Dashboard</h1>
+            <p>Select an option from the menu to get started.</p>
+            <div class="animated-icons">
+                <div class="icon-circle"><i class="fas fa-users"></i></div>
+                <div class="icon-circle"><i class="fas fa-chart-line"></i></div>
+                <div class="icon-circle"><i class="fas fa-cog"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', function() {
+            document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,398 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Group - Connect Sphere{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# <link rel="stylesheet" href="{{ asset('css/creategroups.css') }}"> -- CSS will be embedded #}
+
+    {# Added for header/footer icons and font if not in base.html.twig #}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- ROOT CSS Variables (Ensure all needed variables are defined here or globally) --- */
+        :root {
+            /* Variables for Header/Footer theme */
+            --theme-primary-pink: #E83E8C;
+            --theme-primary-pink-hover: #d0367c;
+            --theme-text-dark: #343A40;
+            --theme-border-color: #DEE2E6;
+            --pill-radius: 50px; /* For header/footer buttons */
+
+            /* Variables from your creategroups.css (form theme) */
+            --form-primary-accent: #667eea;
+            --form-secondary-accent: #764ba2;
+            --form-focus-shadow-color: rgba(102, 126, 234, 0.2);
+            --form-label-color: #4a5568;
+            --form-input-border-color: #e2e8f0;
+            --form-input-bg: #f8fafc;
+            --form-input-bg-focus: white;
+            --form-gradient: linear-gradient(90deg, var(--form-primary-accent) 0%, var(--form-secondary-accent) 100%);
+
+            /* General Variables */
+            --body-font: 'Poppins', sans-serif;
+            --light-bg-page: #f5f7fa; /* For the overall page background */
+            --card-bg: white; /* For form container */
+            --border-radius-form: 15px; /* From creategroups.css */
+            --border-radius-input: 8px; /* From creategroups.css */
+            --transition-fast: 0.2s ease-in-out;
+            --transition-medium: 0.3s ease;
+        }
+
+        body {
+            font-family: var(--body-font);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--light-bg-page); /* Gradient from creategroups.css now on .groups-container */
+        }
+        .page-content-wrapper {
+            flex: 1;
+            display: flex; /* To center .groups-container if it doesn't take full height */
+            flex-direction: column; /* Ensure children stack */
+        }
+
+        /* --- Header Styles --- */
+        .header { background: var(--card-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: .8rem 1rem; border-bottom: 1px solid var(--theme-border-color); }
+        .header .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1140px; margin: 0 auto; padding: 0 15px; }
+        .header .logo-img { height: 50px; vertical-align: middle; }
+        .header .logo a span { vertical-align: middle; font-weight:bold; font-size:1.5rem; color:var(--theme-text-dark); margin-left:10px; }
+        .header .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+        .header .nav-link { font-weight: 500; transition: color var(--transition-fast); color: var(--theme-text-dark); text-decoration: none; padding: 0.5rem 0; }
+        .header .nav-link:hover, .header .nav-link.active { color: var(--theme-primary-pink); text-decoration: none; }
+        .header .contact-btn { background: var(--theme-primary-pink); color: white !important; padding: .5rem 1.2rem; border-radius: var(--pill-radius); font-weight: 500; text-decoration: none; transition: background-color var(--transition-fast); }
+        .header .contact-btn:hover { background: var(--theme-primary-pink-hover); }
+
+        /* --- Footer Styles --- */
+        .site-footer { background: #343a40; color: rgba(255,255,255,.75); padding: 3rem 1rem 1.5rem; margin-top: auto; /* Pushes to bottom if content is short */ }
+        .site-footer .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; max-width: 1140px; margin: 0 auto; padding: 0 15px; }
+        .site-footer .footer-column { flex: 1 1 200px; }
+        .site-footer .footer-column h4 { color: #fff; margin-bottom: 1rem; font-weight: 600; border-bottom: 2px solid var(--theme-primary-pink); display: inline-block; padding-bottom: .5rem; }
+        .site-footer .footer-column ul { list-style: none; padding: 0; }
+        .site-footer .footer-column ul li { margin-bottom: .6rem; }
+        .site-footer .footer-column ul li a { color: rgba(255,255,255,.75); transition: color var(--transition-fast); text-decoration: none; }
+        .site-footer .footer-column ul li a:hover { color: var(--theme-primary-pink); }
+        .site-footer .footer-contact i { margin-right: .5rem; color: var(--theme-primary-pink); }
+        .site-footer .footer-social-icons a { color: rgba(255,255,255,.75); margin-right: 1rem; font-size: 1.5rem; transition: color var(--transition-fast); text-decoration: none; }
+        .site-footer .footer-social-icons a:hover { color: var(--theme-primary-pink); }
+        .site-footer .footer-bottom { text-align: center; margin-top: 2rem; font-size: .85rem; color: rgba(255,255,255,.55); border-top: 1px solid #495057; padding-top: 1rem; max-width: 1140px; margin-left: auto; margin-right: auto;}
+
+        /* --- creategroups.css Content Starts Here --- */
+        .groups-container { /* Renamed from your CSS to avoid conflict, now used as a wrapper */
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            /* min-height: 100vh; -- Handled by body + page-content-wrapper */
+            padding: 2rem;
+            display: flex; /* To center its child .group-form-outer-wrapper */
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1; /* Takes up available space in .page-content-wrapper */
+        }
+
+        /* Renamed from .group-view-container in your CSS to be specific for form */
+        .group-form-outer-wrapper {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-form);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 700px;
+            animation: fadeInUp 0.6s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden; /* For ::before pseudo-element */
+        }
+
+        .group-form-outer-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: var(--form-gradient);
+        }
+
+        /* Renamed from .groups-title in your CSS to be specific for form page */
+        .create-group-page-title {
+            color: var(--form-label-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .create-group-page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--form-gradient);
+            border-radius: 2px;
+        }
+
+        .group-form { /* This is the <form> element */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            position: relative; /* For potential absolute positioned elements inside */
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--form-label-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-control, .form-control-file { /* Combined for consistency */
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--form-input-border-color);
+            border-radius: var(--border-radius-input);
+            font-size: 1rem;
+            transition: all var(--transition-medium) ease;
+            background-color: var(--form-input-bg);
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+        .form-control-file { /* Specific for file input if needed */
+             padding: 0.6rem 1rem; /* Adjust padding for file input */
+        }
+
+
+        .form-control:focus, .form-control-file:focus {
+            outline: none;
+            border-color: var(--form-primary-accent);
+            box-shadow: 0 0 0 3px var(--form-focus-shadow-color);
+            background-color: var(--form-input-bg-focus);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1rem; /* Reduced margin from original */
+        }
+
+        /* Re-styling form buttons to have a similar feel to header/footer theme where appropriate */
+        .form-actions .group-btn { /* General style for form action buttons */
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius-input); /* Match input radius */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-medium) ease;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.95rem;
+            border: none; /* Removing border by default, add back if needed */
+        }
+
+        .form-actions .group-btn-primary { /* "Create Group" button */
+            background: var(--theme-primary-pink); /* Using header/footer theme pink */
+            color: white;
+        }
+
+        .form-actions .group-btn-primary:hover {
+            background: var(--theme-primary-pink-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(232, 62, 140, 0.3); /* Shadow with pink hue */
+        }
+
+        .form-actions .group-btn-outline { /* "Cancel" button */
+            border: 2px solid var(--theme-border-color); /* Using header/footer border color */
+            color: var(--theme-text-dark); /* Using header/footer text color */
+            background: transparent;
+        }
+
+        .form-actions .group-btn-outline:hover {
+            background: var(--light-bg-page); /* Light hover for cancel */
+            border-color: var(--theme-text-muted);
+            transform: translateY(-2px);
+        }
+
+        /* Animation from creategroups.css */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Floating decoration elements from creategroups.css */
+        .group-form-outer-wrapper::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.1) 0%, rgba(118, 75, 162, 0) 70%);
+            top: -50px;
+            right: -50px;
+            z-index: -1; /* Behind the form */
+        }
+
+        /* Image preview style from original creategroups.html.twig */
+        #preview {
+            margin-top: 1rem;
+            max-height: 200px;
+            max-width: 100%; /* Ensure it doesn't overflow */
+            border-radius: var(--border-radius-input); /* Match input radius */
+            display: none; /* Initially hidden */
+            border: 1px solid var(--form-input-border-color); /* Consistent border */
+            object-fit: cover;
+        }
+
+        /* Responsive adjustments for header/footer and form */
+        @media (max-width: 768px) {
+            /* Form specific responsive from creategroups.css */
+            .group-form-outer-wrapper {
+                padding: 1.5rem;
+                margin: 1rem; /* Add some margin on mobile so it doesn't touch edges */
+            }
+            .create-group-page-title {
+                font-size: 1.8rem;
+            }
+            .form-actions {
+                flex-direction: column-reverse; /* Stack buttons, primary on bottom for better UX */
+            }
+            .form-actions .group-btn {
+                width: 100%; /* Full width buttons on mobile */
+            }
+
+
+            /* Header responsive */
+           .header .nav-container { flex-direction: column; align-items: flex-start; }
+           .header .nav-links { margin-top: 1rem; flex-direction: column; align-items: flex-start; width: 100%; }
+           .header .nav-link, .header .contact-btn { padding: 0.5rem; width: 100%; text-align: left; }
+           .header .contact-btn { margin-top: 0.5rem; }
+           /* Footer responsive */
+           .site-footer .footer-content { flex-direction: column; align-items: center; text-align: center; }
+           .site-footer .footer-column { min-width: 100%; margin-bottom: 1rem; }
+           .site-footer .footer-column h4 { display: block; }
+        }
+        /* --- creategroups.css Content Ends Here --- */
+
+    </style>
+{% endblock %}
+
+{% block body %}
+    {# --- HEADER --- #}
+    <header class="header">
+        <nav class="nav-container">
+          <div class="logo">
+            <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+              <img src="{{ asset('images/logo.png') }}" alt="Logo ConnectSphere" class="logo-img">
+              <span>ConnectSphere</span>
+            </a>
+          </div>
+          <div class="nav-links">
+        <a href="{{ path('app_home') }}" class="nav-link">Home</a>
+        <a href="{{ path('app_events') }}" class="nav-link">Events</a>
+        <a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
+        <a href="{{ path('app_analytics') }}" class="nav-link">Analytics</a>
+        <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+        <a href="{{ path('app_profile') }}" class="nav-link">Profile</a>
+        <a href="{{ path('app_social') }}" class="nav-link">Social</a>
+        </nav>
+    </header>
+
+    {# --- Main Content Area --- #}
+    <div class="page-content-wrapper">
+        {# This .groups-container now provides the gradient background and centering #}
+        <div class="groups-container">
+            {# This .group-form-outer-wrapper is for the white form card #}
+            <div class="group-form-outer-wrapper">
+                <h1 class="create-group-page-title">Create New Group</h1>
+
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+
+                <form method="post" enctype="multipart/form-data" class="group-form">
+                    <div class="form-group">
+                        <label for="name">Group Name</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rules">Group Rules (one rule per line)</label>
+                        <textarea id="rules" name="rules" class="form-control" rows="5" placeholder="Enter each rule on a new line." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profile_picture">Profile Picture</label>
+                        <input type="file" id="profile_picture" name="profile_picture" class="form-control-file" accept="image/*">
+                        <img id="preview" alt="Image Preview" /> {# Changed alt text #}
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{{ path('app_groups') }}" class="group-btn group-btn-outline">Cancel</a>
+                        <button type="submit" class="group-btn group-btn-primary">Create Group</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {# --- FOOTER --- #}
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-column"><h4>ConnectSphere</h4><p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p></div>
+            <div class="footer-column"><h4>Quick Links</h4><ul><li><a href="{{ path('app_home') }}">Home</a></li><li><a href="{{ path('app_events') }}">Events</a></li><li><a href="#">About Us</a></li><li><a href="#">Blog</a></li><li><a href="#">Contact</a></li><li><a href="#">Terms of Service</a></li></ul></div>
+            <div class="footer-column footer-contact"><h4>Contact Us</h4><p><i class="fas fa-phone"></i> <a href="tel:+21692160411">+216 92 160 411</a></p><p><i class="fas fa-envelope"></i> <a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p></div>
+            <div class="footer-column"><h4>Follow Us</h4><div class="footer-social-icons"><a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a><a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a><a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a><a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a></div></div>
+        </div>
+        <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
+    </footer>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        const input = document.getElementById('profile_picture');
+        const preview = document.getElementById('preview');
+
+        if (input && preview) { // Check if elements exist
+            input.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    preview.src = ''; // Clear preview if no file selected
+                    preview.style.display = 'none';
+                }
+            });
+        }
+    </script>
+    {# If using Bootstrap dismissible alerts, ensure Bootstrap JS is loaded #}
+{% endblock %}

@@ -1,0 +1,980 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conversion de Points{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Base Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #F5F5FF; /* Fond clair */
+            color: #1F2937;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 207px;
+            background: linear-gradient(180deg, #220054 0%, #5B21B6 100%); /* Dégradé violet */
+            color: #FFFFFF;
+            padding: 20px 8px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+            border-top-right-radius: 12px; /* Border-radius côté droit */
+            border-bottom-right-radius: 12px; /* Border-radius côté droit */
+        }
+
+        .sidebar .logo {
+            margin-bottom: 40px;
+        }
+
+        .sidebar .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            flex-grow: 1;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.03); /* Léger agrandissement au survol */
+        }
+
+        /* Sous-menu pour Dashboard */
+        .submenu {
+            display: none;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .submenu li a {
+            padding: 10px 30px;
+            font-size: 14px;
+        }
+
+        .submenu li a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .submenu.active {
+            display: block;
+            max-height: 200px; /* Ajuste selon le contenu */
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 220px;
+            width: calc(100% - 220px);
+            padding: 15px; /* Réduit pour minimiser les espaces */
+            background: #F5F5FF;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg,rgb(29, 0, 98), #9F7AEA); /* Dégradé violet doux */
+            border-radius: 12px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 15px; /* Réduit pour minimiser les espaces */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .welcome-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: #FFFFFF;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-avatar i {
+            font-size: 30px;
+            color: #6B46C1;
+        }
+
+        .welcome-text h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+
+        .welcome-text p {
+            font-size: 14px;
+            color: #EDE9FE;
+            font-weight: 400;
+        }
+
+        /* Stats Grid (Points, Money, Conversion Score) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px; /* Réduit pour minimiser les espaces */
+        }
+
+        .stat-card, .conversion-score-card {
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-card:hover, .conversion-score-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Nouvelles couleurs élégantes pour chaque carte */
+        .stat-card.points-card {
+            background: linear-gradient(135deg,rgb(249, 198, 69),rgb(250, 213, 149)); /* Dégradé doré/orange */
+        }
+
+        .stat-card.money-card {
+            background: linear-gradient(135deg,rgb(115, 209, 249), #0EA5E9); /* Dégradé bleu saphir */
+        }
+
+        .conversion-score-card {
+            background: linear-gradient(135deg,rgb(205, 165, 244),rgb(183, 112, 249)); /* Dégradé violet améthyste */
+        }
+
+        .stat-card h3, .conversion-score-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-value.points {
+            color: #B45309; /* Orange foncé pour les points */
+        }
+
+        .stat-value.money {
+            color: #075985; /* Bleu profond pour l'argent */
+        }
+
+        /* Conversion Score Specific Styles */
+        .conversion-score-card .score-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #6B21A8; /* Violet sombre pour le score */
+            margin-bottom: 5px;
+        }
+
+        /* Avatars animés */
+        .stat-avatar, .score-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            margin: 0 auto 10px;
+        }
+
+        .stat-avatar i, .score-avatar i {
+            font-size: 20px;
+            color: #FFFFFF;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        /* Animation de pulsation */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Convert Section (Card) */
+        .convert-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 15px; /* Réduit pour minimiser les espaces */
+        }
+
+        .convert-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .convert-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #6B7280;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .convert-form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .convert-field {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 200px;
+        }
+
+        .convert-label {
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .convert-spinner, .devise-select {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #F9FAFB;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.3s ease;
+        }
+
+        .convert-spinner:focus, .devise-select:focus {
+            outline: none;
+            border: 1px solid #7C3AED;
+        }
+
+        .convert-button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #7C3AED, #A855F7); /* Dégradé violet */
+            border: none;
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .convert-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Content Grid (History Sections) */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        /* History Cards */
+        .history-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .history-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .history-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #6B7280;
+            margin-bottom: 15px;
+        }
+
+        /* Tabs inside History Cards */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            gap: 20px;
+            margin-bottom: 15px;
+            padding: 0;
+            position: relative;
+        }
+
+        .tab {
+            padding: 8px 15px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #6B7280;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .tab.active {
+            color: #7C3AED;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 3px;
+            background: #7C3AED;
+            border-radius: 2px;
+        }
+
+        /* History Table */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .history-table th, .history-table td {
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .history-table th {
+            background-color: #F9FAFB;
+            color: #6B7280;
+            font-weight: 600;
+        }
+
+        .history-table td {
+            color: #1F2937;
+            border-bottom: 1px solid #F1F3F5;
+        }
+
+        /* Effet zébré pour les lignes */
+        .history-table tbody tr:nth-child(even) {
+            background-color: #F9FAFB;
+        }
+
+        .history-table tbody tr:hover {
+            background-color: #F1F3F5;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+                padding: 10px;
+            }
+
+            .welcome-card {
+                padding: 10px 15px;
+            }
+
+            .welcome-text h2 {
+                font-size: 20px;
+            }
+
+            .welcome-text p {
+                font-size: 12px;
+            }
+
+            .welcome-avatar {
+                width: 50px;
+                height: 50px;
+            }
+
+            .welcome-avatar i {
+                font-size: 25px;
+            }
+
+            .stats-grid, .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .convert-form {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .convert-field {
+                min-width: 100%;
+            }
+
+            .history-table th, .history-table td {
+                font-size: 12px;
+                padding: 8px;
+            }
+        }
+
+        .currency-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .currency-tnd {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+        }
+
+        .currency-eur {
+            background-color: rgba(79, 70, 229, 0.2);
+            color: #4F46E5;
+        }
+
+        .currency-usd {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-gain {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+        }
+
+        .badge-perte {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>Connect Sphere</h1>
+            </div>
+            <ul>
+                <li><a href="{{ path('app_points') }}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href='/points/fortune-wheel'><i class="fas fa-box"></i><span>Fourtune wheel</span></a></li>
+                <li><a href="{{ path('app_convert_points') }}"><i class="fas fa-users"></i><span>Conversion </span></a></li>
+                <li class="menu-item logout">
+                    <a href="{{ path('app_logout') }}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <div class="welcome-avatar">
+                    <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <div class="welcome-text">
+                    <h2>Welcome to Your Dashboard!</h2>
+                    <p>Manage your points and conversions here!</p>
+                </div>
+            </div>
+
+            <!-- Stats Grid (Points, Money, Conversion Score) -->
+            <div class="stats-grid">
+                <div class="stat-card points-card">
+                    <h3>Total Points</h3>
+                    <div class="stat-avatar">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="stat-value points">{{ user.points|default(0) }}</p>
+                </div>
+                <div class="stat-card money-card">
+                    <h3>Total Money</h3>
+                    <div class="stat-avatar">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <p class="stat-value money">{{ user.argent|default('0.00') }}</p>
+                </div>
+                <div class="conversion-score-card">
+                    <h3>Conversion Rate</h3>
+                    <div class="score-avatar">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <p class="score-value">100 Points = 5 TND</p>
+                </div>
+            </div>
+
+            <!-- Convert Card -->
+            <div class="convert-card">
+                <h3>Convert Points to Money</h3>
+                <div class="convert-form">
+                    <div class="convert-field">
+                        <p class="convert-label">Points to Convert</p>
+                        <input type="number" class="convert-spinner" id="numPoints" value="100">
+                    </div>
+                    <div class="convert-field">
+                        <p class="convert-label">Currency</p>
+                        <select class="devise-select" id="devise">
+                            <option value="TND">TND</option>
+                            <option value="EUR">EUR</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
+                    <div class="convert-field">
+                        <button class="convert-button" id="convertBtn" type="button">Convert</button>
+                    </div>
+                    <div id="conversion-status" style="margin-top: 10px; text-align: center; color: #6B7280;"></div>
+                </div>
+            </div>
+
+            <!-- Content Grid (History Sections) -->
+            <div class="content-grid">
+                <!-- Points History -->
+                <div class="history-card">
+                    <h3>Points History</h3>
+                    <div id="points-history" class="tab-pane active">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Points</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if pointsHistory is empty %}
+                                    <tr>
+                                        <td colspan="4">No points history available</td>
+                                    </tr>
+                                {% else %}
+                                    {% for entry in pointsHistory %}
+                                        <tr>
+                                            <td>{{ entry.date|date('d/m/Y H:i') }}</td>
+                                            <td>
+                                                {% if entry.type == 'gain' %}
+                                                    <span class="badge badge-gain">Gain</span>
+                                                {% else %}
+                                                    <span class="badge badge-perte">Loss</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if entry.type == 'gain' %}
+                                                    +{{ entry.points }}
+                                                {% else %}
+                                                    {{ entry.points }}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ entry.raison }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Conversion History -->
+                <div class="history-card">
+                    <h3>Conversion History</h3>
+                    <div id="conversion-history" class="tab-pane active">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Currency</th>
+                                    <th>Points Converted</th>
+                                    <th>Amount Received</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if transactions is empty %}
+                                    <tr>
+                                        <td colspan="4">No conversion history available</td>
+                                    </tr>
+                                {% else %}
+                                    {% for transaction in transactions %}
+                                        <tr>
+                                            <td>{{ transaction.date|date('d/m/Y H:i') }}</td>
+                                            <td>
+                                                <span class="currency-badge currency-{{ transaction.devise|lower }}">
+                                                    {{ transaction.devise }}
+                                                </span>
+                                            </td>
+                                            <td>{{ transaction.pointConvertis }}</td>
+                                            <td>{{ transaction.montant }} {{ transaction.devise }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        /**
+         * Met à jour l'historique des conversions dans l'interface
+         * @param {Object} transaction - La nouvelle transaction à ajouter
+         */
+        function updateConversionHistory(transaction) {
+            console.log('Mise à jour de l\'historique avec:', transaction);
+            
+            // Chercher la table d'historique des conversions
+            const historyTables = [
+                document.querySelector('.history-table tbody'),
+                document.querySelector('table tbody'),
+                document.querySelector('.conversion-history tbody')
+            ].filter(table => table !== null);
+            
+            if (historyTables.length === 0) {
+                console.warn('Aucune table d\'historique trouvée dans la page');
+                return;
+            }
+            
+            // Pour chaque table d'historique trouvée
+            historyTables.forEach(tableBody => {
+                // Vérifier s'il y a un message "Aucune conversion"
+                const emptyRow = tableBody.querySelector('tr td[colspan]');
+                if (emptyRow) {
+                    // Supprimer la ligne "Aucune conversion"
+                    emptyRow.parentNode.remove();
+                }
+                
+                // Créer une nouvelle ligne
+                const newRow = document.createElement('tr');
+                
+                // Formater la date
+                const formattedDate = transaction.date;
+                
+                // Ajouter les cellules avec les données de la transaction
+                newRow.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>
+                        <span class="currency-badge currency-${transaction.devise.toLowerCase()}">
+                            ${transaction.devise}
+                        </span>
+                    </td>
+                    <td>${transaction.pointConvertis}</td>
+                    <td>${parseFloat(transaction.montant).toFixed(2)} ${transaction.devise}</td>
+                `;
+                
+                // Ajouter la nouvelle ligne au début de la table
+                if (tableBody.firstChild) {
+                    tableBody.insertBefore(newRow, tableBody.firstChild);
+                } else {
+                    tableBody.appendChild(newRow);
+                }
+            });
+        }
+        
+        // Fonction de conversion des points directement dans la page
+        function directConvertPoints() {
+            console.log('Direct conversion function called');
+
+            // Récupérer les valeurs du formulaire
+            const pointsInput = document.getElementById('numPoints');
+            const deviseSelect = document.getElementById('devise');
+            const statusDiv = document.getElementById('conversion-status');
+
+            if (!pointsInput || !deviseSelect) {
+                console.error('Form elements not found!');
+                alert('Erreur: Impossible de trouver les éléments du formulaire.');
+                return;
+            }
+
+            const points = pointsInput.value;
+            const devise = deviseSelect.value;
+
+            console.log(`Points: ${points}, Devise: ${devise}`);
+
+            // Vérifier que les points sont un nombre valide
+            if (isNaN(points) || points <= 0 || points % 100 !== 0) {
+                alert('Le nombre de points doit être un multiple positif de 100.');
+                return;
+            }
+
+            // Afficher un indicateur de chargement
+            const convertBtn = document.getElementById('convertBtn');
+            const originalText = convertBtn ? convertBtn.textContent : 'Convertir';
+            if (convertBtn) {
+                convertBtn.textContent = 'Conversion en cours...';
+                convertBtn.disabled = true;
+            }
+
+            if (statusDiv) {
+                statusDiv.textContent = 'Conversion en cours...';
+            }
+
+            // Envoyer la requête AJAX
+            fetch('/points/convert/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({
+                    'points': points,
+                    'devise': devise
+                })
+            })
+            .then(response => {
+                console.log('Response received:', response);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Data received:', data);
+
+                if (data.success) {
+                    // Mettre à jour l'affichage des points et de l'argent
+                    const pointsElement = document.querySelector('.stat-value.points');
+                    const moneyElement = document.querySelector('.stat-value.money');
+                    const pointsDisplays = document.querySelectorAll('.user-points');
+
+                    // Calculer les nouveaux points (points actuels - points convertis)
+                    const newPoints = parseInt(pointsElement?.textContent || 0) - data.points;
+                    
+                    // Mettre à jour tous les affichages de points
+                    if (pointsElement) pointsElement.textContent = newPoints;
+                    pointsDisplays.forEach(el => el.textContent = newPoints);
+                    
+                    // Mettre à jour l'affichage de l'argent si disponible
+                    if (moneyElement) {
+                        const currentMoney = parseFloat(moneyElement.textContent || 0);
+                        moneyElement.textContent = (currentMoney + parseFloat(data.montant)).toFixed(2);
+                    }
+
+                    // Ajouter la nouvelle transaction à l'historique sans recharger la page
+                    updateConversionHistory({
+                        date: new Date().toISOString().split('T')[0], // Format YYYY-MM-DD
+                        devise: data.devise,
+                        pointConvertis: data.points,
+                        montant: data.montant
+                    });
+
+                    // Afficher un message de succès
+                    alert(data.message);
+                } else {
+                    // Afficher un message d'erreur
+                    alert(data.message || 'Une erreur est survenue lors de la conversion.');
+                }
+
+                // Réactiver le bouton
+                if (convertBtn) {
+                    convertBtn.textContent = originalText;
+                    convertBtn.disabled = false;
+                }
+
+                if (statusDiv) {
+                    statusDiv.textContent = '';
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la conversion:', error);
+                alert('Une erreur est survenue lors de la conversion. Veuillez réessayer.');
+
+                // Réactiver le bouton
+                if (convertBtn) {
+                    convertBtn.textContent = originalText;
+                    convertBtn.disabled = false;
+                }
+
+                if (statusDiv) {
+                    statusDiv.textContent = '';
+                }
+            });
+        
+            }
+
+            // Envoyer la requête AJAX
+            fetch('/points/convert/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({
+                    'points': points,
+                    'devise': devise
+                })
+            })
+            .then(response => {
+                console.log('Response received:', response);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Data received:', data);
+
+                if (data.success) {
+                    // Mettre à jour l'affichage des points et de l'argent
+                    const pointsElement = document.querySelector('.stat-value.points');
+                    const moneyElement = document.querySelector('.stat-value.money');
+
+                    if (pointsElement) pointsElement.textContent = data.newPoints;
+                    if (moneyElement) moneyElement.textContent = data.newArgent;
+
+                    if (statusDiv) {
+                        statusDiv.textContent = data.message;
+                        statusDiv.style.color = '#10B981';
+                    }
+
+                    // Afficher un message de succès
+                    alert(data.message);
+
+                    // Recharger la page pour afficher les nouvelles transactions
+                    window.location.reload();
+                } else {
+                    // Afficher un message d'erreur
+                    if (statusDiv) {
+                        statusDiv.textContent = data.message || 'Une erreur est survenue lors de la conversion.';
+                        statusDiv.style.color = '#EF4444';
+                    }
+
+                    alert(data.message || 'Une erreur est survenue lors de la conversion.');
+
+                    // Réactiver le bouton
+                    if (convertBtn) {
+                        convertBtn.textContent = 'Convert';
+                        convertBtn.disabled = false;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la conversion:', error);
+
+                if (statusDiv) {
+                    statusDiv.textContent = 'Une erreur est survenue lors de la conversion. Veuillez réessayer.';
+                    statusDiv.style.color = '#EF4444';
+                }
+
+                alert('Une erreur est survenue lors de la conversion. Veuillez réessayer.');
+
+                // Réactiver le bouton
+                if (convertBtn) {
+                    convertBtn.textContent = 'Convert';
+                    convertBtn.disabled = false;
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('JS chargé ✓');
+
+            // Attacher l'événement au bouton de conversion
+            const convertBtn = document.getElementById('convertBtn');
+            if (convertBtn) {
+                console.log('Convert button found, attaching direct event listener');
+                convertBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Convert button clicked');
+                    directConvertPoints();
+                });
+            } else {
+                console.error('Convert button not found!');
+            }
+        });
+    </script>
+{% endblock %}

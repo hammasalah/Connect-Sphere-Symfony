@@ -1,0 +1,953 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Groups - Connect Sphere{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# We will embed all CSS directly, so no need to link groups.css separately if all its content is below #}
+    {# <link rel="stylesheet" href="{{ asset('css/groups.css') }}"> #}
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- ROOT CSS Variables (Ensure all needed variables are defined here or globally) --- */
+        :root {
+            --primary-color: #1c2b5d; /* Example, define based on your theme */
+            --primary-hover: #3d5472; /* Example */
+            --secondary-color: #6c757d; /* Example */
+            --secondary-hover: #5a6268; /* Example */
+
+            --theme-primary-pink: #E83E8C;
+            --theme-primary-pink-hover: #d0367c; /* Added for hover state */
+            --theme-secondary-teal: #20C997; /* Example */
+
+            --light-bg: #f8f9fa; /* Example */
+            --card-header-bg: #ffffff; /* Example */
+
+            --theme-text-dark: #343A40;
+            --theme-text-muted: #6c757d; /* Adjusted for consistency */
+            --theme-border-color: #DEE2E6;
+
+            --card-shadow: 0 4px 8px rgba(0,0,0,0.05); /* Example */
+            --card-shadow-hover: 0 6px 12px rgba(0,0,0,0.1); /* Example */
+
+            --border-radius: 8px; /* Example */
+            --input-border-radius: 6px; /* Example */
+            --pill-radius: 50px; /* Example */
+
+            --transition-fast: 0.2s ease-in-out; /* Example */
+            --transition-medium: 0.3s ease-in-out; /* Example */
+
+            --body-font: 'Poppins', sans-serif;
+        }
+
+        body {
+            font-family: var(--body-font);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--light-bg); /* Apply light background to whole page */
+        }
+        .page-content-wrapper {
+            flex: 1;
+        }
+
+        /* --- Header Styles --- */
+        .header { background: var(--card-header-bg, #fff); box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: .8rem 1rem; border-bottom: 1px solid var(--theme-border-color); }
+        .header .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1140px; margin: 0 auto; padding: 0 15px; }
+        .header .logo-img { height: 50px; vertical-align: middle; }
+        .header .logo a span { vertical-align: middle; font-weight:bold; font-size:1.5rem; color:var(--theme-text-dark); margin-left:10px; }
+        .header .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+        .header .nav-link { font-weight: 500; transition: color var(--transition-fast); color: var(--theme-text-dark); text-decoration: none; padding: 0.5rem 0; }
+        .header .nav-link:hover, .header .nav-link.active { color: var(--theme-primary-pink); text-decoration: none; }
+        .header .contact-btn { background: var(--theme-primary-pink); color: white !important; padding: .5rem 1.2rem; border-radius: var(--pill-radius); font-weight: 500; text-decoration: none; transition: background-color var(--transition-fast); }
+        .header .contact-btn:hover { background: var(--theme-primary-pink-hover); }
+
+        /* --- Footer Styles --- */
+        .site-footer { background: #343a40; color: rgba(255,255,255,.75); padding: 3rem 1rem 1.5rem; margin-top: auto; }
+        .site-footer .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; max-width: 1140px; margin: 0 auto; padding: 0 15px; }
+        .site-footer .footer-column { flex: 1 1 200px; }
+        .site-footer .footer-column h4 { color: #fff; margin-bottom: 1rem; font-weight: 600; border-bottom: 2px solid var(--theme-primary-pink); display: inline-block; padding-bottom: .5rem; }
+        .site-footer .footer-column ul { list-style: none; padding: 0; }
+        .site-footer .footer-column ul li { margin-bottom: .6rem; }
+        .site-footer .footer-column ul li a { color: rgba(255,255,255,.75); transition: color var(--transition-fast); text-decoration: none; }
+        .site-footer .footer-column ul li a:hover { color: var(--theme-primary-pink); }
+        .site-footer .footer-contact i { margin-right: .5rem; color: var(--theme-primary-pink); }
+        .site-footer .footer-social-icons a { color: rgba(255,255,255,.75); margin-right: 1rem; font-size: 1.5rem; transition: color var(--transition-fast); text-decoration: none; }
+        .site-footer .footer-social-icons a:hover { color: var(--theme-primary-pink); }
+        .site-footer .footer-bottom { text-align: center; margin-top: 2rem; font-size: .85rem; color: rgba(255,255,255,.55); border-top: 1px solid #495057; padding-top: 1rem; max-width: 1140px; margin-left: auto; margin-right: auto;}
+
+
+        /* --- groups.css Content Starts Here --- */
+        /* Groups Main Container */
+        .groups-container {
+            /* display: flex; -- Already on body */
+            /* min-height: 100vh; -- Already on body */
+            /* background-color: var(--light-bg); -- Already on body */
+            padding: 2rem; /* This padding is for the content within the main page area */
+            /* font-family: var(--body-font); -- Already on body */
+        }
+
+        .groups-content {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto; /* Centering the content block */
+            padding: 2rem;
+            background-color: var(--card-header-bg, #fff);
+            border-radius: var(--border-radius, 16px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Header */
+        .groups-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--theme-border-color);
+        }
+
+        .groups-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+            position: relative;
+        }
+
+        .create-group-btn {
+            background-color: var(--theme-primary-pink);
+            color: white;
+            border: none;
+            border-radius: var(--pill-radius);
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .create-group-btn:hover {
+            background-color: var(--theme-primary-pink-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(232, 62, 140, 0.2);
+        }
+        .create-group-btn svg {
+            width: 1em;
+            height: 1em;
+        }
+
+        /* Groups Grid */
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 2rem;
+        }
+
+        .group-card {
+            background-color: var(--card-header-bg, #fff);
+            border-radius: var(--border-radius);
+            /* overflow: hidden; -- Changed to visible for ::before */
+            overflow: visible;
+            box-shadow: var(--card-shadow);
+            transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+            border: 1px solid var(--theme-border-color);
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: var(--theme-text-dark);
+            position: relative;
+        }
+
+        .group-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        .group-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+            z-index: 1;
+            border-top-left-radius: var(--border-radius); /* Match parent radius */
+            border-top-right-radius: var(--border-radius);/* Match parent radius */
+        }
+        .group-card:hover::before {
+            opacity: 1;
+        }
+
+        .group-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+            transition: transform var(--transition-medium);
+            border-top-left-radius: calc(var(--border-radius) - 1px); /* Adjust for border */
+            border-top-right-radius: calc(var(--border-radius) - 1px);/* Adjust for border */
+        }
+        .group-card:hover .group-image {
+            transform: scale(1.03);
+        }
+
+        .group-body {
+            padding: 1.25rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+        }
+
+        .group-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--theme-text-dark);
+            margin: 0 0 0.5rem 0;
+            transition: color var(--transition-fast);
+        }
+        .group-card:hover .group-name {
+            color: var(--primary-color);
+        }
+
+        .group-description {
+            color: var(--theme-text-muted, #666);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .group-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--theme-text-muted, #888);
+            margin-bottom: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--theme-border-color);
+        }
+
+        .group-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: auto; /* Pushes actions to bottom */
+            padding-top: 0.5rem; /* Space above buttons */
+        }
+
+        .group-btn { /* This is a generic button style for cards, adjust if needed */
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border-radius: var(--pill-radius);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border: 1px solid transparent;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .group-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+        }
+        .group-btn.group-btn-primary {
+            background-color: var(--theme-primary-pink);
+            color: white;
+            border-color: var(--theme-primary-pink);
+        }
+        .group-btn.group-btn-primary:hover {
+            background-color: var(--theme-primary-pink-hover);
+            border-color: var(--theme-primary-pink-hover);
+        }
+        .group-btn.group-btn-outline-themed { /* Use this class for "Join Group" */
+            background-color: transparent;
+            color: var(--theme-primary-pink);
+            border: 1px solid var(--theme-primary-pink);
+        }
+        .group-btn.group-btn-outline-themed:hover {
+            background-color: rgba(232, 62, 140, 0.1);
+            color: var(--theme-primary-pink-hover);
+            border-color: var(--theme-primary-pink-hover);
+        }
+        .group-btn.group-btn-outline { /* Used for Edit, for example */
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        .group-btn.group-btn-outline:hover {
+            background-color: rgba(28, 43, 93, 0.05); /* Light primary color bg */
+            color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+        .group-btn.group-btn-danger { /* Used for Delete/Leave Group */
+            /* Your groups.css used secondary-color for danger, this can be confusing.
+               Typically danger is red. I'll keep your logic but you might want to revisit. */
+            background-color: var(--secondary-color); /* Or a red variable like --danger-color */
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        .group-btn.group-btn-danger:hover {
+            background-color: var(--secondary-hover);
+            border-color: var(--secondary-hover);
+        }
+
+
+        /* Group View Page (Single Group View) */
+        .group-view-container {
+            max-width: 1000px;
+            margin: 0 auto; /* Centered within its parent, which is .groups-content */
+            /* padding: 2rem; -- Padding is already on .groups-content */
+            /* background-color: var(--card-header-bg, #fff); -- Already on .groups-content */
+            /* border-radius: var(--border-radius); -- Already on .groups-content */
+            /* box-shadow: var(--card-shadow); -- Already on .groups-content */
+        }
+
+        .group-view-container .group-header-info {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: flex-start;
+        }
+
+        .group-avatar { /* For single group view page */
+            width: 120px;
+            height: 120px;
+            border-radius: var(--border-radius);
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 3px solid var(--card-header-bg, #fff); /* Assuming this is for image on a colored bg */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .group-info { /* For single group view page */
+            flex: 1;
+        }
+
+        .group-view-container .group-title { /* Specific title for single group view */
+            font-size: 2rem; /* Larger than .groups-title */
+            margin: 0 0 0.5rem 0;
+            color: var(--primary-color);
+        }
+
+        .group-creator { /* For single group view page */
+            color: var(--theme-text-muted, #666);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .group-creator a {
+            color: var(--primary-color);
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .group-creator a:hover {
+            color: var(--theme-primary-pink);
+            text-decoration: underline;
+        }
+
+        .group-rules { /* For single group view page */
+            background-color: var(--light-bg); /* A slightly different background */
+            padding: 1.5rem;
+            border-radius: var(--input-border-radius);
+            margin-bottom: 2rem;
+            border: 1px solid var(--theme-border-color);
+        }
+
+        .group-rules-title { /* For single group view page */
+            font-size: 1.2rem;
+            margin: 0 0 0.75rem 0;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        .group-rules ul { /* For single group view page */
+            list-style: disc;
+            padding-left: 20px;
+            color: var(--theme-text-muted);
+        }
+        .group-rules ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Members Section */
+        .members-section { /* For single group view page */
+            margin-top: 2rem;
+        }
+
+        .section-title { /* General section title, used on single group view and groups list */
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--theme-border-color);
+            font-weight: 600;
+        }
+
+        .members-grid { /* For single group view page */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .member-card { /* For single group view page */
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: var(--card-header-bg, #fff);
+            border-radius: var(--input-border-radius);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--theme-border-color);
+        }
+
+        .member-avatar { /* For single group view page */
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .member-info { /* For single group view page */
+            flex: 1;
+        }
+
+        .member-name { /* For single group view page */
+            font-size: 1rem;
+            margin: 0;
+            color: var(--theme-text-dark);
+            font-weight: 500;
+        }
+
+        .member-role { /* For single group view page */
+            font-size: 0.8rem;
+            color: var(--theme-text-muted, #666);
+            margin: 0.25rem 0 0 0;
+        }
+
+
+        /* Forms (e.g., Create/Edit Group Form) */
+        .group-form { /* For create/edit group page */
+            max-width: 700px;
+            margin: 2rem auto; /* Should be within .groups-content or similar */
+            padding: 2rem;
+            background-color: var(--card-header-bg, #fff);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+        .group-form .form-label { /* Assuming Bootstrap or custom form styling */
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .group-form .form-control { /* Assuming Bootstrap or custom form styling */
+            /* Styles for input, textarea, select */
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--theme-text-dark);
+            background-color: var(--card-header-bg, #fff);
+            background-clip: padding-box;
+            border: 1px solid var(--theme-border-color);
+            appearance: none;
+            border-radius: var(--input-border-radius);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            margin-bottom: 1rem; /* Spacing between form controls */
+        }
+        .group-form .form-control:focus {
+            border-color: var(--primary-color);
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(var(--primary-color), 0.25); /* Example focus, replace rgba with actual color if needed */
+        }
+        .form-actions { /* For create/edit group page */
+            display: flex;
+            justify-content: flex-end; /* Align buttons to the right */
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--theme-border-color);
+        }
+        .form-btn-secondary { /* General secondary button, e.g., "Cancel" */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: .75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #fff;
+            background-color: var(--secondary-color);
+            border: 1px solid var(--secondary-color);
+            border-radius: var(--pill-radius);
+            text-decoration: none;
+            transition: all var(--transition-fast);
+        }
+        .form-btn-secondary:hover {
+            background-color: var(--secondary-hover);
+            border-color: var(--secondary-hover);
+            color: #fff;
+        }
+        /* .create-group-btn can be reused for "Save" if styles match, or create .form-btn-primary */
+
+
+        /* Group Search Styling */
+        .group-search-container {
+            margin-bottom: 2.5rem;
+            position: relative; /* For potential future absolute positioned elements */
+        }
+
+        .group-search-form {
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto 1.5rem auto; /* Center search bar */
+            border-radius: var(--pill-radius);
+            overflow: hidden; /* To make inner border-radius work with ::before */
+            box-shadow: 0 4px 15px rgba(28, 43, 93, 0.1);
+            transition: all var(--transition-medium);
+            position: relative; /* For ::before pseudo-element */
+            background: var(--card-header-bg, #fff); /* Background for input area */
+            border: 1px solid var(--theme-border-color);
+        }
+
+        .group-search-form:focus-within {
+            box-shadow: 0 6px 20px rgba(28, 43, 93, 0.2);
+            border-color: var(--primary-color); /* Highlight border on focus */
+        }
+
+        .group-search-input {
+            flex: 1;
+            padding: 0.9rem 1.5rem;
+            border: none;
+            font-size: 1rem;
+            color: var(--theme-text-dark);
+            background: transparent; /* Input takes background from parent */
+            z-index: 2; /* Above ::before */
+        }
+        .group-search-input::placeholder {
+            color: var(--theme-text-muted, #aaa);
+            font-weight: 400;
+        }
+        .group-search-input:focus {
+            outline: none; /* Remove default browser outline */
+        }
+
+        .group-search-button {
+            padding: 0 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color var(--transition-fast);
+            z-index: 2; /* Above ::before */
+        }
+        .group-search-button:hover {
+            background: var(--primary-hover);
+        }
+        .group-search-button svg {
+            transition: transform var(--transition-fast);
+        }
+        .group-search-button:hover svg {
+            transform: scale(1.1);
+        }
+
+        .group-search-form::before { /* Animated gradient border effect */
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px; /* Cover the border area */
+            z-index: 1;
+            background: linear-gradient(45deg,
+                var(--primary-color), var(--primary-hover), var(--secondary-color), var(--secondary-hover));
+            background-size: 400% 400%;
+            border-radius: var(--pill-radius); /* Match parent */
+            opacity: 0;
+            transition: opacity var(--transition-medium);
+        }
+        .group-search-form:focus-within::before {
+            opacity: 0.15; /* Adjust for desired intensity */
+            animation: gradientBG 8s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .no-results-message {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--light-bg);
+            border-radius: var(--border-radius);
+            max-width: 600px; /* Match search bar width */
+            margin: 1rem auto;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--theme-border-color);
+            color: var(--theme-text-muted);
+        }
+        .no-results-message span { /* For emphasizing search term if you add it */
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .clear-search-btn {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.6rem 1.25rem;
+            background: var(--theme-primary-pink);
+            color: white;
+            border: none;
+            border-radius: var(--pill-radius);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .clear-search-btn:hover {
+            background: var(--theme-primary-pink-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(232, 62, 140, 0.2);
+        }
+
+        /* .search-results -- This class was in groups.css but not used in the HTML.
+           If you add a wrapper for search results, style it here. */
+        /* .search-results { ... } */
+
+
+        .section-header { /* Used in groups list for "My Groups" / "Other Groups" headers */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .section-header .section-title { /* Overrides general .section-title for this context */
+            margin-bottom: 0; /* Remove bottom margin */
+            border-bottom: none; /* Remove border */
+            padding-bottom: 0; /* Remove padding */
+        }
+
+        .section-count { /* Badge for group count */
+            margin-left: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--theme-text-muted, #888);
+            background-color: var(--light-bg); /* Subtle background */
+            padding: 0.25rem 0.6rem;
+            border-radius: var(--pill-radius);
+        }
+
+        /* Badge styles for member roles if needed */
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: var(--pill-radius);
+            font-size: 0.75rem;
+            font-weight: 500;
+            line-height: 1;
+        }
+        .badge-admin {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .badge-member {
+            background-color: var(--theme-border-color, #e0e0e0);
+            color: var(--theme-text-dark);
+        }
+
+        .no-groups { /* Message when no groups are found in a section */
+            padding: 1rem;
+            text-align: center;
+            color: var(--theme-text-muted);
+            font-style: italic;
+            grid-column: 1 / -1; /* Make it span all columns if inside a grid */
+        }
+
+
+        /* Responsive adjustments from groups.css and general */
+        @media (max-width: 768px) {
+            .groups-container {
+                padding: 1rem;
+            }
+            .groups-content {
+                padding: 1.5rem;
+            }
+            .groups-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .create-group-btn {
+                align-self: flex-start; /* Keep button to the left on mobile */
+            }
+            .group-view-container .group-header-info { /* Single group view */
+                flex-direction: column;
+                align-items: center; /* Center avatar and info on mobile */
+                gap: 1rem;
+            }
+            .group-avatar { /* Single group view */
+                width: 100px;
+                height: 100px;
+            }
+            .group-view-container .group-title { /* Single group view */
+                text-align: center;
+            }
+            .groups-grid { /* Groups list */
+                grid-template-columns: 1fr; /* Stack cards */
+            }
+            .members-grid { /* Single group view */
+                grid-template-columns: 1fr; /* Stack member cards */
+            }
+            .group-actions { /* Card actions */
+                flex-direction: column; /* Stack buttons in card */
+            }
+            .group-btn { /* Card buttons */
+                width: 100%; /* Make buttons full width in card on mobile */
+            }
+
+            /* Header responsive from general styles */
+           .header .nav-container { flex-direction: column; align-items: flex-start; }
+           .header .nav-links { margin-top: 1rem; flex-direction: column; align-items: flex-start; width: 100%; }
+           .header .nav-link, .header .contact-btn { padding: 0.5rem; width: 100%; text-align: left; }
+           .header .contact-btn { margin-top: 0.5rem; }
+           /* Footer responsive from general styles */
+           .site-footer .footer-content { flex-direction: column; align-items: center; text-align: center; }
+           .site-footer .footer-column { min-width: 100%; margin-bottom: 1rem; }
+           .site-footer .footer-column h4 { display: block; }
+        }
+        /* --- groups.css Content Ends Here --- */
+
+    </style>
+{% endblock %}
+
+{% block body %}
+    {# --- HEADER --- #}
+    <header class="header">
+        <nav class="nav-container">
+          <div class="logo">
+            <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+              <img src="{{ asset('images/logo.png') }}" alt="Logo ConnectSphere" class="logo-img">
+              <span>ConnectSphere</span>
+            </a>
+          </div>
+          <div class="nav-links">
+            <a href="{{ path('app_home') }}" class="nav-link">Home</a>
+            <a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
+            <a href="{{ path('app_dashboard') }}" class="nav-link">Dashboard</a>
+            <a href="{{ path('app_groups') }}" class="nav-link active">Groups</a>
+            <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+            <a href="{{ path('app_profile') }}" class="nav-link">Profile</a>
+            <a href="#" class="contact-btn nav-link">Contact</a>
+          </div>
+        </nav>
+    </header>
+
+    {# --- Main Content Area --- #}
+    <div class="page-content-wrapper">
+        <div class="groups-container"> {# This is the main container styled by groups.css #}
+            <div class="groups-content"> {# Inner content wrapper styled by groups.css #}
+                <div class="groups-header">
+                    <h1 class="groups-title">Groups</h1>
+                    <a href="{{ path('app_group_create') }}" class="create-group-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                        Create Group
+                    </a>
+                </div>
+
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+                {% for message in app.flashes('error') %} {# Added error flashes #}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+
+
+                <div class="group-search-container">
+                    <form method="get" action="{{ path('app_groups') }}" class="group-search-form">
+                        <input type="text" name="search" class="group-search-input"
+                               placeholder="Search for groups by name..."
+                               value="{{ app.request.query.get('search') }}"
+                               autocomplete="off">
+                        <button type="submit" class="group-search-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                        </button>
+                    </form>
+                    {% if app.request.query.get('search') %}
+                        {% set hasSearchResultsInLoop = false %} {# Use a different variable name #}
+                        {% for group in groups %}
+                            {% if group.name|lower matches ('%' ~ app.request.query.get('search')|lower ~ '%') %}
+                                {% set hasSearchResultsInLoop = true %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if not hasSearchResultsInLoop %}
+                            <div class="no-results-message">
+                                No groups found matching "<span>{{ app.request.query.get('search')|escape }}</span>"
+                                <a href="{{ path('app_groups') }}" class="clear-search-btn">Clear Search</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <!-- My Groups Section -->
+                <div class="groups-section">
+                    <div class="section-header">
+                        <h2 class="section-title">My Groups</h2>
+                        {% set myGroupsCount = 0 %}
+                        {% for group in groups %}
+                            {% if group.creatorId.id == currentUser.id %}
+                                {% if not app.request.query.get('search') or group.name|lower matches ('%' ~ app.request.query.get('search')|lower ~ '%') %}
+                                    {% set myGroupsCount = myGroupsCount + 1 %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        <span class="section-count">({{ myGroupsCount }})</span>
+                    </div>
+                    <div class="groups-grid">
+                        {% set myGroupsDisplayed = false %}
+                        {% for group in groups %}
+                            {% if group.creatorId.id == currentUser.id %}
+                                {% if not app.request.query.get('search') or group.name|lower matches ('%' ~ app.request.query.get('search')|lower ~ '%') %}
+                                    {% set myGroupsDisplayed = true %}
+                                    <div class="group-card">
+                                        {% if group.profilePicture %}
+                                            <img src="data:image/jpeg;base64,{{ group.profilePicture }}" alt="{{ group.name|escape }}'s Profile Picture" class="group-image" />
+                                        {% else %}
+                                            <img src="{{ asset('images/default-group.jpg') }}" alt="Default Group Image" class="group-image" />
+                                        {% endif %}
+                                        <div class="group-body">
+                                            <h3 class="group-name">{{ group.name|escape }}</h3>
+                                            <p class="group-description">{{ group.description|escape|nl2br }}</p>
+                                            <div class="group-meta">
+                                                <span class="group-meta-item">Created by you</span>
+                                                {# You can add more meta items here if needed, like member count #}
+                                            </div>
+                                            <div class="group-actions">
+                                                <a href="{{ path('app_group_view', {'id': group.id}) }}" class="group-btn group-btn-primary">View</a>
+                                                <a href="{{ path('app_group_edit', {'id': group.id}) }}" class="group-btn group-btn-outline">Edit</a>
+                                                <a href="{{ path('app_group_delete', {'id': group.id}) }}" class="group-btn group-btn-danger" onclick="return confirm('Are you sure you want to delete the group \'{{ group.name|escape('js') }}\'?')">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if not myGroupsDisplayed %}
+                            <p class="no-groups">
+                                {% if app.request.query.get('search') %}
+                                    No groups you created match "<span>{{ app.request.query.get('search')|escape }}</span>".
+                                {% else %}
+                                    You haven't created any groups yet. <a href="{{ path('app_group_create') }}">Create one now!</a>
+                                {% endif %}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Other Groups Section -->
+                <div class="groups-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Other Groups</h2>
+                        {% set otherGroupsCount = 0 %}
+                        {% for group in groups %}
+                            {% if group.creatorId.id != currentUser.id %}
+                                {% if not app.request.query.get('search') or group.name|lower matches ('%' ~ app.request.query.get('search')|lower ~ '%') %}
+                                    {% set otherGroupsCount = otherGroupsCount + 1 %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                         <span class="section-count">({{ otherGroupsCount }})</span>
+                    </div>
+                    <div class="groups-grid">
+                        {% set otherGroupsDisplayed = false %}
+                        {% for group in groups %}
+                            {% if group.creatorId.id != currentUser.id %}
+                                {% if not app.request.query.get('search') or group.name|lower matches ('%' ~ app.request.query.get('search')|lower ~ '%') %}
+                                    {% set otherGroupsDisplayed = true %}
+                                    <div class="group-card">
+                                        {% if group.profilePicture and group.profilePicture starts with 'uploads/' %}
+                                            <img src="{{ asset(group.profilePicture) }}" alt="{{ group.name|escape }}" class="group-image">
+                                        {% elseif group.profilePicture %}
+                                             <img src="data:image/jpeg;base64,{{ group.profilePicture }}" alt="{{ group.name|escape }}'s Profile Picture" class="group-image" />
+                                        {% else %}
+                                            <img src="{{ asset('images/default-group.jpg') }}" alt="Default Group Image" class="group-image">
+                                        {% endif %}
+                                        <div class="group-body">
+                                            <h3 class="group-name">{{ group.name|escape }}</h3>
+                                            <p class="group-description">{{ group.description|escape|nl2br }}</p>
+                                            <div class="group-meta">
+                                                <span class="group-meta-item">Created by {{ group.creatorId.username|escape }}</span>
+                                                {# Add other meta if available #}
+                                            </div>
+                                            <div class="group-actions">
+                                                <a href="{{ path('app_group_view', {'id': group.id}) }}" class="group-btn group-btn-primary">View</a>
+                                                {% if userGroups is defined and userGroups[group.id] is defined %}
+                                                    <a href="{{ path('app_group_leave', {'id': group.id}) }}" class="group-btn group-btn-danger">Leave</a>
+                                                {% else %}
+                                                    <a href="{{ path('app_group_join', {'id': group.id}) }}" class="group-btn group-btn-outline-themed">Join</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if not otherGroupsDisplayed %}
+                            <p class="no-groups">
+                                {% if app.request.query.get('search') %}
+                                    No other groups match "<span>{{ app.request.query.get('search')|escape }}</span>".
+                                {% else %}
+                                    There are no other groups available to join.
+                                {% endif %}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# --- FOOTER --- #}
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-column"><h4>ConnectSphere</h4><p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p></div>
+            <div class="footer-column"><h4>Quick Links</h4><ul><li><a href="{{ path('app_home') }}">Home</a></li><li><a href="{{ path('app_events') }}">Events</a></li><li><a href="#">About Us</a></li><li><a href="#">Blog</a></li><li><a href="#">Contact</a></li><li><a href="#">Terms of Service</a></li></ul></div>
+            <div class="footer-column footer-contact"><h4>Contact Us</h4><p><i class="fas fa-phone"></i> <a href="tel:+21692160411">+216 92 160 411</a></p><p><i class="fas fa-envelope"></i> <a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p></div>
+            <div class="footer-column"><h4>Follow Us</h4><div class="footer-social-icons"><a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a><a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a><a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a><a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a></div></div>
+        </div>
+        <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
+    </footer>
+{% endblock %}
+

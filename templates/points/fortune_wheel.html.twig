@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fortune Wheel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Base Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(145deg, #0A001F 0%, #1C0033 100%);
+            color: #FFFFFF;
+            overflow-x: hidden;
+        }
+
+        /* Animations */
+        @keyframes holographic-glow {
+            0% { box-shadow: 0 0 10px #00FFFF, 0 0 20px #FF00FF; }
+            50% { box-shadow: 0 0 20px #00FFFF, 0 0 40px #FF00FF; }
+            100% { box-shadow: 0 0 10px #00FFFF, 0 0 20px #FF00FF; }
+        }
+
+        @keyframes neon-pulse {
+            0% { text-shadow: 0 0 5px #00FFFF, 0 0 10px #FF00FF; }
+            50% { text-shadow: 0 0 15px #00FFFF, 0 0 30px #FF00FF; }
+            100% { text-shadow: 0 0 5px #00FFFF, 0 0 10px #FF00FF; }
+        }
+
+        @keyframes sparkle {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes spin-glow {
+            0% { box-shadow: 0 0 15px #00FFFF, 0 0 30px #FF00FF; }
+            50% { box-shadow: 0 0 30px #00FFFF, 0 0 60px #FF00FF; }
+            100% { box-shadow: 0 0 15px #00FFFF, 0 0 30px #FF00FF; }
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: linear-gradient(180deg, #0A001F 0%, #4B0082 100%);
+            color: #FFFFFF;
+            padding: 20px 8px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 20px rgba(0, 255, 255, 0.2);
+            border-top-right-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .sidebar .logo {
+            margin-bottom: 40px;
+        }
+
+        .sidebar .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 0 15px #00FFFF;
+            animation: neon-pulse 1.5s infinite ease-in-out;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            flex-grow: 1;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: rgba(0, 255, 255, 0.2);
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 220px;
+            width: calc(100% - 220px);
+            padding: 20px;
+            background: #0A001F;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, #0A001F 0%, #4B0082 100%);
+            border-radius: 16px;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .welcome-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+        }
+
+        .welcome-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 255, 255, 0.2);
+            border-radius: 50%;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+        }
+
+        .welcome-avatar i {
+            font-size: 35px;
+            color: #00FFFF;
+            animation: neon-pulse 1.5s infinite ease-in-out;
+        }
+
+        .welcome-text {
+            flex-grow: 1;
+        }
+
+        .welcome-text h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .welcome-text p {
+            font-size: 16px;
+            color: #D1D5DB;
+        }
+
+        .score-container {
+            display: none;
+            background: rgba(0, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .score-container.show {
+            display: block;
+        }
+
+        .score-container span {
+            font-size: 20px;
+            font-weight: 600;
+            color: #00FFFF;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .score-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00FFFF, #39FF14);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+            animation: holographic-glow 1.5s infinite;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 90%;
+            max-width: 1200px;
+            grid-template-areas:
+                "wheel wheel rewards"
+                "wheel wheel history";
+        }
+
+        .wheel-section { grid-area: wheel; }
+        .rewards-card { grid-area: rewards; }
+        .history-card { grid-area: history; }
+
+        /* Card Styles (Holographic Glassmorphism) */
+        .wheel-section,
+        .rewards-card,
+        .history-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wheel-section:hover,
+        .rewards-card:hover,
+        .history-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+            animation: holographic-glow 1.5s infinite;
+        }
+
+        /* Neon Borders for Cards */
+        .wheel-section { border-left: 4px solid #00FFFF; }
+        .rewards-card { border-left: 4px solid #FF00FF; }
+        .history-card { border-left: 4px solid #39FF14; }
+
+        /* Wheel Section */
+        .wheel-section {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .wheel-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .wheel-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+        }
+
+        .wheel-avatar i {
+            font-size: 25px;
+            color: #00FFFF;
+            animation: neon-pulse 1.5s infinite ease-in-out;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 450px;
+            height: 490px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .triangle-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 30px solid #00FFFF;
+            z-index: 10;
+            box-shadow: 0 0 15px #00FFFF;
+        }
+
+        canvas {
+            border-radius: 50%;
+            background-color: #0A001F;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        canvas.spinning {
+            animation: spin-glow 1s infinite ease-in-out;
+        }
+
+        .spin-btn {
+            margin-top: 30px;
+            padding: 12px 40px;
+            background: linear-gradient(135deg, #00FFFF, #FF00FF);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spin-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
+            animation: holographic-glow 1.5s infinite;
+        }
+
+        .spin-btn:disabled {
+            background: #6B7280;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Rewards Card */
+        .rewards-card {
+            text-align: center;
+        }
+
+        .rewards-card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #FF00FF;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+        }
+
+        .rewards-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rewards-card li {
+            font-size: 16px;
+            color: #D1D5DB;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(255, 0, 255, 0.1);
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .rewards-card li:hover {
+            transform: scale(1.02);
+            background: rgba(255, 0, 255, 0.2);
+        }
+
+        .rewards-card i {
+            font-size: 18px;
+            color: #FF00FF;
+            animation: sparkle 1.5s infinite ease-in-out;
+        }
+
+        /* History Card */
+        .history-card {
+            position: relative;
+        }
+
+        .history-card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #39FF14;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th, .history-table td {
+            padding: 10px;
+            text-align: center;
+            font-size: 16px;
+            color: #D1D5DB;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(57, 255, 20, 0.05);
+        }
+
+        .history-table th {
+            font-weight: 600;
+            color: #39FF14;
+            background: rgba(57, 255, 20, 0.2);
+        }
+
+        .history-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .history-table tbody tr:hover {
+            background: rgba(57, 255, 20, 0.1);
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+
+        /* Particle Effect for Winning */
+        .particle-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .particle {
+            position: absolute;
+            background: #00FFFF;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00FFFF;
+            animation: particle-burst 1s ease-out forwards;
+        }
+
+        @keyframes particle-burst {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+                padding: 10px;
+            }
+
+            .welcome-card {
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .welcome-text h2 {
+                font-size: 24px;
+            }
+
+            .welcome-text p {
+                font-size: 14px;
+            }
+
+            .welcome-avatar {
+                width: 60px;
+                height: 60px;
+            }
+
+            .welcome-avatar i {
+                font-size: 30px;
+            }
+
+            .content-grid {
+                grid-template-areas:
+                    "wheel wheel wheel"
+                    "rewards rewards rewards"
+                    "history history history";
+            }
+
+            .wheel-container {
+                width: 350px;
+                height: 390px;
+            }
+
+            canvas {
+                width: 350px !important;
+                height: 350px !important;
+            }
+
+            .wheel-title,
+            .rewards-card h3,
+            .history-card h3 {
+                font-size: 20px;
+            }
+
+            .spin-btn {
+                font-size: 16px;
+                padding: 10px 30px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .sidebar {
+                width: 60px;
+                padding: 20px 5px;
+            }
+
+            .sidebar .logo h1 {
+                font-size: 18px;
+            }
+
+            .sidebar ul li a {
+                justify-content: center;
+                padding: 10px;
+            }
+
+            .sidebar ul li a span {
+                display: none;
+            }
+
+            .sidebar ul li a i {
+                margin-right: 0;
+                font-size: 20px;
+            }
+
+            .main-content {
+                margin-left: 60px;
+                width: calc(100% - 60px);
+            }
+
+            .wheel-container {
+                width: 280px;
+                height: 320px;
+            }
+
+            canvas {
+                width: 280px !important;
+                height: 280px !important;
+            }
+
+            .welcome-text h2 {
+                font-size: 20px;
+            }
+
+            .welcome-text p {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>Connect Sphere</h1>
+            </div>
+              <ul><ul><li><a href="{{ path('app_home') }}" class="active"><i class="fas fa-home"></i> Home</a></li>
+                                                <li><a href="{{ path('app_points') }}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                                                   <li><a href='/points/fortune-wheel'><i class="fas fa-box"></i><span>Fourtune wheel</span></a></li>
+                                               <li><a href="{{ path('app_convert_points') }}"><i class="fas fa-users"></i><span>Conversion </span></a></li>
+                                                 <li class="menu-item logout">
+
+                                                              <li class="menu-item logout">
+                                                                  <a href="{{ path('app_logout') }}">
+                                                                      <i class="fas fa-sign-out-alt"></i>
+                                                                      <span>Logout</span>
+                                                                  </a>
+                                                              </li>
+
+
+                             </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <div class="welcome-avatar">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="welcome-text">
+                    <h2>Spin the Holo-Wheel!</h2>
+                    <p>Unlock cosmic rewards and boost your points!</p>
+                    <div class="score-container" id="scoreContainer">
+                        <span id="userScore">Current Points:{{ (user.points ?? 0)|number_format(0, '.', ' ') }}
+</span>
+                    </div>
+                    <button class="score-btn" id="scoreBtn"><i class="fas fa-star"></i> Show Score</button>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Wheel Section -->
+                <div class="wheel-section">
+                    <h2 class="wheel-title">
+                        <div class="wheel-avatar">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        Fortune Wheel
+                    </h2>
+
+                    <div class="wheel-container">
+                        <div class="triangle-pointer"></div>
+                        <canvas id="wheel" width="450" height="450"></canvas>
+                        <button class="spin-btn" id="spinBtn"><i class="fas fa-sync-alt"></i> Spin</button>
+                        <div class="particle-container" id="particleContainer"></div>
+                    </div>
+                </div>
+
+                <!-- Rewards Card -->
+                <div class="rewards-card">
+                    <h3>
+                        <i class="fas fa-award"></i>
+                        Possible Rewards
+                    </h3>
+                    <ul>
+                        <li><i class="fas fa-coins"></i> 0 Points</li>
+                        <li><i class="fas fa-trophy"></i> 100 Points</li>
+                        <li><i class="fas fa-gift"></i> 50 Points</li>
+                        <li><i class="fas fa-star"></i> 40 Points</li>
+                        <li><i class="fas fa-crown"></i> Bonus: 200 Points</li>
+                    </ul>
+                </div>
+
+                <!-- History Card -->
+                <div class="history-card">
+                    <h3>
+                        <i class="fas fa-history"></i>
+                        Reward History
+                    </h3>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Reward</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Segment Definitions with Font Awesome Icons (matching Possible Rewards)
+        const segments = [
+            { label: '0 Points', color: 'linear-gradient(135deg, #FF00FF, #FF69B4)', icon: '\uf51e' }, // fa-coins
+            { label: '100 Points', color: 'linear-gradient(135deg, #00FFFF, #00CED1)', icon: '\uf091' }, // fa-trophy
+            { label: '50 Points', color: 'linear-gradient(135deg, #FF4500, #FF6347)', icon: '\uf06b' }, // fa-gift
+            { label: '40 Points', color: 'linear-gradient(135deg, #39FF14, #ADFF2F)', icon: '\uf005' }, // fa-star
+            { label: 'Bonus: 200 Points', color: 'linear-gradient(135deg, #FFD700, #FFECB3)', icon: '\uf521' } // fa-crown
+        ];
+
+        // Canvas Initialization
+        const canvas = document.getElementById('wheel');
+        const ctx = canvas.getContext('2d');
+        const spinBtn = document.getElementById('spinBtn');
+        const historyBody = document.getElementById('historyBody');
+        const particleContainer = document.getElementById('particleContainer');
+        const scoreBtn = document.getElementById('scoreBtn');
+        const scoreContainer = document.getElementById('scoreContainer');
+        const userScoreElement = document.getElementById('userScore');
+        let currentAngle = 0;
+        let spinning = false;
+        let scoreVisible = false;
+        let userScore = {{ user.points ?? 0 }}; // Initialisation avec les points de l'utilisateur depuis le serveur
+
+        // History (localStorage)
+        let spinHistory = JSON.parse(localStorage.getItem('spinHistory') || '[]');
+        updateHistory();
+
+        // Score Toggle
+        scoreBtn.addEventListener('click', () => {
+            scoreVisible = !scoreVisible;
+            scoreContainer.classList.toggle('show', scoreVisible);
+            scoreBtn.innerHTML = scoreVisible ?
+                '<i class="fas fa-eye-slash"></i> Hide Score' :
+                '<i class="fas fa-star"></i> Show Score';
+        });
+        
+        // Mettre à jour l'affichage du score
+        function updateScoreDisplay() {
+            // Formater les points de manière cohérente (comme le filtre Twig format_points)
+            const formattedScore = new Intl.NumberFormat('fr-FR').format(userScore);
+            userScoreElement.textContent = `Current Points: ${formattedScore}`;
+            
+            // Synchroniser avec localStorage pour les autres pages
+            localStorage.setItem('userPoints', userScore.toString());
+            console.log('Points mis à jour dans localStorage:', userScore);
+        }
+        
+        // Vérifier si des points ont été mis à jour dans une autre page
+        function checkStoredPoints() {
+            const storedPoints = localStorage.getItem('userPoints');
+            if (storedPoints) {
+                const parsedPoints = parseInt(storedPoints, 10) || 0;
+                // Ne mettre à jour que si les points stockés sont différents des points actuels
+                if (parsedPoints !== userScore) {
+                    userScore = parsedPoints;
+                    updateScoreDisplay();
+                    console.log('Points synchronisés depuis localStorage:', userScore);
+                }
+            }
+        }
+        
+        // Initialiser l'affichage du score avec les points réels de l'utilisateur
+        updateScoreDisplay();
+        
+        // Vérifier périodiquement les mises à jour des points (toutes les 5 secondes)
+        setInterval(checkStoredPoints, 5000);
+
+        // Ensure Font Awesome is loaded before drawing
+        function loadFontAndDraw() {
+            if (document.fonts) {
+                document.fonts.load('900 24px "Font Awesome 5 Free"').then(() => {
+                    drawWheel();
+                }).catch(err => {
+                    console.error('Font loading failed:', err);
+                    drawWheel(); // Fallback: Draw wheel without icons if font fails
+                });
+            } else {
+                setTimeout(drawWheel, 500); // Fallback for browsers without document.fonts
+            }
+        }
+
+        function drawWheel(angleOffset = 0) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2, r = canvas.width / 2 - 15;
+            const segAngle = 2 * Math.PI / segments.length;
+
+            // Draw Segments
+            for (let i = 0; i < segments.length; i++) {
+                const start = i * segAngle + angleOffset;
+                const end = start + segAngle;
+
+                // Create Gradient for Segment
+                const gradient = ctx.createLinearGradient(cx + r * Math.cos(start), cy + r * Math.sin(start), cx + r * Math.cos(end), cy + r * Math.sin(end));
+                const colors = segments[i].color.match(/#[\w\d]+/g);
+                if (colors) {
+                    gradient.addColorStop(0, colors[0]);
+                    gradient.addColorStop(1, colors[1]);
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, r, start, end);
+                ctx.closePath();
+                ctx.fillStyle = gradient || segments[i].color;
+                ctx.fill();
+                ctx.strokeStyle = "#FFFFFF";
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Holographic Glow on Segments
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, r, start, end);
+                ctx.closePath();
+                ctx.shadowColor = segments[i].color.includes('gradient') ? colors[0] : segments[i].color;
+                ctx.shadowBlur = 15;
+                ctx.strokeStyle = ctx.shadowColor;
+                ctx.stroke();
+                ctx.restore();
+
+                // Label and Icon
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(start + segAngle / 2);
+                ctx.textAlign = "right";
+                ctx.font = "bold 18px Poppins, Arial";
+                ctx.fillStyle = "#FFFFFF";
+                ctx.textShadow = "0 0 5px #000";
+                ctx.fillText(segments[i].label, r - 40, 5);
+                ctx.font = "900 24px 'Font Awesome 5 Free'";
+                ctx.fillStyle = "#FFFFFF";
+                ctx.fillText(segments[i].icon, r - 15, 5);
+                ctx.restore();
+            }
+
+            // Outer Holographic Ring
+            const outerGradient = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
+            outerGradient.addColorStop(0, '#00FFFF');
+            outerGradient.addColorStop(1, '#FF00FF');
+            ctx.beginPath();
+            ctx.arc(cx, cy, r + 10, 0, 2 * Math.PI);
+            ctx.strokeStyle = outerGradient;
+            ctx.lineWidth = 6;
+            ctx.shadowColor = "#00FFFF";
+            ctx.shadowBlur = 20;
+            ctx.stroke();
+
+            // Central Holographic Core
+            const centerGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, 35);
+            centerGradient.addColorStop(0, '#00FFFF');
+            centerGradient.addColorStop(1, '#FF00FF');
+            ctx.beginPath();
+            ctx.arc(cx, cy, 35, 0, 2 * Math.PI);
+            ctx.fillStyle = centerGradient;
+            ctx.fill();
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        }
+
+        function createParticles() {
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const angle = Math.random() * 2 * Math.PI;
+                const distance = Math.random() * 100 + 50;
+                particle.style.width = `${Math.random() * 5 + 5}px`;
+                particle.style.height = particle.style.width;
+                particle.style.left = `${canvas.width / 2}px`;
+                particle.style.top = `${canvas.height / 2}px`;
+                particle.style.transform = `translate(-50%, -50%)`;
+                particle.style.animationDelay = `${Math.random() * 0.5}s`;
+                particle.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+                particle.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+                particleContainer.appendChild(particle);
+
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
+            }
+        }
+
+        function spinWheel() {
+            if (spinning) return;
+            spinning = true;
+            spinBtn.disabled = true;
+            canvas.classList.add('spinning');
+
+            // Animation
+            const totalSpin = 360 * 7 + Math.random() * 360;
+            const startAngle = currentAngle;
+            const endAngle = startAngle + totalSpin;
+            const duration = 6000;
+            const startTime = performance.now();
+
+            function animate(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const ease = 1 - Math.pow(2, -10 * progress);
+                currentAngle = startAngle + (endAngle - startAngle) * ease;
+                drawWheel((currentAngle * Math.PI / 180) % (2 * Math.PI));
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    spinning = false;
+                    spinBtn.disabled = false;
+                    canvas.classList.remove('spinning');
+                    showResult();
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+       function showResult() {
+               const angle = (360 - (currentAngle % 360)) % 360;
+               const segAngle = 360 / segments.length;
+               const idx = Math.floor(angle / segAngle) % segments.length;
+               const reward = segments[idx].label;
+
+               console.log('Segment sélectionné:', idx, 'Reward:', reward);
+               
+               // Préparer les données à envoyer
+               const requestData = JSON.stringify({ segmentIndex: idx });
+               console.log('Données envoyées:', requestData);
+               
+               // Utiliser l'URL absolue pour éviter les problèmes de routage
+               const url = '{{ absolute_url(path('app_fortune_wheel')) }}';
+               console.log('URL utilisée:', url);
+               
+               fetch(url, {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/json',
+                       'Accept': 'application/json',
+                       'X-Requested-With': 'XMLHttpRequest'
+                   },
+                   body: requestData,
+                   credentials: 'same-origin'
+               })
+               .then(response => {
+                   console.log('Statut de la réponse:', response.status);
+                   console.log('Headers de la réponse:', [...response.headers.entries()]);
+                   
+                   // Vérifier le type de contenu
+                   const contentType = response.headers.get('content-type');
+                   console.log('Type de contenu:', contentType);
+                   
+                   // Même en cas d'erreur 500, on essaie de récupérer la réponse JSON
+                   // car notre contrôleur renvoie maintenant des erreurs formatées en JSON
+                   return response.text().then(text => {
+                       if (!text || text.trim() === '') {
+                           throw new Error('Réponse vide du serveur');
+                       }
+                       
+                       try {
+                           // Essayer de parser le texte comme JSON
+                           const data = JSON.parse(text);
+                           console.log('Données parsées avec succès:', data);
+                           
+                           // Si le serveur a renvoyé une erreur formatée en JSON
+                           if (!data.success && data.error) {
+                               throw new Error(data.message || 'Erreur lors du traitement de la requête');
+                           }
+                           
+                           return data;
+                       } catch (e) {
+                           console.error('Erreur lors du parsing JSON:', e);
+                           console.error('Contenu de la réponse:', text);
+                           
+                           // Si la réponse contient du HTML, c'est probablement une page d'erreur
+                           if (text.includes('<!DOCTYPE html>')) {
+                               throw new Error('Le serveur a renvoyé une page HTML au lieu de JSON. Veuillez réessayer.');
+                           }
+                           
+                           throw e; // Propager l'erreur originale
+                       }
+                   });
+               })
+               .then(data => {
+                   console.log('Réponse du serveur:', data);
+                   if (data.success) {
+                       userScore = data.totalPoints;
+                       updateScoreDisplay(); // Utiliser la fonction pour mettre à jour l'affichage
+                       
+                       // Stocker les points mis à jour dans localStorage pour la synchronisation entre pages
+                       localStorage.setItem('userPoints', userScore);
+                       console.log('Points mis à jour dans localStorage:', userScore);
+                       
+                       createParticles();
+                       alert(`✨ Félicitations! Vous avez gagné: ${data.reward} (${data.pointsWon} points)`);
+                       const date = new Date().toLocaleDateString();
+                       spinHistory.unshift({ date, reward: data.reward });
+                       if (spinHistory.length > 10) spinHistory.pop();
+                       localStorage.setItem('spinHistory', JSON.stringify(spinHistory));
+                       updateHistory();
+                   } else {
+                       alert('Erreur lors de l\'enregistrement des points : ' + data.message);
+                   }
+               })
+               .catch(error => {
+                   console.error('Erreur lors de la requête AJAX:', error);
+                   alert('Une erreur est survenue lors de la sauvegarde des points : ' + error.message);
+                   // Réactiver le bouton pour permettre à l'utilisateur de réessayer
+                   spinning = false;
+                   spinBtn.disabled = false;
+               });
+           }
+
+        function updateHistory() {
+            historyBody.innerHTML = '';
+            spinHistory.forEach(entry => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${entry.date}</td><td>${entry.reward}</td>`;
+                historyBody.appendChild(tr);
+            });
+        }
+
+        spinBtn.addEventListener('click', spinWheel);
+
+        // Appeler la fonction d'initialisation au chargement
+        loadFontAndDraw();
+    </script>
+</body>
+</html>

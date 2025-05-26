@@ -1,0 +1,2 @@
+vich_uploader:
+    db_driver: orm  # or 'mongodb'/'phpcr' if you're using those

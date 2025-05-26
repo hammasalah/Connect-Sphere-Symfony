@@ -1,0 +1,250 @@
+{# templates/job_feed/jobfeed.html.twig #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Job Feed | ConnectSphere{% endblock %}</title>
+    
+    {% block stylesheets %}
+        {# Consistent Font Awesome & Google Fonts #}
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        
+        {# Link to a global CSS or the events_page.css for shared styles (header, footer, variables) #}
+        <link rel="stylesheet" href="{{ asset('css/events_page.css') }}"> 
+        
+        {# Specific styles for this job feed page #}
+        <link rel="stylesheet" href="{{ asset('css/job_feed.css') }}"> 
+        
+        {# Bootstrap for modal and potentially other utilities if needed #}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% endblock %}
+</head>
+<body>
+
+    {% block page_header %}
+    <!-- Standard Header -->
+    <header class="header">
+        <nav class="nav-container container">
+            <div class="logo">
+                <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:10px;">
+                    <span style="font-weight:bold;font-size:1.5rem;color:black;">ConnectSphere</span>
+                </a>
+            </div>
+            <div class="nav-links">
+        <a href="{{ path('app_events') }}" class="nav-link">Events</a>
+        <a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
+        <a href="{{ path('app_analytics') }}" class="nav-link">Analytics</a>
+        <a href="{{ path('app_groups') }}" class="nav-link">Groups</a>
+        <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+        <a href="{{ path('app_profile') }}" class="nav-link">Profile</a>
+        <a href="{{ path('app_social') }}" class="nav-link">Social</a>
+            </div>
+        </nav>
+    </header>
+    {% endblock %}
+
+    {% block body %}
+<main class="job-feed-page-container">
+    <div class="container py-4"> 
+        <div class="job-feed-controls-header">
+             <h1 class="page-title">All Available Jobs</h1>
+             <div class="new-job-action">
+                <a href="{{ path('app_create_job') }}" class="btn btn-add-job-page">Post New Job</a>
+             </div>
+        </div>
+
+        <div class="jobs-list">
+            {% if jobs|length > 0 %}
+                {% for job in jobs %}
+                    <div class="job-card"> {# Main card container #}
+                        <div class="job-card-header"> 
+                            <h2 class="job-title">{{ job.jobTitle }}</h2>
+                            <div class="job-meta">
+                                {% if job.eventTitle %}
+                                <span class="job-event-title"><i class="fas fa-calendar-check"></i> {{ job.eventTitle }}</span>
+                                {% endif %}
+                                <span class="salary-badge">{{ job.currency }} {{ job.minSalary|number_format(0, '.', ',') }} - {{ job.maxSalary|number_format(0, '.', ',') }}</span>
+                            </div>
+                        </div>
+
+                        <div class="job-card-content"> {# New wrapper for better padding/layout control #}
+                            <div class="job-card-body"> {# Still using grid for columns #}
+                                <div class="job-left-column">
+                                    <h3 class="section-title-sm">Job Details</h3>
+
+                                    <div class="job-detail-item">
+                                        <div class="job-detail-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                        <div class="job-detail-text">
+                                            <span class="job-detail-label">Location:</span>
+                                            <span class="job-detail-value">{{ job.jobLocation }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="job-detail-item">
+                                        <div class="job-detail-icon"><i class="fas fa-briefcase"></i></div>
+                                        <div class="job-detail-text">
+                                            <span class="job-detail-label">Type:</span>
+                                            <span class="job-detail-value">{{ job.employmentType }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="job-detail-item">
+                                        <div class="job-detail-icon"><i class="fas fa-user-tie"></i></div>
+                                        <div class="job-detail-text">
+                                            <span class="job-detail-label">Recruiter:</span>
+                                            <span class="job-detail-value">{{ job.recruiterName }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="job-detail-item">
+                                        <div class="job-detail-icon"><i class="fas fa-envelope"></i></div>
+                                        <div class="job-detail-text">
+                                            <span class="job-detail-label">Contact:</span>
+                                            <span class="job-detail-value">{{ job.recruiterEmail }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="job-right-column">
+                                    <h3 class="section-title-sm">Key Information</h3> 
+                                    <div class="key-info">
+                                        {% if job.applicationDeadLine %}
+                                            <div class="deadline-info">
+                                                <div class="deadline-icon"><i class="fas fa-hourglass-half"></i></div> {# Changed icon #}
+                                                <div class="deadline-details">
+                                                    <div class="deadline-label">Apply by:</div>
+                                                    <div class="deadline-value">{{ job.applicationDeadLine | date("F d, Y") }}</div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        {% if job.createdAt %}
+                                        <p class="job-posted-date"><i class="fas fa-calendar-plus"></i> Posted: {{ job.createdAt|date('M d, Y') }}</p> {# Shorter date format #}
+                                        {% endif %}
+
+                                        <button class="btn btn-apply apply-button" onclick="openModal('{{ job.id }}', '{{ job.jobTitle|escape('js') }}')">
+                                            <i class="fas fa-paper-plane"></i> Apply Now
+                                        </button>
+                                        <button class="btn btn-share share-button">
+                                            <i class="fas fa-share-alt"></i> Share Job
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="job-description">
+                                <h3 class="section-title-sm">Description</h3>
+                                <div class="job-description-text">
+                                    {{ job.jobDescreption | nl2br }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-jobs-message">
+                    No jobs currently available. Check back soon! <a href="{{ path('app_create_job') }}">Post a Job?</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</main>
+    {% endblock %}
+
+    {% block page_footer %}
+    <!-- Standard Footer -->
+    <footer class="site-footer">
+        <div class="footer-content container">
+            <div class="footer-column">
+                <h4>ConnectSphere</h4>
+                <p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p>
+            </div>
+            <div class="footer-column">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{{ path('app_home') }}">Home</a></li>
+                    <li><a href="{{ path('app_events') }}">Events</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-column footer-contact">
+                <h4>Contact Us</h4>
+                <p><i class="fas fa-phone"></i><a href="tel:+21692160411">+216 92 160 411</a></p>
+                <p><i class="fas fa-envelope"></i><a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p>
+            </div>
+            <div class="footer-column">
+                <h4>Follow Us</h4>
+                <div class="footer-social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
+    </footer>
+    {% endblock %}
+
+    {# Application Modal - Keep as is, but ensure Bootstrap JS is loaded #}
+    <div class="modal fade" id="applicationModal" tabindex="-1" aria-labelledby="applicationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg"> {# Larger modal for better form layout #}
+            <div class="modal-content">
+                <form id="applicationForm" method="POST" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="applicationModalLabel">Apply for: <span id="modalJobTitle">Position</span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="cover_letter" class="form-label">Cover Letter</label>
+                            <textarea class="form-control" id="cover_letter" name="cover_letter" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="resume" class="form-label">Resume/CV (PDF only)</label>
+                            <input class="form-control" type="file" id="resume" name="resume" accept="application/pdf" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit Application</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% block javascripts %}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            var applicationModal; // Make modal instance globally accessible in this script
+            document.addEventListener('DOMContentLoaded', function() {
+                if (document.getElementById('applicationModal')) {
+                    applicationModal = new bootstrap.Modal(document.getElementById('applicationModal'));
+                }
+            });
+
+            function openModal(jobId, jobTitle) { // Pass jobTitle to the modal
+                if (applicationModal) {
+                    const form = document.getElementById('applicationForm');
+                    // Ensure your apply_job route can handle jobId
+                    form.action = "{{ url('apply_job', {'jobId': 'JOB_ID_PLACEHOLDER'}) }}".replace('JOB_ID_PLACEHOLDER', jobId);
+                    document.getElementById('modalJobTitle').textContent = jobTitle; // Update modal title
+                    applicationModal.show();
+                } else {
+                    console.error('Application modal not initialized');
+                }
+            }
+
+            // Note: The closeModal function is not strictly needed if using Bootstrap's data-bs-dismiss
+            // function closeModal() {
+            //     if (applicationModal) {
+            //         applicationModal.hide();
+            //     }
+            // }
+        </script>
+    {% endblock %}
+</body>
+</html>

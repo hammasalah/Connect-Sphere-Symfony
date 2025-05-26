@@ -1,0 +1,163 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ group.name }} - Connect Sphere{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/viewgroups.css') }}">
+    <style>
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .member-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background-color: #4e54c8;
+            color: white;
+        }
+
+        .badge-member {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .group-image {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            object-fit: cover;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="groups-container">
+    <div class="group-view-container">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        <div class="group-header">
+            <div class="group-info">
+                {% if group.profilePicture %}
+                    <img src="{{ asset(group.profilePicture) }}" alt="Group Image" class="group-image">
+                {% endif %}
+
+                <h1 class="group-title">{{ group.name }}</h1>
+                <p class="group-creator">Created by {{ group.creatorId.username }} on {{ group.createdAt|date('M d, Y') }}</p>
+                <p>{{ group.description }}</p>
+
+                <div class="group-actions" style="margin-top: 1rem;">
+                    {% if isMember %}
+                        <a href="{{ path('app_group_leave', {'id': group.id}) }}" class="group-btn group-btn-danger">Leave Group</a>
+                    {% else %}
+                        <a href="{{ path('app_group_join', {'id': group.id}) }}" class="group-btn group-btn-primary">Join Group</a>
+                    {% endif %}
+
+                    {% if group.creatorId.id == currentUser.id %}
+                        <a href="{{ path('app_group_edit', {'id': group.id}) }}" class="group-btn group-btn-outline">Edit Group</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="group-rules">
+            <h3 class="group-rules-title">Group Rules</h3>
+            <p>{{ group.rules }}</p>
+        </div>
+
+        <div class="members-section">
+            <h2 class="section-title">Members ({{ members|length }})</h2>
+
+            {% if group.creatorId.id == currentUser.id or isMember %}
+                <div style="margin-bottom: 1.5rem;">
+                    <form method="get" action="{{ path('app_group_invite', {'groupId': group.id}) }}" class="form-inline">
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" name="search" class="form-control" placeholder="Search friends to invite" required style="flex: 1;">
+                            <button type="submit" class="group-btn group-btn-primary" style="width: auto; padding: 0.5rem 1rem;">Invite</button>
+                        </div>
+                    </form>
+                </div>
+
+                {% if nonMembers is defined %}
+                    <div class="search-results">
+                        <h4>Search Results</h4>
+                        {% if nonMembers|length > 0 %}
+                            <div class="members-grid">
+                                {% for user in nonMembers %}
+                                    <div class="member-card">
+                                        <div class="member-info">
+                                            <h4 class="member-name">{{ user.username }}</h4>
+                                            <a href="{{ path('app_group_add_member', {'groupId': group.id, 'userId': user.id}) }}" 
+                                               class="group-btn group-btn-primary" style="padding: 0.25rem 0.5rem;">
+                                                Invite
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p>No users found or all users are already members</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="members-section">
+            <div class="members-grid">
+                {% for member in members %}
+                    <div class="member-card">
+                        <div class="member-info">
+                            <h4 class="member-name">{{ member.userId.username }}</h4>
+                            <p class="member-role">
+                                <span class="badge {% if member.role == 'admin' %}badge-admin{% else %}badge-member{% endif %}">
+                                    {{ member.role }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

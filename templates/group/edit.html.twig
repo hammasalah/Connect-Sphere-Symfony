@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit {{ group.name }} - Connect Sphere{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/creategroups.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="groups-container">
+    <div class="group-view-container">
+        <h1 class="groups-title">Edit Group</h1>
+        
+        <form method="post" class="group-form">
+            <div class="form-group">
+                <label for="name">Group Name</label>
+                <input type="text" id="name" name="name" class="form-control" value="{{ group.name }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" class="form-control" rows="3" required>{{ group.description }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="rules">Group Rules</label>
+                <textarea id="rules" name="rules" class="form-control" rows="5" required>{{ group.rules }}</textarea>
+            </div>
+            
+{#             <div class="form-group">
+                <label for="profile_picture">Profile Picture URL</label>
+                <input type="text" id="profile_picture" name="profile_picture" class="form-control" value="{{ group.profile_picture }}">
+            </div> #}
+            
+            <div class="form-actions">
+                <a href="{{ path('app_groups')}}" class="group-btn group-btn-outline">Cancel</a>
+                <button type="submit" class="group-btn group-btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

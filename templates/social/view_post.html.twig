@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ posts[0].post.content|slice(0, 50) }}... - Connect Sphere</title>
+    
+    <!-- Métadonnées Open Graph pour le partage sur les réseaux sociaux -->
+    <meta property="og:title" content="{{ posts[0].post.content|slice(0, 100) }}" />
+    <meta property="og:description" content="{{ posts[0].post.content }}" />
+    <meta property="og:url" content="{{ absolute_url(path('app_social_view_post', {id: posts[0].post.id})) }}" />
+    {% if posts[0].post.imagePath %}
+    <meta property="og:image" content="{{ absolute_url(posts[0].post.imagePath) }}" />
+    {% endif %}
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Connect Sphere" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/social.css') }}">
+    
+    <!-- Styles pour le menu déroulant des options de post -->
+    <style>
+        .post-options {
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .dropdown-menu {
+            min-width: 180px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .dropdown-item {
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-item.text-danger:hover {
+            background-color: #fff5f5;
+        }
+    </style>
+    
+    <!-- Scripts Bootstrap pour les menus déroulants -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>Connect Sphere</h2>
+    </div>
+    <div class="sidebar-profile">
+        <img src="/uploads/images/default-avatar.png" alt="Profile">
+        <div>Utilisateur</div>
+    </div>
+    <ul class="sidebar-menu">
+        <li class="active"><a href="{{ path('app_social') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="#"><i class="fas fa-calendar-alt"></i> Events</a></li>
+        <li><a href="#"><i class="fas fa-users"></i> Group</a></li>
+        <li><a href="#"><i class="fas fa-briefcase"></i> Job Feed</a></li>
+        <li><a href="#"><i class="fas fa-plus-circle"></i> Create Job</a></li>
+        <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a href="#"><i class="fas fa-robot"></i> AI assistant</a></li>
+        <li><a href="{{ path('app_logout') }}" class="logout-link"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="container">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+        
+        <div class="feed-header">
+            <h1>Post individuel</h1>
+            <a href="{{ path('app_social') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Retour</a>
+        </div>
+        
+        <div class="feed">
+        {% for post in posts %}
+            <article class="post-card-grid">
+                <div class="post-header-simple">
+                    <div class="user-info">
+                        <div class="username">{{ post.user.username }}</div>
+                        <div class="post-date">{{ post.post.timeStamp|date('d/m/Y H:i') }}</div>
+                    </div>
+                    {% if currentUser and post.user.id == currentUser.id %}
+                    <div class="post-options dropdown">
+                        <i class="fas fa-ellipsis-h" id="dropdownMenuButton-{{ post.post.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton-{{ post.post.id }}">
+                            <a class="dropdown-item" href="{{ path('app_social_edit_post', {id: post.post.id}) }}">
+                                <i class="fas fa-edit mr-2"></i> Modifier
+                            </a>
+                            <form action="{{ path('app_social_delete_post', {id: post.post.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?');">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-trash-alt mr-2"></i> Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if post.post.imagePath %}
+                <div class="post-image">
+                    <img src="{{ post.post.imagePath }}" alt="Post image">
+                </div>
+                {% endif %}
+                
+                <div class="post-text-content">
+                    {{ post.post.content }}
+                </div>
+                
+                <div class="post-actions-simple">
+                    <div class="action-buttons">
+                        <form action="{{ path('app_social_like_post', {id: post.post.id}) }}" method="post" class="like-form">
+                            <button type="submit" class="btn-icon {% if post.userLiked %}liked{% endif %}">
+                                <i class="{% if post.userLiked %}fas{% else %}far{% endif %} fa-heart"></i>
+                            </button>
+                        </form>
+                        <a href="#comments-{{ post.post.id }}" class="btn-icon">
+                            <i class="far fa-comment"></i>
+                        </a>
+                        
+                        <!-- Menu déroulant pour le partage externe -->
+                        <div class="share-dropdown">
+                            <button type="button" class="btn-icon share-toggle" data-id="{{ post.post.id }}">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <div id="share-options-{{ post.post.id }}" class="share-options">
+                                <button onclick="shareOnFacebook('{{ absolute_url(path('app_social_view_post', {id: post.post.id})) }}', 'Voir ce post', '{{ post.post.content|slice(0, 100) }}')" class="share-btn facebook">
+                                    <i class="fab fa-facebook-f"></i> Facebook
+                                </button>
+                                <button onclick="shareOnTwitter('{{ absolute_url(path('app_social_view_post', {id: post.post.id})) }}', '{{ post.post.content|slice(0, 100) }}')" class="share-btn twitter">
+                                    <i class="fab fa-twitter"></i> Twitter
+                                </button>
+                                <button onclick="shareOnLinkedIn('{{ absolute_url(path('app_social_view_post', {id: post.post.id})) }}', 'Voir ce post', '{{ post.post.content|slice(0, 100) }}')" class="share-btn linkedin">
+                                    <i class="fab fa-linkedin-in"></i> LinkedIn
+                                </button>
+                                <button onclick="shareOnWhatsApp('{{ absolute_url(path('app_social_view_post', {id: post.post.id})) }}', '{{ post.post.content|slice(0, 100) }}')" class="share-btn whatsapp">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-stats">
+                        <div class="like-stat">{{ post.likeCount }} J'aime</div>
+                    </div>
+                    
+                    <div class="post-caption">
+                        <span class="caption-username">{{ post.user.username }}</span>
+                        <span class="caption-text">{{ post.post.content }}</span>
+                    </div>
+                    
+                    <div class="comments-preview" id="comments-{{ post.post.id }}">
+                        <a href="#comments-{{ post.post.id }}" class="view-comments">Voir les commentaires ({{ post.comments|length }})</a>
+                        {% for comment in post.comments|slice(0, 3) %}
+                            <div class="comment-preview">
+                                <span class="comment-username">{{ comment.userId.username }}</span>
+                                <span class="comment-text">{{ comment.content }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="comment-form-simple">
+                    <form action="{{ path('app_social_add_comment', {id: post.post.id}) }}" method="post">
+                        <input type="text" name="content" placeholder="Ajouter un commentaire..." required>
+                        <button type="submit" class="btn-submit-comment">
+                            <i class="far fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </article>
+        {% else %}
+            <div class="empty-feed">
+                <i class="far fa-sad-tear fa-3x"></i>
+                <p>Aucun post à afficher pour le moment.</p>
+                <p>Soyez le premier à partager quelque chose !</p>
+            </div>
+        {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ajouter le script pour les fonctionnalités de partage -->
+<script src="{{ asset('js/social-share.js') }}"></script>
+</body>
+</html>

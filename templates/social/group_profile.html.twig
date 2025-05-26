@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Groupe - Connect Sphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/social.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-social.css') }}">
+    
+    <!-- jQuery et Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<!-- Navbar horizontale -->    
+<header class="navbar-social">
+    <div class="container-fluid">
+        <div class="navbar-content">
+            <div class="navbar-brand">
+                <a href="{{ path('app_root') }}">
+                    <img src="{{ asset('images/logo.png') }}" alt="ConnectSphere" class="logo-img">
+                </a>
+            </div>
+            <div class="search-container">
+                    <div class="search-form">
+                        <input type="text" name="search" id="searchInput" placeholder="Search users /groups" class="search-input" autocomplete="off">
+                        <button type="button" class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="search-dropdown" id="searchDropdown"></div>
+                </div>
+         
+            
+            <button class="mobile-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="navbar-links">
+                <a href="{{ path('app_root') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="{{ path('app_social') }}" class="nav-link"><i class="fas fa-users"></i> Feed</a>
+                <a href="{{ path('app_job_feed') }}" class="nav-link"><i class="fas fa-briefcase"></i> Jobs</a>
+                <a href="{{ path('app_events') }}" class="nav-link"><i class="fas fa-calendar-alt"></i> Events</a>
+            </div>
+            
+            <!-- Ajout de l'icône profil utilisateur avec menu déroulant -->
+            <div class="profile-dropdown">
+                <div class="dropdown-toggle">
+                    <img src="{{ asset('images/profile-modified.png') }}" alt="Photo par défaut" class="profile-img">
+                    <span class="d-none d-md-inline">{{ app.session.get('user') ? app.session.get('user').username : 'Invité' }}</span>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="{{ path('app_social_user_profile', {id: app.session.get('user').id}) }}" class="dropdown-item">
+                        <i class="fas fa-user"></i> Mon profil
+                    </a>
+                    <a href="{{ path('app_social_follow_requests') }}" class="dropdown-item">
+                        <i class="fas fa-user-plus"></i> Demandes de suivi
+                        <span class="badge badge-danger ml-2">{{ pendingRequestsCount|default(0) }}</span>
+                    </a>
+                    
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ path('app_logout') }}" class="dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="container">
+        <style>
+            /* Styles pour le contenu principal avec la navbar */
+            .main-content {
+                padding-top: 80px; /* Espace pour la navbar fixe */
+                min-height: 100vh;
+                background-color: #f8f9fa;
+            }
+            
+            .container {
+                max-width: 1140px;
+                margin: 0 auto;
+                padding: 20px 15px;
+            }
+            
+            /* Styles pour les états de membre */
+            .member-status {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .badge {
+                padding: 8px 12px;
+                font-size: 14px;
+                border-radius: 4px;
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+            }
+            
+            .badge-success {
+                background-color: #28a745;
+                color: white;
+            }
+            
+            .badge-warning {
+                background-color: #ffc107;
+                color: #212529;
+            }
+            
+            .btn-outline-danger {
+                color: #dc3545;
+                border-color: #dc3545;
+                background-color: transparent;
+                transition: all 0.3s ease;
+            }
+            
+            .btn-outline-danger:hover {
+                color: white;
+                background-color: #dc3545;
+            }
+            
+            .btn-outline-secondary {
+                color: #6c757d;
+                border-color: #6c757d;
+                background-color: transparent;
+                transition: all 0.3s ease;
+            }
+            
+            .btn-outline-secondary:hover {
+                color: white;
+                background-color: #6c757d;
+            }
+            
+            .btn-sm {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.875rem;
+                line-height: 1.5;
+                border-radius: 0.2rem;
+            }
+            
+            .ml-2 {
+                margin-left: 0.5rem;
+            }
+            
+            /* Responsive */
+            @media (max-width: 768px) {
+                .main-content {
+                    padding-top: 60px; /* Ajustement pour les écrans plus petits */
+                }
+                
+                .member-status {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+                
+                .ml-2 {
+                    margin-left: 0;
+                    margin-top: 0.5rem;
+                }
+            }
+        </style>
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+        
+        <div class="feed-header">
+            <h1>Groupe: {{ group.name }}</h1>
+           
+            <a href="{{ path('app_social') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Retour au Feed
+            </a>
+        </div>
+        
+        <!-- Profil du groupe -->
+        <div class="group-profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <img src="/uploads/images/default-group.png" alt="{{ group.name }}">
+                </div>
+                <div class="profile-info">
+                    <h2>{{ group.name }}</h2>
+                    <p class="profile-description">{{ group.description }}</p>
+                </div>
+            </div>
+            <div class="profile-actions">
+                {% if isMember is defined and isMember %}
+                    <div class="member-status">
+                        <span class="badge badge-success">
+                            <i class="fas fa-check-circle"></i> Vous êtes membre
+                        </span>
+                        <form action="{{ path('app_social_leave_group', {id: group.id}) }}" method="post" class="ml-2">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-sign-out-alt"></i> Quitter le groupe
+                            </button>
+                        </form>
+                    </div>
+                {% elseif isPending is defined and isPending %}
+                    <div class="member-status">
+                        <span class="badge badge-warning">
+                            <i class="fas fa-clock"></i> Demande en attente
+                        </span>
+                        <form action="{{ path('app_social_cancel_join_group', {id: group.id}) }}" method="post" class="ml-2">
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-times"></i> Annuler la demande
+                            </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <form action="{{ path('app_social_join_group', {id: group.id}) }}" method="post">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Rejoindre le groupe
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Formulaire d'ajout de post pour le groupe -->
+        <div class="add-post-section">
+            <h3>Ajouter une publication au groupe</h3>
+            <form action="{{ path('app_social_group_add_post', {id: group.id}) }}" method="post" enctype="multipart/form-data" class="add-post-form">
+                <textarea name="content" placeholder="Partagez quelque chose avec le groupe..." required></textarea>
+                <div class="form-actions">
+                    <div class="file-input-wrapper">
+                        <label for="image_file" class="file-label">
+                            <i class="fas fa-image"></i> Ajouter une image
+                        </label>
+                        <input type="file" id="image_file" name="image_file" accept="image/*" class="file-input">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Publier
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Publications du groupe -->
+        <div class="group-posts-section">
+            <h2>Publications du groupe</h2>
+            
+            {% if posts|length > 0 %}
+                <div class="feed-grid">
+                    {% for post in posts %}
+                        <article class="post-card-grid">
+                            <div class="post-header-simple">
+                                <div class="user-info">                                    <span class="username">{{ post.user.username }}</span>
+                                    <span class="post-date">{{ post.post.timestamp|date('d M Y H:i') }}</span>
+                                </div>
+                                {% if currentUser and post.user.id == currentUser.id %}
+                                    <div class="post-options dropdown">
+                                        <button class="btn-icon" type="button" data-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a href="{{ path('app_social_edit_post', {id: post.post.id}) }}" class="dropdown-item">
+                                                <i class="fas fa-edit"></i> Modifier
+                                            </a>
+                                            <a href="{{ path('app_social_delete_post', {id: post.post.id}) }}" class="dropdown-item text-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post?')">
+                                                <i class="fas fa-trash"></i> Supprimer
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="post-content-simple">
+                                {% if post.post.mediaUrl %}
+                                    <img src="{{ post.post.mediaUrl }}" alt="Image du post" class="post-image-grid">
+                                {% endif %}
+                                <div class="post-text-content">{{ post.post.content }}</div>
+                            </div>
+                            <div class="post-actions-simple">
+                                <div class="action-buttons">
+                                    <form action="{{ path('app_social_like_post', {id: post.post.id}) }}" method="post" class="like-form">
+                                        <button type="submit" class="btn-icon {% if post.userLiked %}active{% endif %}">
+                                            <i class="{% if post.userLiked %}fas{% else %}far{% endif %} fa-heart"></i>
+                                        </button>
+                                    </form>
+                                    <a href="#comments-{{ post.post.id }}" class="btn-icon">
+                                        <i class="far fa-comment"></i>
+                                    </a>
+                                </div>
+                                <div class="post-stats">
+                                    <div class="like-stat">{{ post.likeCount }} J'aime</div>
+                                    <div class="comment-stat">{{ post.comments|length }} Commentaires</div>
+                                </div>
+                                
+                                <div class="comments-section" id="comments-{{ post.post.id }}">
+                                    <div class="comments-list">
+                                        {% for comment in post.comments %}
+                                            <div class="comment">
+                                                <strong>{{ comment.userId.username }}</strong>
+                                                <span>{{ comment.content }}</span>
+                                                <small class="comment-date">{{ comment.createdAt|date('d M Y H:i') }}</small>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    
+                                    <form action="{{ path('app_social_add_comment', {id: post.post.id}) }}" method="post" class="comment-form">
+                                        <input type="text" name="content" placeholder="Ajouter un commentaire..." required>
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-feed">
+                    <i class="far fa-sad-tear fa-3x"></i>
+                    <p>Aucune publication dans ce groupe pour le moment.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="{{ asset('js/social-share.js') }}"></script>
+<script src="{{ asset('js/search-dropdown.js') }}"></script>
+<script>
+    // Gestion du menu mobile
+    document.querySelector('.mobile-toggle').addEventListener('click', function() {
+        document.querySelector('.navbar-links').classList.toggle('active');
+    });
+    
+    // Gestion du dropdown profil
+    document.querySelector('.profile-dropdown .dropdown-toggle').addEventListener('click', function(e) {
+        e.stopPropagation();
+        document.querySelector('.profile-dropdown .dropdown-menu').classList.toggle('show');
+    });
+    
+    // Empêcher la fermeture du dropdown quand on clique sur un élément du menu
+    document.querySelector('.profile-dropdown .dropdown-menu').addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+    
+    // Fermer le dropdown quand on clique ailleurs sur la page
+    document.addEventListener('click', function() {
+        document.querySelector('.profile-dropdown .dropdown-menu').classList.remove('show');
+    });
+    
+    // Fermer automatiquement les alertes après 5 secondes
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            alert.style.opacity = '0';
+            setTimeout(function() {
+                alert.style.display = 'none';
+            }, 500);
+        });
+    }, 5000);
+</script>
+</body>
+</html>

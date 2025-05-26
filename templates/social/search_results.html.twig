@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats de recherche - ConnectSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">    <link rel="stylesheet" href="{{ asset('css/social.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar-social.css') }}">
+    
+    <!-- jQuery et Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <!-- Navbar horizontale -->    
+    <header class="navbar-social">
+        <div class="container-fluid">
+            <div class="navbar-content">
+                <div class="navbar-brand">
+                    <a href="{{ path('app_root') }}">
+                        <img src="{{ asset('images/logo.png') }}" alt="ConnectSphere" class="logo-img">
+                        <span>ConnectSphere</span>
+                    </a>
+                </div>
+                
+                <div class="search-container">
+                    <div class="search-form">
+                        <input type="text" name="search" id="searchInput" placeholder="Search users /groups" class="search-input" autocomplete="off">
+                        <button type="button" class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="search-dropdown" id="searchDropdown"></div>
+                </div>
+                
+                <button class="mobile-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <div class="navbar-links">
+                    <a href="{{ path('app_root') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                    <a href="{{ path('app_social') }}" class="nav-link active"><i class="fas fa-users"></i> Feed</a>
+                    <a href="{{ path('app_job_feed') }}" class="nav-link"><i class="fas fa-briefcase"></i> Jobs</a>
+                    <a href="{{ path('app_events') }}" class="nav-link"><i class="fas fa-calendar-alt"></i> Events</a>
+                </div>
+                
+                <div class="profile-dropdown">
+                    <div class="dropdown-toggle">
+                        <img src="{{ asset('images/profile-modified.png') }}" alt="Photo par défaut" class="profile-img">
+                        <span class="d-none d-md-inline">{{ app.session.get('user') ? app.session.get('user').username : 'Invité' }}</span>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="{{ path('app_social_user_profile', {id: app.session.get('user').id}) }}" class="dropdown-item">
+                            <i class="fas fa-user"></i> Mon profil
+                        </a>
+                        <a href="{{ path('app_social_follow_requests') }}" class="dropdown-item">
+                            <i class="fas fa-user-plus"></i> Demandes de suivi
+                            <span class="badge badge-danger ml-2">{{ follow_requests_count|default(0) }}</span>
+                        </a>
+                        <a href="{{ path('app_social_notifications') }}" class="dropdown-item">
+                            <i class="fas fa-bell"></i> Notifications
+                            <span class="badge badge-danger ml-2">{{ notifications_count|default(0) }}</span>
+                        </a>
+                        
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ path('app_logout') }}" class="dropdown-item text-danger">
+                            <i class="fas fa-sign-out-alt"></i> Déconnexion
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="container">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                    <span class="alert-icon">
+                        {% if label == 'success' %}
+                            <i class="fas fa-check-circle"></i>
+                        {% elseif label == 'danger' %}
+                            <i class="fas fa-exclamation-circle"></i>
+                        {% elseif label == 'warning' %}
+                            <i class="fas fa-exclamation-triangle"></i>
+                        {% elseif label == 'info' %}
+                            <i class="fas fa-info-circle"></i>
+                        {% endif %}
+                    </span>
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="feed-header mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-0">Résultats de recherche</h1>
+            </div>
+        </div>
+        
+        {% if results is defined and results is not empty and (results.users is not empty or results.groups is not empty) %}
+            <div class="feed-grid">
+                {% if results.users is defined and results.users is not empty %}
+                    <div class="section-title mb-4">
+                        <h2>Utilisateurs</h2>
+                    </div>
+                    {% for user in results.users %}
+                        <article class="post-card-grid mb-4">
+                            <div class="post-header-simple d-flex align-items-center">
+                                <div class="user-avatar mr-3">
+                                    <img src="{{ asset('images/profile-modified.png') }}" alt="{{ user.username }}" class="rounded-circle" style="width: 50px; height: 50px;">
+                                </div>
+                                <div class="user-info">
+                                    <h3 class="mb-1 username">{{ user.username }}</h3>
+                                    <p class="text-muted mb-0 post-date">{{ user.email }}</p>
+                                </div>
+                                <div class="ml-auto">
+                                    <a href="{{ path('app_social_user_profile', {id: user.id}) }}" class="btn btn-primary">
+                                        <i class="fas fa-user"></i> Voir le profil
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                {% endif %}
+                
+                {% if results.groups is defined and results.groups is not empty %}
+                    <div class="section-title mb-4 mt-5">
+                        <h2>Groupes</h2>
+                    </div>
+                    {% for group in results.groups %}
+                        <article class="post-card-grid mb-4">
+                            <div class="post-header-simple d-flex align-items-center">
+                                <div class="group-avatar mr-3">
+                                    <img src="{{ group.profilePicture }}" alt="{{ group.name }}" class="rounded-circle" style="width: 50px; height: 50px;">
+                                </div>
+                                <div class="group-info">
+                                    <h3 class="mb-1 username">{{ group.name }}</h3>
+                                    <p class="text-muted mb-0 post-date">{{ group.description }}</p>
+                                </div>
+                                <div class="ml-auto">
+                                    <a href="{{ path('app_social_group_profile', {id: group.id}) }}" class="btn btn-primary">
+                                        <i class="fas fa-users"></i> Voir le groupe
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="empty-feed text-center py-5">
+                {% if results.searchTerm is defined and results.searchTerm is not empty %}
+                    <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                    <h3 class="mb-3">Aucun résultat trouvé pour "{{ results.searchTerm }}"</h3>
+                    <p class="text-muted">Essayez avec d'autres termes de recherche</p>
+                {% else %}
+                    <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                    <h3 class="mb-3">Commencez votre recherche</h3>
+                    <p class="text-muted">Utilisez la barre de recherche ci-dessus pour trouver des utilisateurs et des groupes</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Script pour la recherche en temps réel -->
+<script src="{{ asset('js/search-dropdown.js') }}"></script>
+</body>
+</html>

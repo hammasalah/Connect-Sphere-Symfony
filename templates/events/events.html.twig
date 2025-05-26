@@ -1,0 +1,398 @@
+{# templates/events/events.html.twig #}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="{{ asset('css/events_page.css') }}">
+{# Bootstrap CSS for alerts and modal close buttons #}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<!-- Header from home page -->
+<header class="header">
+    <nav class="nav-container container">
+      <div class="logo">
+        <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+          <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:10px;">
+          <span style="font-weight:bold;font-size:1.5rem;color:black;">ConnectSphere</span>
+        </a>
+      </div>
+      <div class="nav-links">
+      <a href="{{ path('app_home') }}" class="nav-link">Home</a>
+        <a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
+        <a href="{{ path('app_organizer') }}" class="nav-link">Dashboard</a>
+        <a href="{{ path('app_analytics') }}" class="nav-link">Analaytics</a>
+        <a href="{{ path('app_groups') }}" class="nav-link">Groups</a>
+        <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+        <a href="{{ path('app_profile') }}" class="nav-link">Profile</a>
+        <a href="{{ path('app_social') }}" class="nav-link">Social</a>
+    </nav>
+  </header>
+</header>
+<!-- Main Events Content -->
+<div class="event-list-page">
+    {# --- Top Controls --- #}
+    <div class="events-controls-header">
+        <h1 class="page-title">Events</h1>
+        <form action="{{ path('app_events') }}" method="GET" class="search-filter-form">
+            <input type="text" id="eventSearchField" name="search" class="form-control" placeholder="Search events..." value="{{ app.request.query.get('search') }}">
+            {% if app.request.query.get('category') %}
+                 <input type="hidden" name="category" value="{{ app.request.query.get('category') }}">
+            {% endif %}
+            <button type="submit" class="btn btn-search">Search</button>
+        </form>
+        <div class="new-event-action">
+            <a href="{{ path('app_event_add_page') }}" class="btn btn-add-event-page">New Event</a>
+        </div>
+    </div>
+    <div class="category-filters-section">
+        <div class="category-filters-container">
+            <ul class="category-filters-list">
+                <li class="category-pill{% if not app.request.query.get('category') %} active{% endif %}">
+                    <a href="{{ path('app_events', {'search': app.request.query.get('search')}) }}">
+                        <i class="fas fa-layer-group"></i> All Categories
+                    </a>
+                </li>
+                {% if categories is defined and categories is not empty %}
+                    {% for category in categories %}
+                        <li class="category-pill{% if app.request.query.get('category') == category.id %} active{% endif %}">
+                            <a href="{{ path('app_events', {'search': app.request.query.get('search'), 'category': category.id}) }}">
+                                {% if category.name == 'Technology' %}
+                                    <i class="fas fa-laptop-code"></i>
+                                {% elseif category.name == 'Business' %}
+                                    <i class="fas fa-briefcase"></i>
+                                {% elseif category.name == 'Art' %}
+                                    <i class="fas fa-palette"></i>
+                                {% elseif category.name == 'Music' %}
+                                    <i class="fas fa-music"></i>
+                                {% elseif category.name == 'Food' %}
+                                    <i class="fas fa-utensils"></i>
+                                {% elseif category.name == 'Sports' %}
+                                    <i class="fas fa-running"></i>
+                                {% elseif category.name == 'Education' %}
+                                    <i class="fas fa-graduation-cap"></i>
+                                {% else %}
+                                    <i class="fas fa-calendar-alt"></i>
+                                {% endif %}
+                                {{ category.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    {# --- Flash Messages (for server-side messages) --- #}
+    <div id="server-flash-message-container" style="margin-top: 15px;">
+        {% for label, messages in app.flashes %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                {% for message in messages %}{{ message|raw }}{% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+
+    {# --- Container for AJAX messages --- #}
+    <div id="ajax-message-container" style="margin-top: 15px;"></div>
+
+
+    {# --- Event Grid --- #}
+    <div class="row event-grid-row">
+        {# MODIFIED: Loop over eventsWithStatus instead of events #}
+        {% if eventsWithStatus is defined and eventsWithStatus is not empty %}
+            {% for eventData in eventsWithStatus %}
+                {% set event = eventData.entity %} {# Get the actual event entity from the wrapper #}
+                {% set hasJoined = eventData.hasJoined %} {# Get the participation status #}
+                <div class="event-column">
+                    <div class="card h-100 event-display-card" id="event-card-{{ event.id }}">
+                        {# --- Image Card --- #}
+                        {% set imageSrc = asset('images/default_event.png') %}
+                        {% if event.image is not null and event.image is not empty %}
+                            {% if event.image starts with 'data:' %} {% set imageSrc = event.image %}
+                            {% else %}
+                                {% set base64Data = event.image %} {% set mimeType = 'image/jpeg' %}
+                                {% if base64Data starts with 'iVBO' %} {% set mimeType = 'image/png' %}
+                                {% elseif base64Data starts with '/9j/' %} {% set mimeType = 'image/jpeg' %}
+                                {% elseif base64Data starts with 'R0lG' %} {% set mimeType = 'image/gif' %}
+                                {% elseif base64Data starts with 'PHN2Zy' %} {% set mimeType = 'image/svg+xml' %}
+                                {% endif %}
+                                {% set imageSrc = 'data:' ~ mimeType ~ ';base64,' ~ base64Data %}
+                            {% endif %}
+                        {% endif %}
+                        <div class="card-img-wrapper"><img src="{{ imageSrc }}" class="card-img-top" alt="{{ event.name|default('Event Image') }}"></div>
+                        {# --- Card Body --- #}
+                        <div class="card-body">
+                             <h5 class="card-title">{{ event.name }}</h5>
+                            <div class="event-text-details">
+                                {{ event.description|slice(0, 80)|striptags ~ (event.description|length > 80 ? '...' : '') }}<br>
+                                <small>
+                                    {% if event.startTime %}{{ event.startTime|date('d/m/Y') }}{% endif %}
+                                    {% if event.endTime and event.startTime|date('Y-m-d') != event.endTime|date('Y-m-d') %} - {{ event.endTime|date('d/m/Y') }}{% endif %}<br>
+                                    {{ event.location ?? 'N/A' }} | Cat: {{ event.categoryId.name ?? 'N/A' }}
+                                </small>
+                            </div>
+                            <div class="event-card-actions">
+                                <button type="button" class="btn btn-view-details view-details-btn" data-modal-target="#event-modal-{{ event.id }}">Details</button>
+                                
+                                {# MODIFIED: Conditional class, text, and disabled state for Join button #}
+                                <button type="button" 
+                                        class="btn btn-participate join-event-btn {% if hasJoined %}joined{% endif %}" 
+                                        data-event-id="{{ event.id }}"
+                                        {% if hasJoined %}disabled{% endif %}>
+                                    {% if hasJoined %}
+                                        <i class="fas fa-check"></i> Joined
+                                    {% else %}
+                                        Join
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# --- Event Modal --- #}
+                <div class="event-modal-overlay" id="event-modal-{{ event.id }}">
+                    <div class="event-modal-content">
+                         <button type="button" class="event-modal-close-x close-modal-btn">×</button>
+                        <div class="event-modal-body">
+                             <div class="event-modal-image-wrapper"><img src="{{ imageSrc }}" class="event-modal-image" alt="{{ event.name }}"></div>
+                             <h3 class="event-modal-title">{{ event.name }}</h3>
+                             <p class="event-modal-description">{{ event.description|striptags }}</p>
+                             <div class="event-modal-details">
+                                 <strong>Date:</strong> {% if event.startTime %}{{ event.startTime|date('d/m/Y H:i') }}{% else %}N/A{% endif %} - {% if event.endTime %}{{ event.endTime|date('d/m/Y H:i') }}{% else %}N/A{% endif %}<br>
+                                 <strong>Location:</strong> {{ event.location ?? 'N/A' }}<br>
+                                 <strong>Category:</strong> {{ event.categoryId.name ?? 'N/A' }}<br>
+                                 <strong>Points:</strong> {{ event.points ?? '0' }}
+                             </div>
+                        </div>
+                         <div class="event-modal-footer">
+                             <div class="share-icons">
+                                 {% set event_url = url('app_events', {'search': event.name|url_encode}) %}
+                                 {% set share_text = "Check out this event: " ~ event.name ~ " on ConnectSphere! " ~ event_url %}
+                                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ event_url|url_encode }}" target="_blank" rel="noopener noreferrer" title="Share on Facebook" class="facebook-share"><i class="fab fa-facebook-square"></i></a>
+                                 <a href="https://api.whatsapp.com/send?text={{ share_text|url_encode }}" target="_blank" rel="noopener noreferrer" title="Share on WhatsApp" class="whatsapp-share"><i class="fab fa-whatsapp-square"></i></a>
+                                 <a href="#" class="copy-link" data-link="{{ event_url }}" title="Copy Link"><i class="fas fa-copy"></i></a>
+                             </div>
+                             <button type="button" class="btn btn-modal-close close-modal-btn">Close</button>
+                        </div>
+                        <div class="copy-link-feedback">Link Copied!</div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+             <div class="col-12">
+                <div class="no-events-message">
+                   No events match your current filter. <a href="{{ path('app_events') }}">Clear filters?</a> or <a href="{{ path('app_event_add_page') }}" class="{% if app.request.attributes.get('_route') != 'app_event_add_page' %}open-add-event-trigger{% endif %}">Create a new event?</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Footer from home page -->
+<footer class="site-footer">
+    {# ... (your full footer HTML) ... #}
+    <div class="footer-content container">
+        <div class="footer-column">
+            <h4>ConnectSphere</h4>
+            <p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p>
+        </div>
+        <div class="footer-column">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="{{ path('app_home') }}">Home</a></li>
+                <li><a href="{{ path('app_events') }}">Events</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Terms of Service</a></li>
+            </ul>
+        </div>
+        <div class="footer-column footer-contact">
+            <h4>Contact Us</h4>
+            <p><i class="fas fa-phone"></i><a href="tel:+21692160411">+216 92 160 411</a></p>
+            <p><i class="fas fa-envelope"></i><a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p>
+        </div>
+        <div class="footer-column">
+            <h4>Follow Us</h4>
+            <div class="footer-social-icons">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
+</footer>
+{% endblock %}
+
+{% block javascripts %}
+{# Bootstrap JS Bundle for alerts and other components if needed #}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // console.log("JS Events List: Initializing modal and participation listeners.");
+
+    // --- Modal handling ---
+    const viewDetailButtons = document.querySelectorAll('.view-details-btn');
+    viewDetailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const targetModalId = this.getAttribute('data-modal-target');
+            if (targetModalId) {
+                const targetModal = document.querySelector(targetModalId);
+                if (targetModal) targetModal.classList.add('active');
+            }
+        });
+    });
+
+    const closeDetailButtons = document.querySelectorAll('.event-modal-overlay .close-modal-btn, .event-modal-overlay .event-modal-close-x');
+    closeDetailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            this.closest('.event-modal-overlay')?.classList.remove('active');
+        });
+    });
+
+    const detailModalOverlays = document.querySelectorAll('.event-modal-overlay');
+    detailModalOverlays.forEach(overlay => {
+        overlay.addEventListener('click', function(event) {
+            if (event.target === overlay) {
+                overlay.classList.remove('active');
+            }
+        });
+    });
+
+    // --- Link copying ---
+    document.querySelectorAll('.copy-link').forEach(button => {
+         button.addEventListener('click', function(event) {
+             event.preventDefault();
+             const linkToCopy = this.getAttribute('data-link');
+             const feedbackElement = this.closest('.event-modal-content')?.querySelector('.copy-link-feedback');
+             if (linkToCopy && navigator.clipboard) {
+                 navigator.clipboard.writeText(linkToCopy).then(() => {
+                     if(feedbackElement) {
+                         feedbackElement.style.display = 'block';
+                         setTimeout(() => { feedbackElement.style.display = 'none'; }, 1500);
+                     }
+                 }).catch(err => showCopyFallback(linkToCopy, feedbackElement));
+             } else if (linkToCopy) {
+                  showCopyFallback(linkToCopy, feedbackElement);
+             }
+         });
+    });
+    function showCopyFallback(textToCopy, feedbackElement) {
+        const textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        textArea.style.position = "fixed"; textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus(); textArea.select();
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                if(feedbackElement) {
+                     feedbackElement.style.display = 'block';
+                     setTimeout(() => { feedbackElement.style.display = 'none'; }, 1500);
+                 }
+            } else {
+                alert('Could not copy link. Please copy it manually.');
+            }
+        } catch (err) {
+            alert('Could not copy link. Please copy it manually.');
+        }
+        document.body.removeChild(textArea);
+    }
+
+    // --- Flash messages ---
+    const serverFlashMessages = document.querySelectorAll('#server-flash-message-container .alert');
+    serverFlashMessages.forEach(function(flashMessage) {
+        setTimeout(function() {
+            const alertInstance = typeof bootstrap !== 'undefined' ? bootstrap.Alert.getInstance(flashMessage) : null;
+            if (alertInstance) {
+                alertInstance.close();
+            } else { 
+                flashMessage.style.transition = 'opacity 0.5s ease-out';
+                flashMessage.style.opacity = '0';
+                setTimeout(() => flashMessage.remove(), 500);
+            }
+        }, 7000);
+    });
+
+    // --- Event Participation Logic ---
+    const ajaxMessageContainer = document.getElementById('ajax-message-container');
+
+    function displayAjaxMessage(message, type = 'success') {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        ajaxMessageContainer.innerHTML = ''; 
+        ajaxMessageContainer.appendChild(alertDiv);
+
+        setTimeout(() => {
+            const bsAlert = typeof bootstrap !== 'undefined' ? bootstrap.Alert.getInstance(alertDiv) : null;
+            if (bsAlert) {
+                bsAlert.close();
+            } else {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+
+    document.querySelectorAll('.join-event-btn').forEach(button => {
+        // If button is already disabled (because user has joined from server-side render),
+        // don't add click listener again for AJAX for this specific button.
+        if (button.disabled) {
+            return;
+        }
+
+        button.addEventListener('click', function() {
+            const eventId = this.dataset.eventId;
+            const participateUrl = `/events/participate/${eventId}`; 
+
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Joining...';
+
+            fetch(participateUrl, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(response => {
+                if (!response.ok) { 
+                    return response.json().catch(() => {
+                        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                    }).then(errorData => {
+                        let msg = (errorData && errorData.message) ? errorData.message : `Server error: ${response.status}`;
+                        throw new Error(msg);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    displayAjaxMessage(data.message, 'success');
+                    this.innerHTML = '<i class="fas fa-check"></i> Joined';
+                    this.classList.add('joined'); 
+                    // Button remains disabled after successful AJAX join
+                } else {
+                    displayAjaxMessage(data.message || 'An unknown error occurred.', 'danger');
+                    this.disabled = false; // Re-enable if join failed via AJAX
+                    this.innerHTML = 'Join';
+                }
+            })
+            .catch(error => {
+                displayAjaxMessage(error.message || 'Could not connect to the server. Please try again.', 'danger');
+                this.disabled = false; // Re-enable on fetch error
+                this.innerHTML = 'Join';
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
+{# --- End of File --- #}

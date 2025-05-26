@@ -1,0 +1,247 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Messaging{% endblock %}
+
+{% block stylesheets %}
+<style>
+    body {
+        background: linear-gradient(180deg, #220054 0%, #5B21B6 100%);
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 40px 0;
+        color: #fff;
+    }
+
+    .messagerie-wrapper {
+        display: flex;
+        gap: 20px;
+        width: 90%;
+        max-width: 1200px;
+    }
+
+    .sidebar {
+        width: 25%;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 20px;
+        height: 500px;
+        overflow-y: auto;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        color: #eee;
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .sidebar h5 {
+        margin-bottom: 20px;
+        color: #d8b4fe; /* lilac accent */
+        font-weight: 700;
+        font-size: 1.4rem;
+        border-bottom: 2px solid #d8b4fe;
+        padding-bottom: 6px;
+    }
+
+    .user-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .user-item {
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        color: #ddd;
+        font-weight: 500;
+    }
+
+    .user-item:hover {
+        background-color: rgba(255, 255, 255, 0.25);
+        color: #fff;
+    }
+
+    .chat-box {
+        width: 75%;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        height: 500px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: #fff;
+    }
+
+    .chat-header {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #d8b4fe;
+        user-select: none;
+    }
+
+    .chat-panel {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 10px;
+        margin-bottom: 15px;
+        scrollbar-width: thin;
+        scrollbar-color: #a78bfa transparent;
+    }
+
+    .chat-panel::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .chat-panel::-webkit-scrollbar-thumb {
+        background-color: #a78bfa;
+        border-radius: 4px;
+    }
+
+    .chat-wrapper {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 14px;
+    }
+
+    .align-right {
+        align-items: flex-end;
+    }
+
+    .chat-bubble {
+        padding: 12px 18px;
+        border-radius: 20px;
+        max-width: 70%;
+        word-wrap: break-word;
+        font-size: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        background-color: rgba(255, 255, 255, 0.25);
+        color: #fff;
+        position: relative;
+        user-select: text;
+        transition: background-color 0.3s ease;
+    }
+
+    .chat-right {
+        background-color: #7c3aed; /* violet */
+        border-bottom-right-radius: 0;
+        box-shadow: 0 3px 10px #7c3aedaa;
+    }
+
+    .chat-time {
+        font-size: 11px;
+        color: #d1d5db;
+        margin-top: 4px;
+        user-select: none;
+    }
+
+    .message-box {
+        display: flex;
+        gap: 10px;
+    }
+
+    .message-box input {
+        flex: 1;
+        padding: 12px 18px;
+        border-radius: 20px;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+        color: #333;
+        background-color: #fff;
+        box-shadow: 0 0 5px #7c3aedaa;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .message-box input:focus {
+        box-shadow: 0 0 10px #a78bfa;
+    }
+
+    .message-box button {
+        padding: 12px 26px;
+        border-radius: 20px;
+        background-color: #7c3aed;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: 0 4px 12px #7c3aedbb;
+        transition: background-color 0.3s ease;
+    }
+
+    .message-box button:hover {
+        background-color: #a78bfa;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container messagerie-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h5>Users</h5>
+        <ul class="user-list">
+            <li class="user-item">Ahmed</li>
+            <li class="user-item">Maysem</li>
+            <li class="user-item">admin</li>
+            <li class="user-item">jack</li>
+        </ul>
+    </div>
+
+    <!-- Chat Box -->
+    <div class="chat-box">
+        <div class="chat-header">💬 Chat</div>
+        <div class="chat-panel" id="chat-panel"></div>
+        <div class="message-box">
+            <input type="text" placeholder="Write a message..." id="message-input" autocomplete="off">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('message-input');
+    const button = document.getElementById('send-button');
+    const chatPanel = document.getElementById('chat-panel');
+
+    button.addEventListener('click', () => {
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'chat-wrapper align-right';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble chat-right';
+        bubble.textContent = msg;
+
+        const time = document.createElement('div');
+        time.className = 'chat-time';
+        time.textContent = new Date().toLocaleTimeString();
+
+        wrapper.appendChild(bubble);
+        wrapper.appendChild(time);
+        chatPanel.appendChild(wrapper);
+
+        chatPanel.scrollTop = chatPanel.scrollHeight;
+        input.value = '';
+    });
+
+    // Optional: send message on Enter key
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            button.click();
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversion de Points</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .conversion-options {
+            margin-bottom: 30px;
+        }
+        
+        .conversion-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #495057;
+        }
+        
+        .conversion-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .conversion-card {
+            width: 200px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .conversion-card h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #495057;
+        }
+        
+        .conversion-links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .convert-link {
+            display: block;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .convert-link:hover {
+            background-color: #0069d9;
+        }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Conversion de Points en Argent</h1>
+        
+        <div class="conversion-options">
+            <h2 class="conversion-title">Choisissez une option de conversion</h2>
+            
+            <div class="conversion-links">
+                <div class="conversion-card">
+                    <h3>TND</h3>
+                    <div class="conversion-links-container">
+                        <a href="/convert.php?points=100&devise=TND" class="convert-link">Convertir 100 points</a>
+                        <a href="/convert.php?points=200&devise=TND" class="convert-link">Convertir 200 points</a>
+                        <a href="/convert.php?points=500&devise=TND" class="convert-link">Convertir 500 points</a>
+                    </div>
+                </div>
+                
+                <div class="conversion-card">
+                    <h3>EUR</h3>
+                    <div class="conversion-links-container">
+                        <a href="/convert.php?points=100&devise=EUR" class="convert-link">Convertir 100 points</a>
+                        <a href="/convert.php?points=200&devise=EUR" class="convert-link">Convertir 200 points</a>
+                        <a href="/convert.php?points=500&devise=EUR" class="convert-link">Convertir 500 points</a>
+                    </div>
+                </div>
+                
+                <div class="conversion-card">
+                    <h3>USD</h3>
+                    <div class="conversion-links-container">
+                        <a href="/convert.php?points=100&devise=USD" class="convert-link">Convertir 100 points</a>
+                        <a href="/convert.php?points=200&devise=USD" class="convert-link">Convertir 200 points</a>
+                        <a href="/convert.php?points=500&devise=USD" class="convert-link">Convertir 500 points</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <a href="/points/convert" class="back-link">Retour à la page de conversion</a>
+    </div>
+</body>
+</html>

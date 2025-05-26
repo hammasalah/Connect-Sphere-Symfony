@@ -1,0 +1,319 @@
+{# templates/base.html.twig #}
+{% block stylesheets %}
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/root.css') }}">
+{% endblock %}
+
+{% block body %}
+<header class="header">
+    <nav class="navbar">
+        <div class="logo">
+            <img src="{{ asset('images/logo1.PNG') }}" alt="Connect Sphere" class="logo-img">
+        </div>
+        <div class="search-location">
+            <div class="search-container">
+                <input type="text" placeholder="Search events" class="search-input">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="location-selector">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Tunis</span>
+            </div>
+        </div>
+        <div class="nav-links">
+          
+            <a href="{{ path('app_login') }}" class="nav-link">Login</a>
+            <a href="{{ path('app_register') }}" class="nav-link">Register</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    {# HERO SECTION #}
+    <section class="hero">
+    <div class="carousel">
+        <div class="slide active">
+            <img src="{{ asset('images/banner4.png') }}" alt="Event 1">
+            <div class="carousel-content">
+                <div class="banner-label">GET INTO IT</div>
+                <h1 class="banner-title">READY. <br> SET. FEST.</h1>
+                <a href="#" class="cta-btn">Find A World Of Festivals</a>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="{{ asset('images/banner5.png') }}" alt="Event 2">
+            <div class="carousel-content">
+                <div class="banner-label">GET INTO IT</div>
+                <h1 class="banner-title">READY. <br> SET. FEST.</h1>
+                <a href="#" class="cta-btn">Find A World Of Festivals</a>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="{{ asset('images/banner3.png') }}" alt="Event 3">
+            <div class="carousel-content">
+                <div class="banner-label">GET INTO IT</div>
+                <h1 class="banner-title">READY. <br> SET. FEST.</h1>
+                <a href="#" class="cta-btn">Find A World Of Festivals</a>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="{{ asset('images/banner6.png') }}" alt="Event 2">
+            <div class="carousel-content">
+                <div class="banner-label">GET INTO IT</div>
+                <h1 class="banner-title">READY. <br> SET. FEST.</h1>
+                <a href="#" class="cta-btn">Find A World Of Festivals</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="carousel-controls">
+        <button class="prev-slide"><i class="fas fa-chevron-left"></i></button>
+        <button class="next-slide"><i class="fas fa-chevron-right"></i></button>
+    </div>
+</section>
+
+
+
+    {# CATEGORY ICONS #}
+    <section class="categories">
+        {# <h3>hhhhhh</h3> #}
+        <div class="category-grid">
+            {% set categories = [
+                {'icon': 'microphone', 'name': 'Music'},
+                {'icon': 'globe', 'name': 'Nightlife'},
+                {'icon': 'theater-masks', 'name': 'Performing & Visual Arts'},
+                {'icon': 'calendar-days', 'name': 'Holidays'},
+                {'icon': 'heart', 'name': 'Dating'},
+                {'icon': 'gamepad', 'name': 'Hobbies'},
+                {'icon': 'briefcase', 'name': 'Business'},
+                {'icon': 'utensils', 'name': 'Food & Drink'}
+            ] %}
+            {% for category in categories %}
+                <div class="category-item">
+                    <div class="icon-circle">
+                        <i class="fas fa-{{ category.icon }}"></i>
+                    </div>
+                    <span>{{ category.name }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    {# EVENT LISTINGS #}
+   
+<section class="events">
+    <h2 class="section-title">Events in Tunis</h2>
+    <div class="event-list">
+        <div class="event-card">
+            <img src="{{ asset('images/banner2.png') }}" alt="Event 1">
+            <div class="event-details">
+                <h3>Finding Your Inner Joy MasterClass</h3>
+                <p>Fri, May 16 • 2:30 AM GMT+2</p>
+                <span class="event-price">Free</span>
+            </div>
+        </div>
+
+        <div class="event-card">
+            <img src="{{ asset('images/banner1.png') }}" alt="Event 2">
+            <div class="event-details">
+                <h3>Music Beats Festival</h3>
+                <p>Sat, May 17 • 6:00 PM GMT+2</p>
+                <span class="event-price">$20</span>
+            </div>
+        </div>
+
+        <div class="event-card">
+            <img src="{{ asset('images/banner3.png') }}" alt="Event 3">
+            <div class="event-details">
+                <h3>Startup Innovation Conference</h3>
+                <p>Sun, May 18 • 10:00 AM GMT+2</p>
+                <span class="event-price">Free</span>
+            </div>
+        </div>
+
+        <div class="event-card">
+            <img src="{{ asset('images/banner1.png') }}" alt="Event 4">
+            <div class="event-details">
+                <h3>Art & Culture Exhibition</h3>
+                <p>Mon, May 19 • 3:00 PM GMT+2</p>
+                <span class="event-price">$15</span>
+            </div>
+        </div>
+
+        <div class="event-card">
+            <img src="{{ asset('images/banner2.png') }}" alt="Event 5">
+            <div class="event-details">
+                <h3>Food Truck Fiesta</h3>
+                <p>Tue, May 20 • 12:00 PM GMT+2</p>
+                <span class="event-price">Free</span>
+            </div>
+        </div>
+
+        <div class="event-card">
+            <img src="{{ asset('images/banner3.png') }}" alt="Event 6">
+            <div class="event-details">
+                <h3>Outdoor Cinema Night</h3>
+                <p>Wed, May 21 • 8:00 PM GMT+2</p>
+                <span class="event-price">$10</span>
+            </div>
+        </div>
+
+        <div class="event-card">
+            <img src="{{ asset('images/banner1.png') }}" alt="Event 7">
+            <div class="event-details">
+                <h3>Photography Workshop</h3>
+                <p>Thu, May 22 • 1:00 PM GMT+2</p>
+                <span class="event-price">Free</span>
+            </div>
+        </div>
+
+        <div class="event-card">
+            <img src="{{ asset('images/banner2.png') }}" alt="Event 8">
+            <div class="event-details">
+                <h3>DJ Party Night</h3>
+                <p>Fri, May 23 • 11:00 PM GMT+2</p>
+                <span class="event-price">$25</span>
+            </div>
+        </div>
+
+       
+    </div>
+</section>
+
+</section>
+<section class="interests-section">
+    <div class="interests-container">
+        <div class="interests-header">
+            <h2>Let's make it personal</h2>
+            <p>Select your interests to get event suggestions based on what you love</p>
+        </div>
+        <div class="interests-list">
+            {% set interests = [
+                'Comedy', 'Food', 'Education', 'Pop', 'Design', 'R&B', 'Hip Hop / Rap',
+                'Film', 'Personal health', 'Blues & Jazz', 'Travel', 'Rock', 'Yoga',
+                'Country', 'Startups & Small Business', 'Classical', 'Mental health',
+                'TV', 'Alternative', 'Musical'
+            ] %}
+            {% for interest in interests %}
+               <button class="interest-tag">{{ interest }}</button>
+            {% endfor %}
+        </div>
+        <a href="#" class="view-all">View all interests</a>
+    </div>
+</section>
+<section class="sponsors">
+    <div class="container">
+        <h2 class="section-title">Our Sponsors</h2>
+        <div class="sponsor-logos">
+            <img src="{{ asset('images/sponsor1.png') }}" alt="Sponsor 1">
+            <img src="{{ asset('images/sponsor2.png') }}" alt="Sponsor 2">
+            <img src="{{ asset('images/sponsor3.png') }}" alt="Sponsor 3">
+            <img src="{{ asset('images/sponsor4.png') }}" alt="Sponsor 4">
+            <img src="{{ asset('images/sponsor5.png') }}" alt="Sponsor 5">
+        </div>
+    </div>
+</section>
+
+
+</main>
+
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-section">
+            <h4>About</h4>
+            <ul>
+                <li><a href="#">Our Story</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Press & Media</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Support</h4>
+            <ul>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">Contact Us</a></li>
+                <li><a href="#">Accessibility</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Explore</h4>
+            <ul>
+                <li><a href="#">Festivals</a></li>
+                <li><a href="#">Workshops</a></li>
+                <li><a href="#">Concerts</a></li>
+            </ul>
+        </div>
+        <div class="footer-section social">
+            <h4>Follow Us</h4>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 FestiHub. All rights reserved.</p>
+    </div>
+</footer>
+
+{% endblock %}
+{% block javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const slides = document.querySelectorAll('.slide');
+    const nextBtn = document.querySelector('.next-slide');
+    const prevBtn = document.querySelector('.prev-slide');
+    let currentSlide = 0;
+    let slideInterval = setInterval(nextSlide, 4000); // Auto-slide every 4 seconds
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === index);
+        });
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    nextBtn.addEventListener('click', () => {
+        nextSlide();
+        resetInterval();
+    });
+
+    prevBtn.addEventListener('click', () => {
+        prevSlide();
+        resetInterval();
+    });
+
+    function resetInterval() {
+        clearInterval(slideInterval);
+        slideInterval = setInterval(nextSlide, 4000);
+    }
+});
+
+
+// Add event listeners to interest tags
+document.addEventListener('DOMContentLoaded', () => {
+        const tags = document.querySelectorAll('.interest-tag');
+
+        tags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                tag.classList.toggle('selected');
+            });
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Roulette</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4B0082;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #6A0DAD;
+        }
+        pre {
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #e6ffe6;
+            border: 1px solid #99cc99;
+        }
+        .error {
+            background-color: #ffe6e6;
+            border: 1px solid #cc9999;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test de la Roulette</h1>
+    
+    <div class="test-container">
+        <h2>Test de la requête AJAX</h2>
+        <p>Ce test simule une requête AJAX vers le contrôleur RouletteController.</p>
+        <button id="testBtn">Tester la requête</button>
+        <div id="requestInfo" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('testBtn').addEventListener('click', function() {
+            const resultDiv = document.getElementById('requestInfo');
+            resultDiv.innerHTML = '<p>Envoi de la requête...</p>';
+            resultDiv.className = 'result';
+            
+            // Préparer les données à envoyer (simuler un segment aléatoire)
+            const segmentIndex = Math.floor(Math.random() * 5); // 0-4
+            const requestData = JSON.stringify({ segmentIndex: segmentIndex });
+            
+            // Afficher les données envoyées
+            resultDiv.innerHTML += `<p>Données envoyées:</p><pre>${requestData}</pre>`;
+            
+            // Envoyer la requête
+            fetch('{{ path("app_fortune_wheel") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: requestData
+            })
+            .then(response => {
+                // Afficher les informations sur la réponse
+                resultDiv.innerHTML += `<p>Statut de la réponse: ${response.status}</p>`;
+                resultDiv.innerHTML += `<p>Headers de la réponse:</p><pre>${[...response.headers.entries()].map(entry => entry[0] + ': ' + entry[1]).join('\n')}</pre>`;
+                
+                if (!response.ok) {
+                    throw new Error('Erreur HTTP : ' + response.status);
+                }
+                
+                // Vérifier le type de contenu
+                const contentType = response.headers.get('content-type');
+                resultDiv.innerHTML += `<p>Type de contenu: ${contentType}</p>`;
+                
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('La réponse n\'est pas au format JSON');
+                }
+                
+                return response.text().then(text => {
+                    // Afficher le texte brut de la réponse
+                    resultDiv.innerHTML += `<p>Réponse brute:</p><pre>${text}</pre>`;
+                    
+                    try {
+                        // Essayer de parser le JSON
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('Erreur lors du parsing JSON:', e);
+                        resultDiv.innerHTML += `<p>Erreur de parsing JSON: ${e.message}</p>`;
+                        throw new Error('Impossible de parser la réponse JSON: ' + e.message);
+                    }
+                });
+            })
+            .then(data => {
+                // Afficher les données parsées
+                resultDiv.innerHTML += `<p>Données parsées:</p><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML += `<p>✅ Test réussi! Vous avez gagné: ${data.reward} (${data.pointsWon} points)</p>`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML += `<p>❌ Erreur: ${data.message}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la requête AJAX:', error);
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML += `<p>❌ Erreur: ${error.message}</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
