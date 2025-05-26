@@ -14,14 +14,21 @@ class HistoriquePointsRepository extends ServiceEntityRepository
         parent::__construct($registry, HistoriquePoints::class);
     }
 
-    public function findRecentByUser(Users $user, int $limit = 10): array
+    public function findFilteredByUser(Users $user, ?string $search = null, ?string $date = null, int $limit = 100): array
     {
-        return $this->createQueryBuilder('h')
+        $qb = $this->createQueryBuilder('h')
             ->where('h.user = :user')
             ->setParameter('user', $user)
             ->orderBy('h.date', 'DESC')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
+            ->setMaxResults($limit);
+        if ($search) {
+            $qb->andWhere('h.raison LIKE :search OR h.type LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+        if ($date) {
+            $qb->andWhere('DATE(h.date) = :date')
+               ->setParameter('date', $date);
+        }
+        return $qb->getQuery()->getResult();
     }
 }

@@ -61,7 +61,8 @@ class ConversionController extends AbstractController
 
         return $this->render('points/convert.html.twig', [
             'user' => $user, // Utilisateur avec points mis à jour
-            'conversions' => $conversions
+            'conversions' => $conversions,
+            'pointsHistory' => $this->entityManager->getRepository(HistoriquePoints::class)->findBy(['user' => $user], ['date' => 'DESC'], 10)
         ]);
     }
 
