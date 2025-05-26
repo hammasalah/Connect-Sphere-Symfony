@@ -69,61 +69,88 @@ class RouletteController extends AbstractController
             error_log('User ID: ' . $user->getId());
 
             // Définir des valeurs fixes pour le test
-            $totalPoints = 340; // Valeur fixe pour correspondre à la page fortune-wheel
+            // $totalPoints = 340; // Valeur fixe pour correspondre à la page fortune-wheel
+            // $totalEvents = 12; // Valeur fixe pour les événements
+            // $visitStreak = 6; // Valeur fixe pour la série de visites
 
-            // Debug log to check the points value
-            error_log('Total points in dashboard (fixed value): ' . $totalPoints);
-            error_log('Points from user object: ' . $user->getPoints());
-
-            // Mettre à jour l'objet utilisateur avec les points récupérés
-            $user->setPoints($totalPoints);
-
-            // Définir des valeurs fixes pour le test
-            $totalEvents = 12; // Valeur fixe pour les événements
-            $visitStreak = 6; // Valeur fixe pour la série de visites
+            // Calcul dynamique du nombre total d'événements auxquels l'utilisateur participe
+            $participationRepo = $entityManager->getRepository(\App\Entity\Participation::class);
+            $totalEventsAttended = $participationRepo->count(['participant' => $user]);
+            $myParticipations = $participationRepo->findBy(['participant' => $user]);
+            $totalPoints = $user->getPoints();
+            $visitStreak = 6; // Vous pouvez rendre cela dynamique si besoin
 
             error_log('Visit streak (fixed value): ' . $visitStreak);
-            error_log('Total events (fixed value): ' . $totalEvents);
+            error_log('Total events (fixed value): ' . $totalEventsAttended);
 
             // Mettre à jour la session avec les données actualisées
             $session->set('user', $user);
 
             // Fetch recent points history for the chart (last 10 by default)
-            $pointsHistory = $historiquePointsRepository->findRecentByUser($user, 10);
+            $pointsHistory = $historiquePointsRepository->findFilteredByUser($user, null, null, 10);
 
-            // Fetch recent points history for the chart (last 7 days)
+            // Calcul dynamique des points perdus sur les 7 derniers jours
             $now = new \DateTime();
             $labels = [];
             $pointsEarned = [];
             $pointsLost = [];
-            for ($i = 6; $i >= 0; $i--) {
-                $date = (clone $now)->modify("-$i days");
-                $label = $date->format('D d/m');
-                $labels[] = $label;
-                $earned = 0;
-                $lost = 0;
-                foreach ($pointsHistory as $entry) {
-                    if ($entry->getDate() && $entry->getDate()->format('Y-m-d') === $date->format('Y-m-d')) {
-                        if ($entry->getType() === 'gain') {
-                            $earned += $entry->getPoints();
-                        } elseif ($entry->getType() === 'perte') {
-                            $lost += abs($entry->getPoints());
+            $totalLost = 0;
+            $totalGagne = 0;
+            foreach ($pointsHistory as $entry) {
+                if ($entry->getType() === 'perte') {
+                    $dateIndex = null;
+                    for ($i = 6; $i >= 0; $i--) {
+                        $date = (clone $now)->modify("-$i days");
+                        if ($entry->getDate() && $entry->getDate()->format('Y-m-d') === $date->format('Y-m-d')) {
+                            $dateIndex = 6 - $i;
+                            break;
                         }
                     }
+                    if ($dateIndex !== null) {
+                        if (!isset($pointsLost[$dateIndex])) {
+                            $pointsLost[$dateIndex] = 0;
+                        }
+                        $pointsLost[$dateIndex] += abs($entry->getPoints());
+                        $totalLost += abs($entry->getPoints());
+                    }
                 }
-                $pointsEarned[] = $earned;
-                $pointsLost[] = $lost;
+                if ($entry->getType() === 'gain') {
+                    $totalGagne += abs($entry->getPoints());
+                }
+            }
+            // Remplir les jours sans perte avec 0
+            for ($i = 0; $i < 7; $i++) {
+                if (!isset($pointsLost[$i])) {
+                    $pointsLost[$i] = 0;
+                }
+            }
+            ksort($pointsLost);
+            $pointsLost = array_values($pointsLost);
+            // Correction : soustraire tous les gains du total perdu
+            // On ne soustrait que le dernier gain de type "Roulette"
+            $dernierGainRoulette = null;
+            foreach (array_reverse($pointsHistory) as $entry) {
+                if ($entry->getType() === 'gain' && $entry->getRaison() === 'Roulette') {
+                    $dernierGainRoulette = abs($entry->getPoints());
+                    break;
+                }
+            }
+            $totalLostCorrige = $totalLost;
+            if ($dernierGainRoulette !== null) {
+                $totalLostCorrige -= $dernierGainRoulette;
             }
 
             return $this->render('points/index.html.twig', [
                 'user' => $user,
                 'totalPoints' => $totalPoints,
-                'totalEvents' => $totalEvents,
+                'totalEventsAttended' => $totalEventsAttended,
                 'visitStreak' => $visitStreak,
                 'pointsHistory' => $pointsHistory,
                 'labels' => $labels,
                 'pointsEarned' => $pointsEarned,
                 'pointsLost' => $pointsLost,
+                'totalLost' => $totalLostCorrige,
+                'my_participations' => $myParticipations,
             ]);
         } catch (\Exception $e) {
             // Log l'erreur

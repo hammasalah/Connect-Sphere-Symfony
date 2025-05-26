@@ -236,10 +236,10 @@ class PointsService
      */
     public function getPointsHistory(Users $user, int $limit = 10): array
     {
-        return $this->entityManager->getRepository(HistoriquePoints::class)
+        return $this->entityManager->getRepository(\App\Entity\UserRewards::class)
             ->findBy(
                 ['user' => $user],
-                ['date' => 'DESC'],
+                ['earnedAt' => 'DESC'],
                 $limit
             );
     }

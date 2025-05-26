@@ -35,6 +35,12 @@ class DynamicConversionController extends AbstractController
             }
             return $this->redirectToRoute('app_login');
         }
+        // Always re-fetch the managed user entity from the database
+        $userRepository = $entityManager->getRepository(Users::class);
+        $user = $userRepository->find($user->getId());
+        if (!$user) {
+            return $this->handleError('Utilisateur non trouvé.', $request);
+        }
         
         // Récupérer les paramètres
         $points = (int) $request->request->get('points', $request->query->get('points', 0));
