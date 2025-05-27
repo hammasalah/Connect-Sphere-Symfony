@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Give your opinion on - {{ event.name }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/reviews.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="review-form-container">
+        <div class="review-form-header">
+            <h1>Give your opinion on {{ event.name }}</h1>
+            <p class="mb-0">
+                <i class="fas fa-calendar-alt me-2"></i>
+                From {{ event.startTime|date('d/m/Y H:i') }} To {{ event.endTime|date('d/m/Y H:i') }}
+            </p>
+        </div>
+
+        <div class="review-form-card">
+            {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}                
+                <div class="rating-group">
+                    {{ form_label(form.rating, 'Rate this event', {'label_attr': {'class': 'form-label fs-5'}}) }}                    
+                    <div class="star-rating" id="starRating">
+                        {% for choice in form.rating.vars.choices|reverse %}
+                            {% set value = choice.value %}
+                            <input type="radio" id="star{{ value }}" name="{{ form.rating.vars.full_name }}" value="{{ value }}" {% if value == form.rating.vars.value %}checked{% endif %} required="required">
+                            <label for="star{{ value }}" title="{{ choice.label }}" data-rating="{{ value }}">
+                                <i class="fas fa-star"></i>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    <div id="ratingText" class="text-center mt-2">Click on a star to rate</div>
+                    {{ form_errors(form.rating) }}
+                </div>
+                {# Prevent automatic rendering of the rating widget #}
+                {% do form.rating.setRendered() %}
+
+                <div class="comment-group">
+                    {{ form_label(form.comment, 'Your comment', {'label_attr': {'class': 'form-label fs-5'}}) }}
+                    {{ form_widget(form.comment, {
+                        'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Share your experience...',
+                            'rows': 5
+                        }
+                    }) }}
+                    {{ form_errors(form.comment) }}
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ path('app_events') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Back to Events
+                    </a>
+                    <button type="submit" class="btn form-submit-btn">
+                        <i class="fas fa-paper-plane me-2"></i>
+                        Submit Review
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const starRating = document.getElementById('starRating');
+            const ratingText = document.getElementById('ratingText');
+            const ratingDescriptions = {
+                1: 'Poor',
+                2: 'Fair',
+                3: 'Good',
+                4: 'Very Good',
+                5: 'Excellent'
+            };
+
+            function updateRatingText(rating) {
+                ratingText.textContent = rating ? `${rating} stars - ${ratingDescriptions[rating]}` : 'Click on a star to rate';
+            }
+
+            function updateStarVisuals(rating) {
+                const stars = Array.from(starRating.querySelectorAll('label')).reverse();
+                stars.forEach((s, index) => {
+                    const starIcon = s.querySelector('i');
+                    starIcon.classList.toggle('active', index < rating);
+                });
+            }
+
+            starRating.addEventListener('mouseover', (e) => {
+                if (e.target.tagName === 'LABEL' || e.target.tagName === 'I') {
+                    const label = e.target.closest('label');
+                    if (label) {
+                        const rating = parseInt(label.getAttribute('data-rating'));
+                        updateStarVisuals(rating);
+                        updateRatingText(rating);
+                    }
+                }
+            });
+
+            starRating.addEventListener('mouseout', () => {
+                const checkedInput = starRating.querySelector('input[type="radio"]:checked');
+                const rating = checkedInput ? parseInt(checkedInput.value) : null;
+                updateStarVisuals(rating || 0);
+                updateRatingText(rating);
+            });
+
+            starRating.addEventListener('click', (e) => {
+                if (e.target.tagName === 'LABEL' || e.target.tagName === 'I') {
+                    const label = e.target.closest('label');
+                    if (label) {
+                        const rating = parseInt(label.getAttribute('data-rating'));
+                        const stars = Array.from(starRating.querySelectorAll('label')).reverse();
+                        stars.forEach((s, index) => {
+                            const star = s.querySelector('i');
+                            if (index < rating) {
+                                star.classList.add('fa-bounce');
+                                setTimeout(() => star.classList.remove('fa-bounce'), 1000);
+                            }
+                        });
+                        updateRatingText(rating);
+                    }
+                }
+            });
+
+            // Initialize
+            const checkedInput = starRating.querySelector('input[type="radio"]:checked');
+            if (checkedInput) {
+                const rating = parseInt(checkedInput.value);
+                updateStarVisuals(rating);
+                updateRatingText(rating);
+            }
+        });
+    </script>
+{% endblock %}

@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ReviewsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Events;
+use App\Entity\Users;
 
 #[ORM\Entity(repositoryClass: ReviewsRepository::class)]
 class Reviews
@@ -13,61 +15,47 @@ class Reviews
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Users $user_id = null;
+    #[ORM\ManyToOne(targetEntity: Events::class, inversedBy: 'reviews')]
+    #[ORM\JoinColumn(name: 'event_id_id', nullable: false)]
+    private ?Events $event = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Events $event_id = null;
-
-    #[ORM\Column]
-    private ?int $rating = null;
+    #[ORM\ManyToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: 'user_id_id', nullable: false)]
+    private ?Users $participant = null;
 
     #[ORM\Column(length: 255)]
     private ?string $comment = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $creatid_at = null;
+    #[ORM\Column(type: 'integer')]
+    private ?int $rating = null;
+
+    #[ORM\Column(name: 'creatid_at', type: 'string', length: 255, nullable: true)]
+    private ?string $createdAt = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUserId(): ?Users
+    public function getEvent(): ?Events
     {
-        return $this->user_id;
+        return $this->event;
     }
 
-    public function setUserId(?Users $user_id): static
+    public function setEvent(?Events $event): self
     {
-        $this->user_id = $user_id;
-
+        $this->event = $event;
         return $this;
     }
 
-    public function getEventId(): ?Events
+    public function getParticipant(): ?Users
     {
-        return $this->event_id;
+        return $this->participant;
     }
 
-    public function setEventId(?Events $event_id): static
+    public function setParticipant(?Users $participant): self
     {
-        $this->event_id = $event_id;
-
-        return $this;
-    }
-
-    public function getRating(): ?int
-    {
-        return $this->rating;
-    }
-
-    public function setRating(int $rating): static
-    {
-        $this->rating = $rating;
-
+        $this->participant = $participant;
         return $this;
     }
 
@@ -76,22 +64,31 @@ class Reviews
         return $this->comment;
     }
 
-    public function setComment(string $comment): static
+    public function setComment(string $comment): self
     {
         $this->comment = $comment;
-
         return $this;
     }
 
-    public function getCreatidAt(): ?string
+    public function getRating(): ?int
     {
-        return $this->creatid_at;
+        return $this->rating;
     }
 
-    public function setCreatidAt(?string $creatid_at): static
+    public function setRating(int $rating): self
     {
-        $this->creatid_at = $creatid_at;
+        $this->rating = $rating;
+        return $this;
+    }
 
+    public function getCreatedAt(): ?string
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?string $createdAt): self
+    {
+        $this->createdAt = $createdAt;
         return $this;
     }
 }

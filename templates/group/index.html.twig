@@ -755,7 +755,7 @@
           <div class="nav-links">
             <a href="{{ path('app_home') }}" class="nav-link">Home</a>
             <a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
-            <a href="{{ path('app_dashboard') }}" class="nav-link">Dashboard</a>
+            <a href="{{ path('app_organizer') }}" class="nav-link">Dashboard</a>
             <a href="{{ path('app_groups') }}" class="nav-link active">Groups</a>
             <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
             <a href="{{ path('app_profile') }}" class="nav-link">Profile</a>
@@ -770,6 +770,15 @@
             <div class="groups-content"> {# Inner content wrapper styled by groups.css #}
                 <div class="groups-header">
                     <h1 class="groups-title">Groups</h1>
+                     <a href="{{ path('app_group_requests') }}" class="create-group-btn" style="background-color: #1c2b5d;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+                    </svg>
+                    Membership requests
+                    {% if pendingRequestsCount > 0 %}
+                    <span class="badge" style="background-color: #f44336; color: white; border-radius: 50%; padding: 2px 6px; margin-left: 5px;">{{ pendingRequestsCount }}</span>
+                    {% endif %}
+                  </a>
                     <a href="{{ path('app_group_create') }}" class="create-group-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>

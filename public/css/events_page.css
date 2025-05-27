@@ -803,3 +803,50 @@
        grid-template-columns: repeat(2, auto);
    }
 }
+
+/* --- Event Sections Styles --- */
+.events-sections {
+    margin: 2rem 0;
+}
+
+.upcoming-events,
+.past-events {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    color: #333;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background-color: #007bff;
+    border-radius: 2px;
+}
+
+.past-events .event-display-card {
+    opacity: 0.85;
+}
+
+.past-events .event-display-card::before {
+    content: 'Past Event';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #6c757d;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    z-index: 1;
+}

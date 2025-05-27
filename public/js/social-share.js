@@ -3,60 +3,53 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialiser les boutons de partage
+    // Initialize all interaction features
+    initLikeButtons();
+    initCommentButtons();
     initShareButtons();
-    
-    // Initialiser les animations pour les cartes de post
-    initPostCardAnimations();
-    
-    // Initialiser les interactions pour les boutons d'action
-    initActionButtons();
+    initCommentEditing();
 });
 
 /**
- * Initialise les boutons de partage avec des animations
+ * Initialize share buttons
  */
 function initShareButtons() {
-    // Gérer l'affichage des options de partage
-    const shareToggles = document.querySelectorAll('.btn-share');
-    
-    shareToggles.forEach(toggle => {
-        toggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            const shareOptions = this.closest('.post-actions-simple').querySelector('.share-options');
-            
-            // Fermer tous les autres menus de partage ouverts
-            document.querySelectorAll('.share-options.show').forEach(menu => {
-                if (menu !== shareOptions) {
-                    menu.classList.remove('show');
-                }
+    // Share menu toggle
+    document.querySelectorAll('.share-dropdown .btn-interaction').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = this.nextElementSibling;
+            document.querySelectorAll('.share-menu.show').forEach(m => {
+                if (m !== menu) m.classList.remove('show');
             });
-            
-            // Basculer l'affichage du menu actuel
-            shareOptions.classList.toggle('show');
-            
-            // Animation du bouton de partage
-            this.classList.add('pulse-animation');
-            setTimeout(() => {
-                this.classList.remove('pulse-animation');
-            }, 300);
+            menu.classList.toggle('show');
         });
     });
-    
-    // Fermer les menus de partage lorsqu'on clique ailleurs
+      // Close share menus when clicking outside
     document.addEventListener('click', function(e) {
-        if (!e.target.closest('.share-dropdown') && !e.target.closest('.btn-share')) {
-            document.querySelectorAll('.share-options.show').forEach(menu => {
+        if (!e.target.closest('.share-dropdown')) {
+            document.querySelectorAll('.share-menu.show').forEach(menu => {
                 menu.classList.remove('show');
             });
         }
     });
-    
-    // Initialiser les boutons de partage spécifiques
-    initFacebookShare();
-    initTwitterShare();
-    initLinkedInShare();
-    initWhatsAppShare();
+
+    // Copy link functionality
+    document.querySelectorAll('.copy-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = this.getAttribute('data-url');
+            navigator.clipboard.writeText(url).then(() => {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i> Link copied!';
+                this.classList.add('text-success');
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.classList.remove('text-success');
+                }, 2000);
+            });
+        });
+    });
 }
 
 /**

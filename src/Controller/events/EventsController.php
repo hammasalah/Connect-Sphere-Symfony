@@ -2,8 +2,9 @@
 // src/Controller/events/EventsController.php
 
 namespace App\Controller\events;
-
+use App\Form\ReviewType; // Importer le type de formulaire ReviewType
 use App\Entity\Events;
+use App\Entity\Reviews;
 use App\Entity\Users;
 use App\Form\EventsType; // Assuming you have this for event creation
 use App\Repository\EventsRepository;
@@ -24,84 +25,98 @@ class EventsController extends AbstractController
     private LoggerInterface $logger;
     private ParticipationRepository $participationRepository; // Injected for ORM check
     // private Connection $connection; // Uncomment and inject if using DBAL check
+        private EntityManagerInterface $entityManager;
 
     public function __construct(
         LoggerInterface $logger,
-        ParticipationRepository $participationRepository // Inject
+        ParticipationRepository $participationRepository, // Inject
         // Connection $connection // Uncomment if using DBAL
+        EntityManagerInterface $entityManager
     ) {
         $this->logger = $logger;
         $this->participationRepository = $participationRepository;
         // $this->connection = $connection; // Uncomment if using DBAL
+        $this->entityManager = $entityManager;
     }
 
-    #[Route('/events', name: 'app_events', methods: ['GET'])]
+     #[Route('/events', name: 'app_events', methods: ['GET'])]
     public function index(
         Request $request,
         EventsRepository $eventsRepository,
         CategoryRepository $categoryRepository,
-        SessionInterface $session // Inject SessionInterface
+        SessionInterface $session
     ): Response {
-        /** @var Users|null $currentUser */
-        $currentUser = $session->get('user');
-        
-        $excludeOrganizerId = null;
-        $currentUserId = null; // To store the ID for checking participation
-        if ($currentUser instanceof Users) {
-            $excludeOrganizerId = $currentUser->getId();
-            $currentUserId = $currentUser->getId();
-        }
+        $upcomingEventsWithStatus = [];
+        $pastEventsWithStatus = [];
 
-        // Get filters from URL
-        $searchTerm = $request->query->get('search');
-        $categoryIdParam = $request->query->get('category');
-        $categoryId = null;
-        if (!empty($categoryIdParam) && ctype_digit((string)$categoryIdParam)) {
-            $categoryId = (int)$categoryIdParam;
-        }
-
-        $eventsWithStatus = []; // Array to hold event entities and their participation status
-        $categories = [];
         try {
-            $eventsList = $eventsRepository->findByNameDescriptionCategory($searchTerm, $categoryId, $excludeOrganizerId);
+            // Get current user from session
+            $userSession = $session->get('user');
+            $currentUser = null;
+            $excludeOrganizerId = null;
+            if ($currentUser instanceof Users) {
+                $excludeOrganizerId = $currentUser->getId();
+            }
+            if ($userSession) {
+                $currentUser = $this->entityManager->getRepository(Users::class)->find($userSession->getId());
+            }
+
+            $searchTerm = $request->query->get('search');
+            $categoryId = $request->query->get('category');
+
+            // Get upcoming events
+            $upcomingEvents = $eventsRepository->findByNameDescriptionCategory($searchTerm, $categoryId, $excludeOrganizerId);
+
+            // Get past events
+            $pastEvents = $eventsRepository->findPastEvents();
+
+            // Get all categories for filter
             $categories = $categoryRepository->findBy([], ['name' => 'ASC']);
 
-            // For each event, check if the current user has participated
-            foreach ($eventsList as $event) {
+            // Process upcoming events
+            foreach ($upcomingEvents as $event) {
                 $hasJoined = false;
-                if ($currentUserId) {
-                    // Option A: Using ORM (recommended if Participation entity is correctly mapped)
+                if ($currentUser) {
                     $participation = $this->participationRepository->findOneBy([
-                        'participant' => $currentUserId, // Assumes 'participant' property in Participation entity links to User ID
-                        'event' => $event->getId()      // Assumes 'event' property in Participation entity links to Event ID
+                        'participant' => $currentUser,
+                        'event' => $event
                     ]);
                     if ($participation) {
                         $hasJoined = true;
                     }
+                }
+                $upcomingEventsWithStatus[] = [
+                    'entity' => $event,
+                    'hasJoined' => $hasJoined
+                ];
+            }
 
-                    // Option B: Using DBAL (if your Participation entity is not fully ORM-mapped for this query)
-                    /*
-                    $sql = "SELECT COUNT(*) FROM participation WHERE event_id = :eventId AND participant_id = :userId";
-                    $stmt = $this->connection->prepare($sql);
-                    $result = $stmt->executeQuery(['eventId' => $event->getId(), 'userId' => $currentUserId]);
-                    if ($result->fetchOne() > 0) {
+            // Process past events
+            foreach ($pastEvents as $event) {
+                $hasJoined = false;
+                if ($currentUser) {
+                    $participation = $this->participationRepository->findOneBy([
+                        'participant' => $currentUser,
+                        'event' => $event
+                    ]);
+                    if ($participation) {
                         $hasJoined = true;
                     }
-                    */
                 }
-                $eventsWithStatus[] = [
+                $pastEventsWithStatus[] = [
                     'entity' => $event,
                     'hasJoined' => $hasJoined
                 ];
             }
 
         } catch (\Exception $e) {
-            $this->logger->error('Error fetching events, categories, or participation status: ' . $e->getMessage(), ['exception' => $e]);
+            $this->logger->error('Error fetching events: ' . $e->getMessage(), ['exception' => $e]);
             $this->addFlash('error', 'An error occurred while retrieving event data.');
         }
 
         return $this->render('events/events.html.twig', [
-            'eventsWithStatus' => $eventsWithStatus, // Pass the enriched array to Twig
+            'upcomingEventsWithStatus' => $upcomingEventsWithStatus,
+            'pastEventsWithStatus' => $pastEventsWithStatus,
             'categories' => $categories,
         ]);
     }
@@ -201,4 +216,102 @@ class EventsController extends AbstractController
         'create_event_form' => $form->createView(),
     ]);
 }
+#[Route('/events/{id}/review', name: 'app_event_review', methods: ['GET', 'POST'])]
+    public function addReview(
+        int $id,
+        Request $request,
+        EventsRepository $eventsRepository,
+        SessionInterface $session
+    ): Response {
+        $event = $eventsRepository->find($id);
+        
+        if (!$event) {
+            throw $this->createNotFoundException('Événement non trouvé');
+        }
+
+        // Get user from session and database
+        $userSession = $session->get('user');
+        if (!$userSession) {
+            $this->addFlash('error', 'Vous devez être connecté pour donner votre avis.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $currentUser = $this->entityManager->getRepository(Users::class)->find($userSession->getId());
+        if (!$currentUser) {
+            $this->addFlash('error', 'Utilisateur non trouvé.');
+            $session->remove('user');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Vérifier si l'événement est passé
+        $now = new \DateTime();
+        $endTime = new \DateTime($event->getEndTime());
+        if ($endTime > $now) {
+            $this->addFlash('error', 'Vous ne pouvez donner votre avis que sur les événements passés.');
+            return $this->redirectToRoute('app_events');
+        }
+
+        // Vérifier si l'utilisateur a participé à l'événement
+        $hasParticipated = $this->participationRepository->findOneBy([
+            'participant' => $currentUser,
+            'event' => $event
+        ]);
+
+        if (!$hasParticipated) {
+            $this->addFlash('error', 'Vous ne pouvez donner votre avis que sur les événements auxquels vous avez participé.');
+            return $this->redirectToRoute('app_events');
+        }
+
+        // Vérifier si l'utilisateur a déjà donné son avis
+        $existingReview = $this->entityManager->getRepository(Reviews::class)->findOneBy([
+            'participant' => $currentUser,
+            'event' => $event
+        ]);
+
+        if ($existingReview) {
+            $this->addFlash('error', 'You have already submitted your review for this event.');
+            return $this->redirectToRoute('app_events');
+        }
+
+        $review = new Reviews();
+        $review->setEvent($event);
+        $review->setParticipant($currentUser);
+        $review->setCreatedAt((new \DateTime())->format('Y-m-d H:i:s'));
+
+        $form = $this->createForm(ReviewType::class, $review);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $this->entityManager->persist($review);
+                $this->entityManager->flush();
+
+                $this->addFlash('success', 'Your feedback has been successfully recorded!');
+                return $this->redirectToRoute('app_events');
+            } catch (\Exception $e) {
+                $this->logger->error('Error saving review: ' . $e->getMessage());
+                $this->addFlash('error', 'There was an error submitting your review.');
+            }
+        }
+
+        return $this->render('events/review.html.twig', [
+            'event' => $event,
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/events/{id}/reviews', name: 'app_event_reviews', methods: ['GET'])]
+    public function showReviews(int $id, EventsRepository $eventsRepository): Response
+    {
+        $event = $eventsRepository->find($id);
+        
+        if (!$event) {
+            throw $this->createNotFoundException('Event not found');
+        }
+
+        return $this->render('events/reviews.html.twig', [
+            'event' => $event,
+            'reviews' => $event->getReviews()
+        ]);
+    }
 }

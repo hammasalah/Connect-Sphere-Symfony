@@ -45,4 +45,22 @@ class UserGroupsRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+ /**
+     * Recherche des groupes par nom ou description
+     * 
+     * @param string $searchTerm Le terme à rechercher
+     * @return UserGroups[] Returns an array of UserGroups objects
+     */
+ public function findBySearch(string $searchTerm): array
+    {
+        return $this->createQueryBuilder('g')
+            ->where('LOWER(g.name) LIKE LOWER(:search)')
+            ->orWhere('LOWER(g.description) LIKE LOWER(:search)')
+            ->setParameter('search', '%' . $searchTerm . '%')
+            ->orderBy('g.name', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

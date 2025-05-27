@@ -27,7 +27,9 @@ class EventsRepository extends ServiceEntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('e')
             ->leftJoin('e.categoryId', 'c')
-            ->addSelect('c');
+            ->addSelect('c')
+            ->andWhere('e.endTime > :now')
+            ->setParameter('now', date('Y-m-d H:i:s'));
 
         // Exclude events by organizer if specified
         if ($excludeOrganizerId !== null) {
@@ -56,5 +58,15 @@ class EventsRepository extends ServiceEntityRepository
                      ->addOrderBy('e.name', 'ASC');
 
         return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function findPastEvents(): array
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.endTime <= :now')
+            ->setParameter('now', date('Y-m-d H:i:s'))
+            ->orderBy('e.endTime', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 }

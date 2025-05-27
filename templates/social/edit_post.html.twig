@@ -229,9 +229,7 @@
             <div class="form-group">
                 <label for="content">Qu'avez-vous en tête ?</label>
                 <textarea id="content" name="content" class="content-textarea" placeholder="Partagez vos pensées, expériences ou questions..." required>{{ post.content }}</textarea>
-            </div>
-            
-            {% if post.imagePath %}
+            </div>              {% if post.imagePath %}
             <div class="image-preview">
                 <p>Image actuelle :</p>
                 <img src="{{ post.imagePath }}" alt="Image du post">

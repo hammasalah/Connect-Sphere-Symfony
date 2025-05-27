@@ -6,8 +6,7 @@
     <title>{{ posts[0].post.content|slice(0, 50) }}... - Connect Sphere</title>
     
     <!-- Métadonnées Open Graph pour le partage sur les réseaux sociaux -->
-    <meta property="og:title" content="{{ posts[0].post.content|slice(0, 100) }}" />
-    <meta property="og:description" content="{{ posts[0].post.content }}" />
+    <meta property="og:title" content="{{ posts[0].post.content|slice(0, 100) }}" />    <meta property="og:description" content="{{ posts[0].post.content }}" />
     <meta property="og:url" content="{{ absolute_url(path('app_social_view_post', {id: posts[0].post.id})) }}" />
     {% if posts[0].post.imagePath %}
     <meta property="og:image" content="{{ absolute_url(posts[0].post.imagePath) }}" />
@@ -19,8 +18,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('css/social.css') }}">
-    
-    <!-- Styles pour le menu déroulant des options de post -->
+      <!-- Styles pour le menu déroulant des options de post -->
     <style>
         .post-options {
             cursor: pointer;
@@ -33,8 +31,7 @@
             border-radius: 8px;
             border: 1px solid rgba(0,0,0,0.1);
         }
-        
-        .dropdown-item {
+          .dropdown-item {
             padding: 8px 15px;
             display: flex;
             align-items: center;
@@ -44,8 +41,20 @@
             background-color: #f8f9fa;
         }
         
-        .dropdown-item.text-danger:hover {
+        .btn-link {
+            text-decoration: none;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        
+        .btn-link:hover {
+            text-decoration: none;
             background-color: #fff5f5;
+        }
+        
+        .text-left {
+            text-align: left;
         }
     </style>
     
@@ -60,7 +69,7 @@
         <h2>Connect Sphere</h2>
     </div>
     <div class="sidebar-profile">
-        <img src="/uploads/images/default-avatar.png" alt="Profile">
+        <img src="{{ asset('images/default-avatar.svg') }}" alt="Profile">
         <div>Utilisateur</div>
     </div>
     <ul class="sidebar-menu">
@@ -98,25 +107,26 @@
                     <div class="user-info">
                         <div class="username">{{ post.user.username }}</div>
                         <div class="post-date">{{ post.post.timeStamp|date('d/m/Y H:i') }}</div>
-                    </div>
-                    {% if currentUser and post.user.id == currentUser.id %}
+                    </div>                    {% if currentUser and post.user.id == currentUser.id %}
                     <div class="post-options dropdown">
                         <i class="fas fa-ellipsis-h" id="dropdownMenuButton-{{ post.post.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton-{{ post.post.id }}">
-                            <a class="dropdown-item" href="{{ path('app_social_edit_post', {id: post.post.id}) }}">
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton-{{ post.post.id }}">                            <a class="dropdown-item" href="{{ path('app_social_edit_post', {id: post.post.id}) }}">
                                 <i class="fas fa-edit mr-2"></i> Modifier
                             </a>
-                            <form action="{{ path('app_social_delete_post', {id: post.post.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?');">
-                                <button type="submit" class="dropdown-item text-danger">
-                                    <i class="fas fa-trash-alt mr-2"></i> Supprimer
-                                </button>
-                            </form>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item p-0">
+                                <form action="{{ path('app_social_delete_post', {id: post.post.id}) }}" method="POST" class="m-0">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-post-' ~ post.post.id) }}">
+                                    <button type="submit" class="btn btn-link text-danger w-100 text-left px-3" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?');">
+                                        <i class="fas fa-trash-alt mr-2"></i> Supprimer
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     {% endif %}
                 </div>
-                
-                {% if post.post.imagePath %}
+                  {% if post.post.imagePath %}
                 <div class="post-image">
                     <img src="{{ post.post.imagePath }}" alt="Post image">
                 </div>
@@ -167,14 +177,46 @@
                         <span class="caption-text">{{ post.post.content }}</span>
                     </div>
                     
-                    <div class="comments-preview" id="comments-{{ post.post.id }}">
-                        <a href="#comments-{{ post.post.id }}" class="view-comments">Voir les commentaires ({{ post.comments|length }})</a>
-                        {% for comment in post.comments|slice(0, 3) %}
-                            <div class="comment-preview">
-                                <span class="comment-username">{{ comment.userId.username }}</span>
-                                <span class="comment-text">{{ comment.content }}</span>
+                    <div class="comments-section" id="comments-{{ post.post.id }}">
+                        <h4 class="comments-title">Commentaires ({{ post.comments|length }})</h4>
+                        {% if post.comments|length > 0 %}
+                            <div class="comments-list">
+                                {% for comment in post.comments %}
+                                    <div class="comment" data-comment-id="{{ comment.commentId }}">
+                                        <div class="comment-avatar">
+                                            {% if comment.userId.profile and comment.userId.profile.profilePicture %}
+                                                <img src="{{ asset('uploads/profile_pictures/' ~ comment.userId.profile.profilePicture) }}" alt="{{ comment.userId.username }}">
+                                            {% else %}
+                                                <img src="{{ asset('images/default-avatar.svg') }}" alt="Default Avatar">
+                                            {% endif %}
+                                        </div>
+                                        <div class="comment-content">
+                                            <div class="comment-header">
+                                                <span class="comment-author">{{ comment.userId.username }}</span>
+                                                <span class="comment-time"><i class="far fa-clock"></i> {{ comment.timeStamp|date('d M Y à H:i') }}</span>
+                                            </div>
+                                            <p class="comment-text">{{ comment.content }}</p>
+                                            {% if app.user and app.user.id == comment.userId.id %}
+                                            <div class="comment-actions">
+                                                <button class="btn btn-sm btn-link text-muted edit-comment-btn" data-comment-id="{{ comment.commentId }}">
+                                                    <i class="fas fa-edit"></i> Modifier
+                                                </button>
+                                                <form method="post" action="{{ path('app_social_delete_comment', {'id': comment.commentId}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire?');">
+                                                    <button type="submit" class="btn btn-sm btn-link text-danger">
+                                                        <i class="fas fa-trash-alt"></i> Supprimer
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
-                        {% endfor %}
+                        {% else %}
+                            <div class="no-comments">
+                                <p>Aucun commentaire pour le moment. Soyez le premier à commenter !</p>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
                 
@@ -199,7 +241,117 @@
     </div>
 </div>
 
-<!-- Ajouter le script pour les fonctionnalités de partage -->
+<!-- Scripts pour les fonctionnalités -->
 <script src="{{ asset('js/social-share.js') }}"></script>
+
+<script>
+    // Gestion de l'édition des commentaires
+    document.querySelectorAll('.edit-comment-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const commentId = this.getAttribute('data-comment-id');
+            const commentElement = document.querySelector(`.comment[data-comment-id="${commentId}"]`);
+            const commentTextElement = commentElement.querySelector('.comment-text');
+            const commentText = commentTextElement.textContent.trim();
+            
+            // Créer le formulaire d'édition
+            const editForm = document.createElement('div');
+            editForm.className = 'edit-comment-form';
+            editForm.innerHTML = `
+                <div class="input-group">
+                    <textarea class="form-control edit-comment-textarea" required>${commentText}</textarea>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-primary save-comment-btn">
+                            <i class="fas fa-save"></i>
+                        </button>
+                        <button type="button" class="btn btn-secondary cancel-edit-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Remplacer le texte du commentaire par le formulaire d'édition
+            commentTextElement.style.display = 'none';
+            commentTextElement.insertAdjacentElement('afterend', editForm);
+            
+            // Gérer l'annulation de l'édition
+            editForm.querySelector('.cancel-edit-btn').addEventListener('click', function() {
+                editForm.remove();
+                commentTextElement.style.display = 'block';
+            });
+            
+            // Gérer la sauvegarde du commentaire
+            editForm.querySelector('.save-comment-btn').addEventListener('click', function() {
+                const newContent = editForm.querySelector('.edit-comment-textarea').value.trim();
+                if (!newContent) {
+                    alert('Le commentaire ne peut pas être vide');
+                    return;
+                }
+                
+                // Envoyer la requête AJAX pour mettre à jour le commentaire
+                const formData = new FormData();
+                formData.append('content', newContent);
+                
+                fetch(`{{ path('app_social_edit_comment', {'id': 'COMMENT_ID'}) }}`.replace('COMMENT_ID', commentId), {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Mettre à jour le texte du commentaire
+                        commentTextElement.textContent = data.comment.content;
+                        
+                        // Supprimer le formulaire d'édition
+                        editForm.remove();
+                        commentTextElement.style.display = 'block';
+                        
+                        // Afficher un message de succès temporaire
+                        const successMessage = document.createElement('div');
+                        successMessage.className = 'alert alert-success comment-success-message';
+                        successMessage.textContent = data.message;
+                        commentElement.appendChild(successMessage);
+                        
+                        setTimeout(() => {
+                            successMessage.remove();
+                        }, 3000);
+                    } else {
+                        alert(data.message || 'Une erreur est survenue lors de la modification du commentaire');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Une erreur est survenue lors de la modification du commentaire');
+                });
+            });
+        });
+    });
+    
+    // Fonction globale pour afficher/masquer les commentaires
+    window.toggleComments = function(postId) {
+        const commentsSection = document.getElementById(`comments-${postId}`);
+        if (!commentsSection) return; // Vérifier si l'élément existe
+        
+        const isHidden = commentsSection.style.display === 'none';
+        
+        if (isHidden) {
+            commentsSection.style.display = 'block';
+            commentsSection.classList.add('animate__animated', 'animate__fadeIn');
+            // Faire défiler jusqu'aux commentaires
+            setTimeout(() => {
+                commentsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        } else {
+            commentsSection.classList.add('animate__animated', 'animate__fadeOut');
+            setTimeout(() => {
+                commentsSection.style.display = 'none';
+                commentsSection.classList.remove('animate__animated', 'animate__fadeOut');
+            }, 300);
+        }
+    };
+</script>
 </body>
 </html>

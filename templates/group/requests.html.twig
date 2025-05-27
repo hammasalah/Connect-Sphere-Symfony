@@ -1,0 +1,166 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Membership Requests - Connect Sphere{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/groups.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="requests-container">
+    <div class="groups-header">
+        <h1 class="groups-title">Pending Membership Requests</h1>
+        <a href="{{ path('app_groups') }}" class="create-group-btn">
+            <i class="fas fa-arrow-left me-2"></i>
+            Back to Groups
+        </a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    {% if pendingRequests|length > 0 %}
+        <div class="requests-overview">
+            <div class="requests-list">
+                {% for request in pendingRequests %}
+                    {% set requestAge = 'now'|date('U') - request.getCreatedAt()|date('U') %}
+                    {% set isNew = requestAge < 86400 %} {# Less than 1 day #}
+                    <div class="request-card">
+                        <div class="request-info">
+                            <div class="request-user">
+                                {% set userId = request.getUserId().getId() %}
+                                {% if userProfiles[userId] is defined %}
+                                    <img src="{{ asset('uploads/profile_pictures/' ~ userProfiles[userId].getProfilePicture()) }}" alt="{{ request.getUserId().getUsername() }}" class="member-avatar">
+                                {% else %}
+                                    <img src="{{ asset('images/profile-modified.png') }}" alt="{{ request.getUserId().getUsername() }}" class="member-avatar">
+                                {% endif %}
+                                <div class="user-info">
+                                    <span class="username">{{ request.getUserId().getUsername() }}</span>
+                                    {% if isNew %}
+                                        <span class="badge badge-new">New</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="request-details">
+                                <div class="request-group">
+                                    <i class="fas fa-users me-2"></i>
+                                    Group: <strong>{{ request.getGroupIt().getName() }}</strong>
+                                </div>
+                                <div class="request-date">
+                                    <i class="far fa-clock me-2"></i>
+                                    Sent on: {{ request.getCreatedAt()|date('d/m/Y H:i') }}
+                                </div>
+                                {% if request.getUserId().getEmail() %}
+                                    <div class="request-email">
+                                        <i class="far fa-envelope me-2"></i>
+                                        {{ request.getUserId().getEmail() }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="request-actions">
+                            <a href="{{ path('app_group_request', {'id': request.getId(), 'action': 'accept'}) }}" class="group-btn group-btn-primary" data-tooltip="Accept this request">
+                                <i class="fas fa-check me-2"></i>
+                                Accept
+                            </a>
+                            <a href="{{ path('app_group_request', {'id': request.getId(), 'action': 'reject'}) }}" class="group-btn group-btn-danger" data-tooltip="Reject this request">
+                                <i class="fas fa-times me-2"></i>
+                                Reject
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="no-requests">
+            <i class="far fa-comment-dots fa-3x mb-3"></i>
+            <p>No pending membership requests for your groups.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Data for the chart (count requests per group)
+        const groupRequests = {};
+        {% for request in pendingRequests %}
+            groupRequests["{{ request.getGroupIt().getName()|e('js') }}"] = (groupRequests["{{ request.getGroupIt().getName()|e('js') }}"] || 0) + 1;
+        {% endfor %}
+        const chartData = {
+            labels: Object.keys(groupRequests),
+            datasets: [{
+                data: Object.values(groupRequests),
+                backgroundColor: [
+                    'var(--primary-color)', 
+                    'var(--secondary-color)', 
+                    'var(--theme-primary-pink)', 
+                    'var(--theme-secondary-teal)', 
+                    '#ff6f61'
+                ].map(color => `color-mix(in srgb, ${color} 80%, transparent)`),
+                borderWidth: 2,
+                borderColor: 'var(--card-header-bg, #ffffff)',
+                hoverOffset: 10
+            }]
+        };
+
+        // Render chart with animation
+        const ctx = document.getElementById('requestsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: 'var(--theme-text-dark)',
+                            font: {
+                                size: 14,
+                                family: 'var(--body-font)'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'var(--theme-text-dark)',
+                        titleFont: { family: 'var(--body-font)' },
+                        bodyFont: { family: 'var(--body-font)' }
+                    }
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                }
+            }
+        });
+
+        // Tooltip functionality
+        document.querySelectorAll('[data-tooltip]').forEach(elem => {
+            elem.addEventListener('mouseenter', function(e) {
+                const tooltipText = this.getAttribute('data-tooltip');
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                tooltip.innerText = tooltipText;
+                document.body.appendChild(tooltip);
+
+                const rect = this.getBoundingClientRect();
+                tooltip.style.left = `${rect.left + rect.width / 2}px`;
+                tooltip.style.top = `${rect.top - 30}px`;
+            });
+
+            elem.addEventListener('mouseleave', function() {
+                document.querySelectorAll('.tooltip').forEach(t => t.remove());
+            });
+        });
+    </script>
+{% endblock %}

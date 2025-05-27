@@ -325,4 +325,9 @@ public function removeReceivedMessage(Message $message): self
     {
         return $this->email;
     }
+
+      public function getProfilePicture(): ?string
+    {
+        return $this->profile ? $this->profile->getProfilePicture() : null;
+    }
 }

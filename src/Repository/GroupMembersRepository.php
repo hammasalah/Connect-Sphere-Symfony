@@ -6,6 +6,7 @@ use App\Entity\GroupMembers;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+
 /**
  * @extends ServiceEntityRepository<GroupMembers>
  *
@@ -45,4 +46,25 @@ class GroupMembersRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+/**
+     * Récupère toutes les demandes d'adhésion en attente pour les groupes d'un utilisateur
+     * 
+     * @param int $userId ID de l'utilisateur (créateur des groupes)
+     * @return array Les demandes d'adhésion en attente
+     */
+    public function findPendingRequestsForUserGroups(int $userId): array
+    {
+        return $this->createQueryBuilder('gm')
+            ->join('gm.group_it', 'g')
+            ->join('gm.user_id', 'u')
+            ->where('g.creator_id = :userId')
+            ->andWhere('gm.status = :status')
+            ->setParameter('userId', $userId)
+            ->setParameter('status', GroupMembers::STATUS_PENDING)
+            ->orderBy('gm.created_at', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
