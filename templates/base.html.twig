@@ -12,8 +12,11 @@
 <header class="header">
     <nav class="navbar">
         <div class="logo">
-            <img src="{{ asset('images/logo1.PNG') }}" alt="Connect Sphere" class="logo-img">
-        </div>
+        <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+          <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:10px;">
+          <span style="font-weight:bold;font-size:1.5rem;color:black;">ConnectSphere</span>
+        </a>
+      </div>
         <div class="search-location">
             <div class="search-container">
                 <input type="text" placeholder="Search events" class="search-input">
