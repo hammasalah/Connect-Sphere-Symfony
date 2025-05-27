@@ -1,6 +1,8 @@
 <?php
 
+
 namespace App\Controller\group;
+use Doctrine\ORM\Mapping as ORM;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,13 +12,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\UserGroups;
 use App\Entity\GroupMembers;
 use App\Entity\Users;
+use App\Entity\Notification;
+use App\Repository\GroupMembersRepository;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class GroupController extends AbstractController
 {
     #[Route('/groups', name: 'app_groups')]
-    public function index(SessionInterface $session, EntityManagerInterface $entityManager): Response
+    public function index(SessionInterface $session, EntityManagerInterface $entityManager, GroupMembersRepository $groupMembersRepository): Response
     {
         // Check if user is logged in
         $user = $session->get('user');
@@ -35,15 +39,23 @@ class GroupController extends AbstractController
         foreach ($userMemberships as $membership) {
             $userGroups[$membership->getGroupIt()->getId()] = $membership;
         }
+        
+        // Récupérer le nombre de demandes d'adhésion en attente pour les groupes de l'utilisateur
+        $pendingRequests = $groupMembersRepository->findPendingRequestsForUserGroups($user->getId());
+        $pendingRequestsCount = count($pendingRequests);
+        
+        // Stocker le nombre dans la session pour l'affichage du badge
+        $session->set('pendingGroupRequestsCount', $pendingRequestsCount);
     
         return $this->render('group/index.html.twig', [
             'groups' => $groups,
             'userGroups' => $userGroups,
-            'currentUser' => $user
+            'currentUser' => $user,
+            'pendingRequestsCount' => $pendingRequestsCount
         ]);
     }
 
-    #[Route('/group/{groupId}/invite', name: 'app_group_invite')]
+#[Route('/group/{groupId}/invite', name: 'app_group_invite')]
 public function invite(
     Request $request,
     EntityManagerInterface $entityManager,
@@ -95,7 +107,10 @@ public function invite(
     }
 
     // Get all members for the view
-    $members = $entityManager->getRepository(GroupMembers::class)->findBy(['group_it' => $group]);
+    $members = $entityManager->getRepository(GroupMembers::class)->findBy([
+        'group_it' => $group,
+        'status' => GroupMembers::STATUS_ACCEPTED
+    ]);
     $isMember = $entityManager->getRepository(GroupMembers::class)->findOneBy([
         'group_it' => $group,
         'user_id' => $user
@@ -148,7 +163,6 @@ if ($uploadedFile instanceof UploadedFile && $uploadedFile->isValid()) {
             $member->setGroupIt($group);
             $member->setUserId($user);
             $member->setRole('admin');
-            $member->setStatus('pending');
 
             $entityManager->persist($member);
             $entityManager->flush();
@@ -248,7 +262,11 @@ if ($uploadedFile instanceof UploadedFile && $uploadedFile->isValid()) {
         ]);
 
         // Récupérer tous les membres du groupe
-        $members = $entityManager->getRepository(GroupMembers::class)->findBy(['group_it' => $group]);
+        // Get all members for the view
+        $members = $entityManager->getRepository(GroupMembers::class)->findBy([
+            'group_it' => $group,
+            'status' => GroupMembers::STATUS_ACCEPTED
+        ]);
 
         return $this->render('group/view.html.twig', [
             'group' => $group,
@@ -256,50 +274,6 @@ if ($uploadedFile instanceof UploadedFile && $uploadedFile->isValid()) {
             'isMember' => $isMember,
             'currentUser' => $user
         ]);
-    }
-
-    #[Route('/group/{id}/join', name: 'app_group_join')]
-    public function join(EntityManagerInterface $entityManager, SessionInterface $session, int $id): Response
-    {
-        $user = $session->get('user');
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-    
-        // Get the managed user entity
-        $managedUser = $entityManager->getRepository(Users::class)->find($user->getId());
-        if (!$managedUser) {
-            throw $this->createNotFoundException('User not found');
-        }
-    
-        $group = $entityManager->getRepository(UserGroups::class)->find($id);
-        if (!$group) {
-            throw $this->createNotFoundException('Group not found');
-        }
-    
-        // Check if user is already a member
-        $existingMember = $entityManager->getRepository(GroupMembers::class)->findOneBy([
-            'group_it' => $group,
-            'user_id' => $managedUser
-        ]);
-    
-        if ($existingMember) {
-            $this->addFlash('warning', 'You are already a member of this group');
-            return $this->redirectToRoute('app_group_view', ['id' => $id]);
-        }
-    
-        // Add user as group member
-        $member = new GroupMembers();
-        $member->setGroupIt($group);
-        $member->setUserId($managedUser); // Use the managed user entity
-        $member->setRole('member');
-        $member->setStatus('pending'); 
-    
-        $entityManager->persist($member);
-        $entityManager->flush();
-    
-        $this->addFlash('success', 'You have successfully joined the group!');
-        return $this->redirectToRoute('app_group_view', ['id' => $id]);
     }
 
     #[Route('/group/{id}/leave', name: 'app_group_leave')]
@@ -348,7 +322,7 @@ if ($uploadedFile instanceof UploadedFile && $uploadedFile->isValid()) {
         return $this->redirectToRoute('app_groups');
     }
 
-    #[Route('/group/{groupId}/add-member/{userId}', name: 'app_group_add_member')]
+        #[Route('/group/{groupId}/add-member/{userId}', name: 'app_group_add_member')]
     public function addMember(
         EntityManagerInterface $entityManager,
         SessionInterface $session,
@@ -381,28 +355,224 @@ if ($uploadedFile instanceof UploadedFile && $uploadedFile->isValid()) {
             throw $this->createNotFoundException('User not found');
         }
     
-        // Check if user is already a member
+        // Check if user is already a member or has a pending request
         $existingMember = $entityManager->getRepository(GroupMembers::class)->findOneBy([
             'group_it' => $group,
             'user_id' => $userToAdd
         ]);
     
         if ($existingMember) {
-            $this->addFlash('warning', 'This user is already a member of the group');
+                    //// star zedetou hadil
+
+
+            if ($existingMember->isPending()) {
+                $this->addFlash('warning', 'This user already has a pending request to join the group');
+            } else {
+                $this->addFlash('warning', 'This user is already a member of the group');
+            }
+            ///star wfee lena 
             return $this->redirectToRoute('app_group_view', ['id' => $groupId]);
         }
     
-        // Add user as group member
+        // Add user as pending group member
         $member = new GroupMembers();
         $member->setGroupIt($group);
         $member->setUserId($userToAdd);
         $member->setRole('member');
-        $member->setStatus('pending'); 
+        //star zedetou hadil
+        $member->setStatus(GroupMembers::STATUS_PENDING);
+        $member->setCreatedAt((new \DateTime())->format('Y-m-d H:i:s'));
+        //star wfee
     
         $entityManager->persist($member);
         $entityManager->flush();
     
-        $this->addFlash('success', 'User successfully invited to the group!');
+        $this->addFlash('success', 'User invitation sent successfully!');
         return $this->redirectToRoute('app_group_view', ['id' => $groupId]);
     }
+
+     #[Route('/group/{id}/join', name: 'app_group_join')]
+    public function join(EntityManagerInterface $entityManager, SessionInterface $session, int $id): Response
+    {
+        $user = $session->get('user');
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+    
+        // Get the managed user entity
+        $managedUser = $entityManager->getRepository(Users::class)->find($user->getId());
+        if (!$managedUser) {
+            throw $this->createNotFoundException('User not found');
+        }
+    
+        $group = $entityManager->getRepository(UserGroups::class)->find($id);
+        if (!$group) {
+            throw $this->createNotFoundException('Group not found');
+        }
+    
+        // Check if user is already a member
+        $existingMember = $entityManager->getRepository(GroupMembers::class)->findOneBy([
+            'group_it' => $group,
+            'user_id' => $managedUser
+        ]);
+    
+        if ($existingMember) {
+            if ($existingMember->getStatus() === GroupMembers::STATUS_PENDING) {
+                $this->addFlash('warning', 'Votre demande d\'adhésion est en attente d\'approbation');
+            } else {
+                $this->addFlash('warning', 'You are already a member of this group');
+            }
+            return $this->redirectToRoute('app_group_view', ['id' => $id]);
+        }
+    
+        // Add user as pending group member
+        $member = new GroupMembers();
+        $member->setGroupIt($group);
+        $member->setUserId($managedUser); // Use the managed user entity
+        $member->setRole('member');
+        $member->setStatus(GroupMembers::STATUS_PENDING);
+        $member->setCreatedAt((new \DateTime())->format('Y-m-d H:i:s'));
+    
+        $entityManager->persist($member);
+        $entityManager->flush();
+    
+        $this->addFlash('success', 'Your membership request has been sent and is pending approval');
+        return $this->redirectToRoute('app_group_view', ['id' => $id]);
+    }
+
+      /**
+     * Permet d'accepter ou de refuser une demande d'adhésion à un groupe
+     */
+    #[Route('/group-request/{id}/{action}', name: 'app_group_request')]
+    public function handleGroupRequest(
+        int $id,
+        string $action,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        GroupMembersRepository $groupMembersRepository
+    ): Response {
+        $groupRequest = $groupMembersRepository->find($id);
+        
+        if (!$groupRequest) {
+            $this->addFlash('error', 'Demande non trouvée');
+            return $this->redirectToRoute('app_groups');
+        }
+        
+        // Vérifier si l'utilisateur est connecté
+        $session = $request->getSession();
+        $userSession = $session->get('user');
+        
+        if (!$userSession) {
+            $this->addFlash('error', 'Utilisateur non connecté');
+            return $this->redirectToRoute('app_login');
+        }
+        
+        // Récupérer l'utilisateur depuis la base de données
+        $currentUser = $entityManager->getRepository(Users::class)->find($userSession->getId());
+        
+        if (!$currentUser) {
+            $this->addFlash('error', 'Utilisateur non trouvé');
+            $session->remove('user');
+            return $this->redirectToRoute('app_login');
+        }
+        
+        // Vérifier que l'utilisateur est le créateur du groupe
+        $group = $groupRequest->getGroupIt();
+        if ($group->getCreatorId()->getId() !== $currentUser->getId()) {
+            $this->addFlash('error', 'Vous n\'êtes pas autorisé à gérer cette demande');
+            return $this->redirectToRoute('app_groups');
+        }
+        
+        // Vérifier que la demande est en attente
+        if (!$groupRequest->isPending()) {
+            $this->addFlash('error', 'Cette demande a déjà été traitée');
+            return $this->redirectToRoute('app_groups');
+        }
+        
+        $userRequesting = $groupRequest->getUserId();
+        $groupName = $group->getName();
+        
+        if ($action === 'accept') {
+            $groupRequest->setStatus(GroupMembers::STATUS_ACCEPTED);
+            $entityManager->flush();
+            
+            // Créer une notification pour l'utilisateur
+            $notification = new Notification();
+            $notification->setUser($userRequesting);
+            $notification->setType(Notification::TYPE_GROUP_REQUEST_ACCEPTED);
+            $notification->setMessage("Your request to join the group \"$groupName\" has been accepted");
+            $notification->setCreatedAt((new \DateTime())->format('Y-m-d H:i:s'));
+            $notification->setLink('/group/' . $group->getId());
+            
+            $entityManager->persist($notification);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'You have accepted the membership request');
+        } else if ($action === 'reject') {
+            $groupRequest->setStatus(GroupMembers::STATUS_REJECTED);
+            $entityManager->flush();
+            
+            // Créer une notification pour l'utilisateur
+            $notification = new Notification();
+            $notification->setUser($userRequesting);
+            $notification->setType(Notification::TYPE_GROUP_REQUEST_REJECTED);
+            $notification->setMessage("Your request to join the group \"$groupName\" has been rejected");
+            $notification->setCreatedAt((new \DateTime())->format('Y-m-d H:i:s'));
+            
+            $entityManager->persist($notification);
+            $entityManager->flush();
+            
+            $this->addFlash('success', 'You have declined the membership request.');
+        } else {
+            $this->addFlash('error', 'Action non reconnue');
+        }
+        
+        return $this->redirectToRoute('app_groups');
+    }
+
+        /**
+     * Affiche les demandes d'adhésion en attente pour les groupes de l'utilisateur
+     */
+    #[Route('/group/requests', name: 'app_group_requests')]
+    public function viewPendingRequests(
+        EntityManagerInterface $entityManager,
+        SessionInterface $session,
+        GroupMembersRepository $groupMembersRepository,
+        \App\Repository\UserProfileRepository $userProfileRepository
+    ): Response {
+        // Vérifier si l'utilisateur est connecté
+        $user = $session->get('user');
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+        
+        // Récupérer l'utilisateur depuis la base de données
+        $managedUser = $entityManager->getRepository(Users::class)->find($user->getId());
+        if (!$managedUser) {
+            throw $this->createNotFoundException('Utilisateur non trouvé');
+        }
+        
+        // Récupérer toutes les demandes d'adhésion en attente pour les groupes de l'utilisateur
+        $pendingRequests = $groupMembersRepository->findPendingRequestsForUserGroups($managedUser->getId());
+        
+        // Récupérer les profils utilisateurs pour tous les utilisateurs qui ont fait une demande
+        $userProfiles = [];
+        foreach ($pendingRequests as $request) {
+            $userId = $request->getUserId()->getId();
+            $profile = $userProfileRepository->findOneBy(['user' => $request->getUserId()]);
+            if ($profile) {
+                $userProfiles[$userId] = $profile;
+            }
+        }
+        
+        // Stocker les profils dans la session pour y accéder dans le template
+        $session->set('userProfiles', $userProfiles);
+        
+        return $this->render('group/requests.html.twig', [
+            'pendingRequests' => $pendingRequests,
+            'currentUser' => $managedUser,
+            'userProfiles' => $userProfiles
+        ]);
+    }
 }
+

@@ -40,7 +40,7 @@ class FeedPosts
     #[ORM\Column(nullable: true)]
     private ?int $scorePopularite = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: "image_path", type: "text", nullable: true)]
     private ?string $imagePath = null;
 
     #[ORM\Column(nullable: true)]
@@ -161,9 +161,22 @@ class FeedPosts
         return $this->imagePath;
     }
 
-    public function setImagePath(string $imagePath): static
+    public function setImagePath(?string $imagePath): static
     {
         $this->imagePath = $imagePath;
+
+        return $this;
+    }
+
+    // Pour la compatibilité ascendante, alias de la propriété image
+    public function getImage(): ?string
+    {
+        return $this->imagePath;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->imagePath = $image;
 
         return $this;
     }

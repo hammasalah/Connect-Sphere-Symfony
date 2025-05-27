@@ -19,7 +19,8 @@ class Comments
     private ?FeedPosts $postId = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    //modiiif
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false)]
     private ?Users $user_id = null;
 
     #[ORM\Column(length: 255)]
@@ -32,6 +33,11 @@ class Comments
     private ?int $isDeleted = null;
 
     public function getId(): ?int
+    {
+        return $this->id;
+    }
+    
+    public function getCommentId(): ?int
     {
         return $this->id;
     }

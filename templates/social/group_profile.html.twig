@@ -2,365 +2,410 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Groupe - Connect Sphere</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>ConnectSphere - Profil of Group</title>    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/events_page.css') }}">
     <link rel="stylesheet" href="{{ asset('css/social.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/navbar-social.css') }}">
-    
-    <!-- jQuery et Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="{{ asset('css/social-enhancements.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/group-profile.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/interactions.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/dropdown-menu.css') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<!-- Navbar horizontale -->    
-<header class="navbar-social">
-    <div class="container-fluid">
-        <div class="navbar-content">
-            <div class="navbar-brand">
-                <a href="{{ path('app_root') }}">
-                    <img src="{{ asset('images/logo.png') }}" alt="ConnectSphere" class="logo-img">
+<body>  
+ <header class="header">
+        <nav class="nav-container container">
+            <div class="logo">
+                <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:10px;">
+                    <span style="font-weight:bold;font-size:1.5rem;color:black;">ConnectSphere</span>
                 </a>
             </div>
-            <div class="search-container">
-                    <div class="search-form">
-                        <input type="text" name="search" id="searchInput" placeholder="Search users /groups" class="search-input" autocomplete="off">
-                        <button type="button" class="search-btn"><i class="fas fa-search"></i></button>
-                    </div>
-                    <div class="search-dropdown" id="searchDropdown"></div>
-                </div>
-         
-            
-            <button class="mobile-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            
-            <div class="navbar-links">
-                <a href="{{ path('app_root') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
-                <a href="{{ path('app_social') }}" class="nav-link"><i class="fas fa-users"></i> Feed</a>
-                <a href="{{ path('app_job_feed') }}" class="nav-link"><i class="fas fa-briefcase"></i> Jobs</a>
-                <a href="{{ path('app_events') }}" class="nav-link"><i class="fas fa-calendar-alt"></i> Events</a>
+            <div class="nav-links">
+                <a href="{{ path('app_home') }}" class="nav-link">Home</a>
+                <a href="{{ path('app_social') }}" class="nav-link active">Feed</a>
+                <a href="{{ path('app_job_feed') }}" class="nav-link">Jobs</a>
+                <a href="{{ path('app_events') }}" class="nav-link">Events</a>
+                <a href="{{ path('app_groups') }}" class="nav-link">Groups</a>
+                <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+            </div>            <div class="user-menu dropdown">
+                <button class="d-flex align-items-center border-0 bg-transparent" type="button" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if app.session.get('user') and app.session.get('user').profilePicture and app.session.get('user').profilePicture != 'default.png' %}
+                        <img src="{{ asset('uploads/profile_pictures/' ~ app.session.get('user').profilePicture) }}" alt="Photo de profil" class="avatar-sm">
+                    {% else %}
+                        <img src="{{ asset('images/default.png') }}" alt="Default profile picture" class="avatar-sm">
+                    {% endif %}
+                    <span class="ms-2">{{ app.session.get('user') ? app.session.get('user').username : 'Invité' }}</span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="userMenuDropdown">
+                    <li>
+                        <a href="{{ path('app_social_user_profile', {id: app.session.get('user').id}) }}" class="dropdown-item">
+                            <i class="fas fa-user"></i> Social profile
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_social_notifications') }}" class="dropdown-item">
+                            <i class="fas fa-bell"></i> Notifications
+                            {% if unreadNotificationsCount|default(0) > 0 %}
+                                <span class="badge bg-danger">{{ unreadNotificationsCount }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_social_follow_requests') }}" class="dropdown-item">
+                            <i class="fas fa-user-plus"></i> Follow Requests
+                            {% if followRequestsCount|default(0) > 0 %}
+                                <span class="badge bg-danger">{{ followRequestsCount }}</span>
+                            {% endif %}
+                            {% if pendingRequestsCount|default(0) > 0 %}
+                                <span class="badge bg-danger">{{ pendingRequestsCount }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_logout') }}" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i> LogOut
+                        </a>
+                    </li>
+                </ul>
             </div>
-            
-            <!-- Ajout de l'icône profil utilisateur avec menu déroulant -->
-            <div class="profile-dropdown">
-                <div class="dropdown-toggle">
-                    <img src="{{ asset('images/profile-modified.png') }}" alt="Photo par défaut" class="profile-img">
-                    <span class="d-none d-md-inline">{{ app.session.get('user') ? app.session.get('user').username : 'Invité' }}</span>
-                </div>
-                <div class="dropdown-menu">
-                    <a href="{{ path('app_social_user_profile', {id: app.session.get('user').id}) }}" class="dropdown-item">
-                        <i class="fas fa-user"></i> Mon profil
-                    </a>
-                    <a href="{{ path('app_social_follow_requests') }}" class="dropdown-item">
-                        <i class="fas fa-user-plus"></i> Demandes de suivi
-                        <span class="badge badge-danger ml-2">{{ pendingRequestsCount|default(0) }}</span>
-                    </a>
-                    
-                    <div class="dropdown-divider"></div>
-                    <a href="{{ path('app_logout') }}" class="dropdown-item text-danger">
-                        <i class="fas fa-sign-out-alt"></i> Déconnexion
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-
-<!-- Main Content -->
-<div class="main-content">
-    <div class="container">
-        <style>
-            /* Styles pour le contenu principal avec la navbar */
-            .main-content {
-                padding-top: 80px; /* Espace pour la navbar fixe */
-                min-height: 100vh;
-                background-color: #f8f9fa;
-            }
-            
-            .container {
-                max-width: 1140px;
-                margin: 0 auto;
-                padding: 20px 15px;
-            }
-            
-            /* Styles pour les états de membre */
-            .member-status {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            
-            .badge {
-                padding: 8px 12px;
-                font-size: 14px;
-                border-radius: 4px;
-                display: inline-flex;
-                align-items: center;
-                gap: 5px;
-            }
-            
-            .badge-success {
-                background-color: #28a745;
-                color: white;
-            }
-            
-            .badge-warning {
-                background-color: #ffc107;
-                color: #212529;
-            }
-            
-            .btn-outline-danger {
-                color: #dc3545;
-                border-color: #dc3545;
-                background-color: transparent;
-                transition: all 0.3s ease;
-            }
-            
-            .btn-outline-danger:hover {
-                color: white;
-                background-color: #dc3545;
-            }
-            
-            .btn-outline-secondary {
-                color: #6c757d;
-                border-color: #6c757d;
-                background-color: transparent;
-                transition: all 0.3s ease;
-            }
-            
-            .btn-outline-secondary:hover {
-                color: white;
-                background-color: #6c757d;
-            }
-            
-            .btn-sm {
-                padding: 0.25rem 0.5rem;
-                font-size: 0.875rem;
-                line-height: 1.5;
-                border-radius: 0.2rem;
-            }
-            
-            .ml-2 {
-                margin-left: 0.5rem;
-            }
-            
-            /* Responsive */
-            @media (max-width: 768px) {
-                .main-content {
-                    padding-top: 60px; /* Ajustement pour les écrans plus petits */
-                }
-                
-                .member-status {
-                    flex-direction: column;
-                    align-items: flex-start;
-                }
-                
-                .ml-2 {
-                    margin-left: 0;
-                    margin-top: 0.5rem;
-                }
-            }
-        </style>
+        </nav>
+    </header>
+    <div class="group-container">
         {% for label, messages in app.flashes %}
             {% for message in messages %}
-                <div class="alert alert-{{ label }}">
-                    {{ message }}
-                </div>
+                <div class="alert alert-{{ label }}">{{ message }}</div>
             {% endfor %}
-        {% endfor %}
-        
-        <div class="feed-header">
-            <h1>Groupe: {{ group.name }}</h1>
-           
-            <a href="{{ path('app_social') }}" class="btn btn-primary">
-                <i class="fas fa-arrow-left"></i> Retour au Feed
-            </a>
-        </div>
-        
-        <!-- Profil du groupe -->
-        <div class="group-profile-card">
-            <div class="profile-header">
-                <div class="profile-avatar">
-                    <img src="/uploads/images/default-group.png" alt="{{ group.name }}">
-                </div>
-                <div class="profile-info">
-                    <h2>{{ group.name }}</h2>
-                    <p class="profile-description">{{ group.description }}</p>
-                </div>
-            </div>
-            <div class="profile-actions">
-                {% if isMember is defined and isMember %}
-                    <div class="member-status">
-                        <span class="badge badge-success">
-                            <i class="fas fa-check-circle"></i> Vous êtes membre
-                        </span>
-                        <form action="{{ path('app_social_leave_group', {id: group.id}) }}" method="post" class="ml-2">
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                <i class="fas fa-sign-out-alt"></i> Quitter le groupe
-                            </button>
-                        </form>
-                    </div>
-                {% elseif isPending is defined and isPending %}
-                    <div class="member-status">
-                        <span class="badge badge-warning">
-                            <i class="fas fa-clock"></i> Demande en attente
-                        </span>
-                        <form action="{{ path('app_social_cancel_join_group', {id: group.id}) }}" method="post" class="ml-2">
-                            <button type="submit" class="btn btn-outline-secondary btn-sm">
-                                <i class="fas fa-times"></i> Annuler la demande
-                            </button>
-                        </form>
-                    </div>
-                {% else %}
-                    <form action="{{ path('app_social_join_group', {id: group.id}) }}" method="post">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-user-plus"></i> Rejoindre le groupe
-                        </button>
-                    </form>
+        {% endfor %}        <section class="group-header">            <div class="group-cover">
+                {% if group.profilePicture and group.profilePicture != 'default.jpg' %}
+                    <img src="{{ asset('uploads/groups/' ~ group.profilePicture) }}" alt="Group Cover Image">
                 {% endif %}
             </div>
-        </div>
-        
-        <!-- Formulaire d'ajout de post pour le groupe -->
-        <div class="add-post-section">
-            <h3>Ajouter une publication au groupe</h3>
-            <form action="{{ path('app_social_group_add_post', {id: group.id}) }}" method="post" enctype="multipart/form-data" class="add-post-form">
-                <textarea name="content" placeholder="Partagez quelque chose avec le groupe..." required></textarea>
-                <div class="form-actions">
-                    <div class="file-input-wrapper">
-                        <label for="image_file" class="file-label">
-                            <i class="fas fa-image"></i> Ajouter une image
-                        </label>
-                        <input type="file" id="image_file" name="image_file" accept="image/*" class="file-input">
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i> Publier
-                    </button>
+            <div class="group-header-content">
+                <div class="group-avatar">
+                    {% if group.profilePicture and group.profilePicture != 'default.jpg' %}
+                        <img src="{{ asset('uploads/groups/' ~ group.profilePicture) }}" alt="{{ group.name }}'s avatar">
+                    {% else %}
+                        <img src="{{ asset('images/default.png') }}" alt="Default group avatar">
+                    {% endif %}
                 </div>
+                <h1 class="group-name">{{ group.name }}</h1>
+                <p class="group-description">{{ group.description }}</p>
+                <div class="group-actions">
+                    {% if isMember is defined and isMember %}
+                        <span class="btn-join member disabled">You are a member</span>
+                        <a href="{{ path('app_leave_group', {'id': group.id}) }}" class="btn-leave">Leave group</a>
+                    {% elseif isPending is defined and isPending %}
+                        <span class="btn-join pending disabled">Pending request</span>
+                        <a href="{{ path('app_social_cancel_join_group', {'id': group.id}) }}" class="btn-cancel">Cancel request</a>
+                    {% else %}
+                        <a href="{{ path('app_social_group_join', {'id': group.id}) }}" class="btn-join">Rejoindre le groupe</a>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <section class="post-creation-form">
+            <h2>Add a post to the group</h2>
+            <form action="{{ path('app_social_group_add_post', {'id': group.id}) }}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <textarea name="content" placeholder="What's new in the group ?" required></textarea>
+                </div>
+                <div class="custom-file-upload">
+                    <input type="file" name="media" accept="image/*">
+                    <span>Add photo</span>
+                </div>
+                <button type="submit" class="btn-publish">Publish</button>
             </form>
-        </div>
-        
-        <!-- Publications du groupe -->
-        <div class="group-posts-section">
-            <h2>Publications du groupe</h2>
-            
-            {% if posts|length > 0 %}
-                <div class="feed-grid">
+        </section>
+
+        <section class="group-posts">
+            <h2 class="group-posts-title">Group posts</h2>
+            <div class="posts-grid">
+                {% if posts|length > 0 %}
                     {% for post in posts %}
-                        <article class="post-card-grid">
-                            <div class="post-header-simple">
-                                <div class="user-info">                                    <span class="username">{{ post.user.username }}</span>
-                                    <span class="post-date">{{ post.post.timestamp|date('d M Y H:i') }}</span>
-                                </div>
-                                {% if currentUser and post.user.id == currentUser.id %}
-                                    <div class="post-options dropdown">
-                                        <button class="btn-icon" type="button" data-toggle="dropdown">
-                                            <i class="fas fa-ellipsis-h"></i>
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <a href="{{ path('app_social_edit_post', {id: post.post.id}) }}" class="dropdown-item">
-                                                <i class="fas fa-edit"></i> Modifier
-                                            </a>
-                                            <a href="{{ path('app_social_delete_post', {id: post.post.id}) }}" class="dropdown-item text-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post?')">
-                                                <i class="fas fa-trash"></i> Supprimer
-                                            </a>
-                                        </div>
+                        <div class="post-card">
+                            <div class="post-header">
+                                <div class="user-info">
+                                    <img src="{{ post.user.profilePicture and post.user.profilePicture != 'default.png' ? asset('uploads/profile_pictures/' ~ post.user.profilePicture) : asset('images/default.png') }}" alt="{{ post.user.username }}'s avatar" class="user-avatar">
+                                    <div class="user-details">
+                                        <a href="{{ path('app_profile', {'id': post.user.id}) }}" class="user-name">{{ post.user.username }}</a>
+                                        <span class="post-time"><i class="far fa-clock"></i> {{ post.post.timeStamp|date('d/m/Y H:i') }}</span>
                                     </div>
-                                {% endif %}
+                                </div>
                             </div>
-                            <div class="post-content-simple">
-                                {% if post.post.mediaUrl %}
-                                    <img src="{{ post.post.mediaUrl }}" alt="Image du post" class="post-image-grid">
-                                {% endif %}
-                                <div class="post-text-content">{{ post.post.content }}</div>
-                            </div>
-                            <div class="post-actions-simple">
-                                <div class="action-buttons">
-                                    <form action="{{ path('app_social_like_post', {id: post.post.id}) }}" method="post" class="like-form">
-                                        <button type="submit" class="btn-icon {% if post.userLiked %}active{% endif %}">
-                                            <i class="{% if post.userLiked %}fas{% else %}far{% endif %} fa-heart"></i>
+                            <div class="post-content">{{ post.post.content }}</div>                        
+                            {% if post.post.mediaUrl %}
+                                <div class="post-media">
+                                    <img src="{{ asset('uploads/posts/' ~ post.post.mediaUrl) }}" alt="Post image" class="post-image">
+                                </div>
+                            {% endif %}
+                            <div class="post-interactions">
+                                <div class="interaction-buttons">
+                                    <form method="post" action="{{ path('app_social_like_post', {'id': post.post.id}) }}" class="d-inline">
+                                        <button type="submit" class="btn-interaction {{ post.userLiked ? 'liked' : '' }}" data-post-id="{{ post.post.id }}" data-action="like">
+                                            <i class="{{ post.userLiked ? 'fas' : 'far' }} fa-heart"></i>
+                                            <span class="interaction-count">{{ post.likeCount }}</span>
                                         </button>
                                     </form>
-                                    <a href="#comments-{{ post.post.id }}" class="btn-icon">
+
+                                    <button class="btn-interaction" onclick="toggleComments({{ post.post.id }})">
                                         <i class="far fa-comment"></i>
-                                    </a>
+                                        <span class="interaction-count">{{ post.comments|length }}</span>
+                                    </button>
+
+                                    <div class="dropdown share-dropdown">
+                                        <button class="btn btn-interaction" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="far fa-share-square"></i>
+                                        </button>
+                                        <ul class="dropdown-menu share-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="https://www.facebook.com/sharer/sharer.php?u={{ url('app_social_view_post', {'id': post.post.id})|url_encode }}" target="_blank">
+                                                    <i class="fab fa-facebook"></i> Facebook
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="https://twitter.com/intent/tweet?url={{ url('app_social_view_post', {'id': post.post.id})|url_encode }}&text={{ post.post.content|striptags|slice(0, 100)|url_encode }}..." target="_blank">
+                                                    <i class="fab fa-twitter"></i> Twitter
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="https://www.linkedin.com/sharing/share-offsite/?url={{ url('app_social_view_post', {'id': post.post.id})|url_encode }}" target="_blank">
+                                                    <i class="fab fa-linkedin"></i> LinkedIn
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item copy-link" href="#" data-url="{{ url('app_social_view_post', {'id': post.post.id}) }}">
+                                                    <i class="fas fa-link"></i> Copy link
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                                <div class="post-stats">
-                                    <div class="like-stat">{{ post.likeCount }} J'aime</div>
-                                    <div class="comment-stat">{{ post.comments|length }} Commentaires</div>
-                                </div>
-                                
-                                <div class="comments-section" id="comments-{{ post.post.id }}">
-                                    <div class="comments-list">
-                                        {% for comment in post.comments %}
-                                            <div class="comment">
-                                                <strong>{{ comment.userId.username }}</strong>
-                                                <span>{{ comment.content }}</span>
-                                                <small class="comment-date">{{ comment.createdAt|date('d M Y H:i') }}</small>
+
+                                <!-- Comments Section -->
+                                <div class="comments-section" id="comments-{{ post.post.id }}" style="display: none;">
+                                    <div class="comment-form">
+                                        <form method="post" action="{{ path('app_social_add_comment', {'id': post.post.id}) }}" class="comment-submit-form">
+                                            <div class="input-group">
+                                                <textarea class="form-control comment-textarea" name="content" placeholder="Add a comment..." required></textarea>
+                                                <button type="submit" class="btn btn-comment">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                </button>
                                             </div>
-                                        {% endfor %}
+                                        </form>
                                     </div>
                                     
-                                    <form action="{{ path('app_social_add_comment', {id: post.post.id}) }}" method="post" class="comment-form">
-                                        <input type="text" name="content" placeholder="Ajouter un commentaire..." required>
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-paper-plane"></i>
-                                        </button>
-                                    </form>
+                                    <div class="comments-list">
+                                        {% if post.comments is empty %}
+                                            <div class="no-comments">
+                                                <i class="far fa-comments fa-2x mb-2 text-muted"></i>
+                                                <p>No comments yet.</p>
+                                                <p class="text-primary">Be the first to comment!</p>
+                                            </div>
+                                        {% else %}
+                                            {% for comment in post.comments %}
+                                                <div class="comment" data-comment-id="{{ comment.id }}">
+                                                    <img src="{{ comment.user.profilePicture ? asset('uploads/profile_pictures/' ~ comment.user.profilePicture) : asset('images/default.png') }}" alt="{{ comment.user.username }}'s avatar" class="comment-avatar">
+                                                    <div class="comment-content">
+                                                        <div class="comment-header">
+                                                            <a href="{{ path('app_social_user_profile', {'id': comment.user.id}) }}" class="comment-author">{{ comment.user.username }}</a>
+                                                            <span class="comment-time">
+                                                                <i class="far fa-clock"></i> {{ comment.createdAt|date('d/m/Y H:i') }}
+                                                            </span>
+                                                        </div>
+                                                        <p class="comment-text">{{ comment.content }}</p>
+                                                        {% if app.user and app.user.id == comment.user.id %}
+                                                            <div class="comment-actions">
+                                                                <button class="btn btn-sm btn-link text-muted edit-comment-btn" data-comment-id="{{ comment.id }}">
+                                                                    <i class="fas fa-edit"></i> Edit
+                                                                </button>
+                                                                <form method="post" action="{{ path('app_social_delete_comment', {'id': comment.id}) }}" class="d-inline">
+                                                                    <button type="submit" class="btn btn-sm btn-link text-danger">
+                                                                        <i class="fas fa-trash-alt"></i> Delete
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
-                        </article>
+                        </div>
                     {% endfor %}
-                </div>
-            {% else %}
-                <div class="empty-feed">
-                    <i class="far fa-sad-tear fa-3x"></i>
-                    <p>Aucune publication dans ce groupe pour le moment.</p>
-                </div>
-            {% endif %}
+                {% else %}
+                    <div class="no-posts-message">
+                        <p>This group has no posts yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+    <!-- Footer from home page -->
+<footer class="site-footer">
+    {# ... (your full footer HTML) ... #}
+    <div class="footer-content container">
+        <div class="footer-column">
+            <h4>ConnectSphere</h4>
+            <p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p>
+        </div>
+        <div class="footer-column">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="{{ path('app_home') }}">Home</a></li>
+                <li><a href="{{ path('app_events') }}">Events</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Terms of Service</a></li>
+            </ul>
+        </div>
+        <div class="footer-column footer-contact">
+            <h4>Contact Us</h4>
+            <p><i class="fas fa-phone"></i><a href="tel:+21692160411">+216 92 160 411</a></p>
+            <p><i class="fas fa-envelope"></i><a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p>
+        </div>
+        <div class="footer-column">
+            <h4>Follow Us</h4>
+            <div class="footer-social-icons">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a>
+            </div>
         </div>
     </div>
-</div>
-
-<script src="{{ asset('js/social-share.js') }}"></script>
-<script src="{{ asset('js/search-dropdown.js') }}"></script>
-<script>
-    // Gestion du menu mobile
-    document.querySelector('.mobile-toggle').addEventListener('click', function() {
-        document.querySelector('.navbar-links').classList.toggle('active');
-    });
+    <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
+</footer>
     
-    // Gestion du dropdown profil
-    document.querySelector('.profile-dropdown .dropdown-toggle').addEventListener('click', function(e) {
-        e.stopPropagation();
-        document.querySelector('.profile-dropdown .dropdown-menu').classList.toggle('show');
-    });
-    
-    // Empêcher la fermeture du dropdown quand on clique sur un élément du menu
-    document.querySelector('.profile-dropdown .dropdown-menu').addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
-    
-    // Fermer le dropdown quand on clique ailleurs sur la page
-    document.addEventListener('click', function() {
-        document.querySelector('.profile-dropdown .dropdown-menu').classList.remove('show');
-    });
-    
-    // Fermer automatiquement les alertes après 5 secondes
-    setTimeout(function() {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(function(alert) {
-            alert.style.opacity = '0';
-            setTimeout(function() {
-                alert.style.display = 'none';
-            }, 500);
+    <script src="{{ asset('js/social-share.js') }}"></script>
+    <script>
+        // Handle like functionality
+        document.querySelectorAll('.btn-interaction[data-action="like"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                fetch(`{{ path('app_social_like_post', {id: 'POST_ID'}) }}`.replace('POST_ID', postId), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const countElement = this.querySelector('.interaction-count');
+                    countElement.textContent = data.likeCount;
+                    this.classList.toggle('liked');
+                    
+                    if(data.isLiked) {
+                        this.querySelector('i').classList.remove('far');
+                        this.querySelector('i').classList.add('fas');
+                    } else {
+                        this.querySelector('i').classList.remove('fas');
+                        this.querySelector('i').classList.add('far');
+                    }
+                });
+            });
         });
-    }, 5000);
-</script>
-</body>
+
+        // Function to toggle comments visibility
+        function toggleComments(postId) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            if (!commentsSection) return;
+            
+            const isHidden = commentsSection.style.display === 'none';
+            
+            if (isHidden) {
+                commentsSection.style.display = 'block';
+                commentsSection.classList.add('animate__animated', 'animate__fadeIn');
+                setTimeout(() => {
+                    commentsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            } else {
+                commentsSection.classList.add('animate__animated', 'animate__fadeOut');
+                setTimeout(() => {
+                    commentsSection.style.display = 'none';
+                    commentsSection.classList.remove('animate__animated', 'animate__fadeOut');
+                }, 300);
+            }
+        }
+
+        // Handle comment edit functionality
+        document.querySelectorAll('.edit-comment-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                const commentElement = document.querySelector(`.comment[data-comment-id="${commentId}"]`);
+                const commentTextElement = commentElement.querySelector('.comment-text');
+                const commentText = commentTextElement.textContent.trim();
+                
+                // Create edit form
+                const editForm = document.createElement('div');
+                editForm.className = 'edit-comment-form';
+                editForm.innerHTML = `
+                    <div class="input-group">
+                        <textarea class="form-control edit-comment-textarea" required>${commentText}</textarea>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-primary save-comment-btn">
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <button type="button" class="btn btn-secondary cancel-edit-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                commentTextElement.style.display = 'none';
+                commentTextElement.insertAdjacentElement('afterend', editForm);
+                
+                // Handle save
+                editForm.querySelector('.save-comment-btn').addEventListener('click', function() {
+                    const newContent = editForm.querySelector('textarea').value;
+                    
+                    fetch(`{{ path('app_social_edit_comment', {id: 'COMMENT_ID'}) }}`.replace('COMMENT_ID', commentId), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ content: newContent })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            commentTextElement.textContent = newContent;
+                            editForm.remove();
+                            commentTextElement.style.display = 'block';
+                        }
+                    });
+                });
+                
+                // Handle cancel
+                editForm.querySelector('.cancel-edit-btn').addEventListener('click', function() {
+                    editForm.remove();
+                    commentTextElement.style.display = 'block';
+                });
+            });
+        });
+
+        // Handle sharing
+        document.querySelectorAll('.copy-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-url');
+                navigator.clipboard.writeText(url).then(() => {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Link copied!';
+                    this.classList.add('text-success');
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.remove('text-success');
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+    </body>
 </html>

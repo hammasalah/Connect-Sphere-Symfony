@@ -1,370 +1,130 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifications - ConnectSphere</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+{% extends 'base.html.twig' %}
+
+{% block title %}Notifications - ConnectSphere{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/groups.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ asset('css/social.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/navbar-social.css') }}">
-    
-    <!-- jQuery et Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block body %}
+
+
+<div class="requests-container">
+    <div class="groups-header">
+        <h1 class="groups-title"><i class="fas fa-bell me-2"></i>Your Notifications</h1>
+        <a href="{{ path('app_social') }}" class="create-group-btn">
+            <i class="fas fa-arrow-left me-2"></i>
+            Back to Feed
+        </a>
+    </div>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {% if notifications|length > 0 %}
+        <div class="requests-list">
+            {% for notification in notifications %}
+                {% set notificationAge = 'now'|date('U') - notification.createdAt|date('U') %}
+                {% set isNew = notificationAge < 86400 %}
+                <div class="request-card">
+                    <div class="request-info">                        <div class="request-user">
+                            <img src="{{ asset('images/profile-modified.png') }}" alt="System notification" class="member-avatar">
+                            <div class="user-info">
+                                <span class="username">System</span>
+                                {% if isNew %}
+                                    <span class="badge badge-new">New</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="request-details">
+                            <div class="request-group">
+                                {% if notification.type == 'follow_request_accepted' %}
+                                    <i class="fas fa-user-check me-2"></i>
+                                    Follow request accepted
+                                {% elseif notification.type == 'follow_request_rejected' %}
+                                    <i class="fas fa-user-times me-2"></i>
+                                    Follow request rejected
+                                {% elseif notification.type == 'group_request_accepted' %}
+                                    <i class="fas fa-users me-2"></i>
+                                    Group request accepted
+                                {% elseif notification.type == 'group_request_rejected' %}
+                                    <i class="fas fa-users-slash me-2"></i>
+                                    Group request rejected
+                                {% else %}
+                                    <i class="fas fa-bell me-2"></i>
+                                    Notification
+                                {% endif %}
+                            </div>
+                            <div class="request-date">
+                                <i class="far fa-clock me-2"></i>
+                                {{ notification.createdAt|date('d/m/Y H:i') }}
+                            </div>
+                            <div class="request-email">
+                                {{ notification.message }}
+                            </div>
+                        </div>
+                    </div>
+                    {% if notification.link %}
+                        <div class="request-actions">
+                            <a href="{{ notification.link }}" class="group-btn group-btn-primary" data-tooltip="View details">
+                                <i class="fas fa-eye me-2"></i>
+                                View
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-requests">
+            <i class="far fa-bell-slash fa-3x mb-3"></i>
+            <p>You have no notifications at the moment.</p>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <style>
-        /* Styles personnalisés pour la page de notifications */
-        :root {
-            --primary-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --accent-color: #8e2de2;
-            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            --hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-            --success-gradient: linear-gradient(to right, #00b09b, #96c93d);
-            --danger-gradient: linear-gradient(to right, #ff416c, #ff4b2b);
-        }
-        
-        .page-header {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 2.5rem;
-            border-radius: 16px;
-            margin-bottom: 2.5rem;
-            box-shadow: var(--card-shadow);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-        }
-        
-        .page-header h2 {
-            margin: 0;
-            font-weight: 700;
-            font-size: 2.2rem;
-            position: relative;
-            z-index: 2;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .page-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 200%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(30deg);
-            z-index: 1;
-        }
-        
-        .page-header::after {
-            content: '';
-            position: absolute;
-            bottom: -30%;
-            left: -10%;
-            width: 60%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            z-index: 1;
-        }
-        
-        .notifications-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        
-        .notification-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: var(--card-shadow);
-            padding: 1.5rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: none;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.95);
-            display: flex;
-            align-items: center;
-        }
-        
-        .notification-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--hover-shadow);
-        }
-        
-        .notification-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1.5rem;
-            flex-shrink: 0;
-        }
-        
-        .notification-icon.follow-accepted {
-            background: var(--success-gradient);
-            color: white;
-        }
-        
-        .notification-icon.follow-rejected {
-            background: var(--danger-gradient);
-            color: white;
-        }
-        
-        .notification-icon.group-accepted {
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            color: white;
-        }
-        
-        .notification-icon.group-rejected {
-            background: linear-gradient(to right, #f83600, #f9d423);
-            color: white;
-        }
-        
-        .notification-content {
-            flex-grow: 1;
-        }
-        
-        .notification-message {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-        
-        .notification-time {
-            font-size: 0.85rem;
-            color: #6c757d;
-        }
-        
-        .notification-link {
-            margin-left: auto;
-            padding-left: 1rem;
-        }
-        
-        .notification-link a {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-        
-        .notification-link a:hover {
-            color: #6a11cb;
-        }
-        
-        .empty-notifications {
-            text-align: center;
-            padding: 3rem;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
-            box-shadow: var(--card-shadow);
-        }
-        
-        .empty-notifications i {
-            font-size: 4rem;
-            color: #adb5bd;
-            margin-bottom: 1.5rem;
-        }
-        
-        .empty-notifications p {
-            font-size: 1.2rem;
-            color: #6c757d;
-        }
-        
-        @media (max-width: 768px) {
-            .page-header {
-                padding: 1.5rem;
-                margin-bottom: 1.5rem;
-            }
-            
-            .page-header h2 {
-                font-size: 1.8rem;
-            }
-            
-            .notification-card {
-                padding: 1rem;
-            }
-            
-            .notification-icon {
-                width: 40px;
-                height: 40px;
-                margin-right: 1rem;
-            }
-            
-            .notification-message {
-                font-size: 0.9rem;
-            }
-        }
-    </style>
-    
     <script>
         $(document).ready(function() {
-            // Gestion du dropdown profil
-            $(".profile-dropdown .dropdown-toggle").on("click", function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                $(this).parent().find(".dropdown-menu").toggleClass("show");
+            // Auto-dismiss alerts
+            setTimeout(function() {
+                $(".alert").fadeOut("slow");
+            }, 5000);
+            $(".alert .close").on("click", function() {
+                $(this).parent().fadeOut("slow");
             });
-            
-            // Fermer le dropdown quand on clique ailleurs
-            $(document).on("click", function(e) {
-                if (!$(e.target).closest(".profile-dropdown").length) {
-                    $(".dropdown-menu").removeClass("show");
-                }
-            });
-            
-            // Empêcher la fermeture du menu lors du clic sur les éléments du menu
-            $(".dropdown-menu").on("click", ".dropdown-item", function(e) {
-                e.stopPropagation();
+
+            // Tooltip functionality
+            document.querySelectorAll('[data-tooltip]').forEach(elem => {
+                elem.addEventListener('mouseenter', function(e) {
+                    const tooltipText = this.getAttribute('data-tooltip');
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'tooltip';
+                    tooltip.innerText = tooltipText;
+                    document.body.appendChild(tooltip);
+
+                    const rect = this.getBoundingClientRect();
+                    tooltip.style.left = `${rect.left + rect.width / 2}px`;
+                    tooltip.style.top = `${rect.top - 30}px`;
+                });
+
+                elem.addEventListener('mouseleave', function() {
+                    document.querySelectorAll('.tooltip').forEach(t => t.remove());
+                });
             });
         });
     </script>
-</head>
-<body>
-    <!-- Navbar horizontale -->    
-    <header class="navbar-social">
-        <div class="container-fluid">
-            <div class="navbar-content">
-                <div class="navbar-brand">
-                    <a href="{{ path('app_root') }}">
-                        <img src="{{ asset('images/logo.png') }}" alt="ConnectSphere" class="logo-img">
-                        <span>ConnectSphere</span>
-                    </a>
-                </div>
-                
-                <div class="search-container">
-                    <div class="search-form">
-                        <input type="text" name="search" id="searchInput" placeholder="Search users /groups" class="search-input" autocomplete="off">
-                        <button type="button" class="search-btn"><i class="fas fa-search"></i></button>
-                    </div>
-                    <div class="search-dropdown" id="searchDropdown"></div>
-                </div>
-                
-                <button class="mobile-toggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                
-                <div class="navbar-links">
-                    <a href="{{ path('app_root') }}" class="nav-link"><i class="fas fa-home"></i> Accueil</a>
-                    <a href="{{ path('app_social') }}" class="nav-link active"><i class="fas fa-users"></i> Social</a>
-                    <a href="{{ path('app_job_feed') }}" class="nav-link"><i class="fas fa-briefcase"></i> Emplois</a>
-                    <a href="{{ path('app_events') }}" class="nav-link"><i class="fas fa-calendar-alt"></i> Événements</a>
-                </div>
-                
-                <!-- Ajout de l'icône profil utilisateur avec menu déroulant -->
-                <div class="profile-dropdown">
-                    <div class="dropdown-toggle">
-                        <img src="{{ asset('images/profile-modified.png') }}" alt="Photo par défaut" class="profile-img">
-                        <span class="d-none d-md-inline">{{ app.session.get('user') ? app.session.get('user').username : 'Invité' }}</span>
-                    </div>
-                    <div class="dropdown-menu">
-                        <a href="{{ path('app_social_user_profile', {id: app.session.get('user').id}) }}" class="dropdown-item">
-                            <i class="fas fa-user"></i> Mon profil
-                        </a>
-                        <a href="{{ path('app_social_notifications') }}" class="dropdown-item">
-                            <i class="fas fa-bell"></i> Notifications
-                            {% if unreadNotificationsCount > 0 %}
-                                <span class="badge badge-danger ml-2">{{ unreadNotificationsCount }}</span>
-                            {% endif %}
-                        </a>
-                        <a href="{{ path('app_social_follow_requests') }}" class="dropdown-item">
-                            <i class="fas fa-user-plus"></i> Demandes de suivi
-                            {% if pendingRequestsCount > 0 %}
-                                <span class="badge badge-danger ml-2">{{ pendingRequestsCount }}</span>
-                            {% endif %}
-                        </a>
-                        
-                        <div class="dropdown-divider"></div>
-                        <a href="{{ path('app_logout') }}" class="dropdown-item text-danger">
-                            <i class="fas fa-sign-out-alt"></i> Déconnexion
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-    
-    <!-- Contenu principal -->
-    <div class="main-content">
-        <div class="container">
-            <!-- Alertes -->
-            {% for label, messages in app.flashes %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                {% endfor %}
-            {% endfor %}
-            
-            <!-- En-tête de la page -->
-            <div class="page-header">
-                <h2>
-                    <i class="fas fa-bell"></i> Vos notifications
-                </h2>
-            </div>
-            
-            <!-- Liste des notifications -->
-            <div class="notifications-list">
-                {% if notifications|length > 0 %}
-                    {% for notification in notifications %}
-                        <div class="notification-card">
-                            {% if notification.type == 'follow_request_accepted' %}
-                                <div class="notification-icon follow-accepted">
-                                    <i class="fas fa-user-check"></i>
-                                </div>
-                            {% elseif notification.type == 'follow_request_rejected' %}
-                                <div class="notification-icon follow-rejected">
-                                    <i class="fas fa-user-times"></i>
-                                </div>
-                            {% elseif notification.type == 'group_request_accepted' %}
-                                <div class="notification-icon group-accepted">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                            {% elseif notification.type == 'group_request_rejected' %}
-                                <div class="notification-icon group-rejected">
-                                    <i class="fas fa-users-slash"></i>
-                                </div>
-                            {% else %}
-                                <div class="notification-icon">
-                                    <i class="fas fa-bell"></i>
-                                </div>
-                            {% endif %}
-                            
-                            <div class="notification-content">
-                                <div class="notification-message">{{ notification.message }}</div>
-                                <div class="notification-time">{{ notification.createdAt|date('d/m/Y à H:i') }}</div>
-                            </div>
-                            
-                            {% if notification.link %}
-                                <div class="notification-link">
-                                    <a href="{{ notification.link }}">
-                                        <i class="fas fa-external-link-alt"></i> Voir
-                                    </a>
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty-notifications">
-                        <i class="far fa-bell-slash"></i>
-                        <p>Vous n'avez pas de notifications pour le moment.</p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+{% endblock %}

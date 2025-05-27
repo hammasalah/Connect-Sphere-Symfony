@@ -1,938 +1,417 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ConnectSphere</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+{% extends 'base.html.twig' %}
+
+{% block title %}Feed Social{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/social.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/navbar-social.css') }}">
-    
-    <!-- jQuery et Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Styles personnalisés pour les alertes -->
-    <style>
-        /* Styles personnalisés pour les alertes */
-        .alert {
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            padding: 15px;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
-        }
-        
-        .alert-danger {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
-        }
-        
-        .alert-warning {
-            background-color: #fff3cd;
-            border-color: #ffeeba;
-            color: #856404;
-        }
-        
-        .alert-info {
-            background-color: #d1ecf1;
-            border-color: #bee5eb;
-            color: #0c5460;
-        }
-        
-        .alert .close {
-            position: absolute;
-            top: 0;
-            right: 0;
-            padding: 0.75rem 1.25rem;
-            color: inherit;
-            opacity: 0.5;
-        }
-        
-        .alert .close:hover {
-            opacity: 1;
-        }
-        
-        /* Styles pour le badge de notification */
-        .notification-badge {
-            position: absolute;
-            top: -8px;
-            right: -10px;
-            font-size: 0.7rem;
-            padding: 0.25rem 0.5rem;
-            animation: pulse 1.5s infinite;
-            box-shadow: 0 0 5px rgba(0,0,0,0.3);
-        }
-        
-        /* Styles pour la barre de recherche */
-        .search-container {
-            display: flex;
-            align-items: center;
-            max-width: 500px;
-            width: 100%;
-        }
-        
-        .search-box {
-            background-color: #f5f5f5;
-            border-radius: 4px 0 0 4px;
-            padding: 8px 12px;
-            flex-grow: 1;
-            border: 1px solid #e6e6e6;
-            border-right: none;
-        }
-        
-        .search-input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            font-size: 14px;
-            outline: none;
-        }
-        
-        .location-box {
-            background-color: #f5f5f5;
-            padding: 8px 12px;
-            border: 1px solid #e6e6e6;
-            border-left: 1px solid #e6e6e6;
-            border-right: none;
-        }
-        
-        .location-input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            font-size: 14px;
-            outline: none;
-        }
-        
-        .search-button {
-            background-color: #f64060;
-            color: white;
-            border: none;
-            border-radius: 0 4px 4px 0;
-            padding: 9px 16px;
-            cursor: pointer;
-            height: 38px;
-        }
-        
-        /* Styles pour les boutons d'action */
-        .btn-primary {
-            background-color: var(--primary-color, #c13584);
-            border-color: var(--primary-color, #c13584);
-            font-weight: 500;
-            font-size: 14px;
-            padding: 8px 16px;
-            border-radius: 4px;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-color, #c13584);
-            border-color: var(--primary-color, #c13584);
-            opacity: 0.9;
-        }
-        
-        
-        
-        /* Style pour le bouton de déconnexion */
-        .logout-link {
-            color: #e74c3c !important;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .logout-link:hover {
-            background-color: rgba(231, 76, 60, 0.1);
-            color: #e74c3c !important;
-        }
-        
-        /* Styles pour la sidebar */
-        .sidebar {
-            width: 220px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, var(--sidebar-gradient-start, #22005a) 0%, var(--sidebar-gradient-end, #5b21b6) 100%);
-            color: white;
-            padding: 20px 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-        
-        .sidebar-header {
-            padding: 0 20px 20px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .sidebar-header h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }
-        
-        .sidebar-profile {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        
-        .sidebar-profile img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-            background: #FFFFFF;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            flex-grow: 1;
-        }
-        
-        .sidebar-menu li {
-            margin: 10px 0;
-        }
-        
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            color: #FFFFFF;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 500;
-            padding: 12px 15px;
-            border-radius: 8px;
-            transition: background 0.3s ease;
-        }
-        
-        .sidebar-menu a i {
-            margin-right: 10px;
-        }
-        
-        .sidebar-menu a:hover, .sidebar-menu .active a {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Bouton menu mobile */
-        .mobile-toggle {
-            display: none;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 10px;
-            z-index: 1031;
-        }
-        
-        .mobile-toggle span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background-color: white;
-            margin: 5px 0;
-            border-radius: 3px;
-            transition: all 0.3s ease;
-            transform-origin: center;
-        }
-        
-        .mobile-toggle.active span:nth-child(1) {
-            transform: translateY(8px) rotate(45deg);
-        }
-        
-        .mobile-toggle.active span:nth-child(2) {
-            opacity: 0;
-        }
-        
-        .mobile-toggle.active span:nth-child(3) {
-            transform: translateY(-8px) rotate(-45deg);
-        }
-        
-        /* Menu principal */
-        .main-menu-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-grow: 1;
-        }
-        
-        .main-menu {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .menu-item {
-            margin: 0 5px;
-            position: relative;
-        }
-        
-        .menu-link {
-            display: flex;
-            align-items: center;
-            color: #212121;
-            text-decoration: none;
-            padding: 8px 15px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        .menu-link:hover, .menu-item.active .menu-link {
-            color: #f64060;
-            text-decoration: none;
-        }
-        
-        .menu-icon {
-            margin-right: 8px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Menu secondaire */
-        .secondary-menu {
-            display: flex;
-            align-items: center;
-        }
-        
-        
-        
-        .notification-item .menu-link:hover {
-            color: #f64060;
-        }
-        
-        .notification-item .menu-icon {
-            margin: 0;
-        }
-        
-        .notification-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #f64060;
-            color: white;
-            font-size: 0.7rem;
-            font-weight: bold;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Profil utilisateur */
-        .profile-item {
-            margin-left: 10px;
-        }
-        
-        .profile-item .menu-link {
-            padding: 5px 10px;
-        }
-        
-        .profile-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            overflow: hidden;
-            margin-right: 8px;
-        }
-        
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .profile-name {
-            font-weight: 500;
-            max-width: 120px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        /* Styles pour le menu déroulant du profil */
-        .profile-dropdown {
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .profile-dropdown .dropdown-toggle {
-            display: flex;
-            align-items: center;
-            padding: 5px 10px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-        
-        .profile-dropdown .dropdown-toggle:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-        
-        .profile-dropdown .profile-img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        
-        .profile-dropdown .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            z-index: 1000;
-            display: none;
-            min-width: 200px;
-            padding: 8px 0;
-            margin: 0.125rem 0 0;
-            background-color: #fff;
-            border-radius: 4px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .profile-dropdown .dropdown-menu.show {
-            display: block;
-        }
-        
-        .navbar-spacer {
-            height: 80px; /* Ajuster selon la hauteur de votre navbar */
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .modern-header .container {
-                max-width: 95%;
-            }
-            
-            .main-content .container {
-                max-width: 95%;
-            }
-        }
-        
-        /* Styles pour le menu mobile */
-        @media (max-width: 991.98px) {
-            .search-container {
-                display: none;
-            }
-            
-            .action-button, .free-trial {
-                display: none !important;
-            }
-            
-            .mobile-toggle {
-                display: block;
-            }
-            
-            .main-menu-container {
-                flex-direction: column;
-                align-items: flex-start;
-                width: 100%;
-                padding-top: 15px;
-                max-height: 0;
-                overflow: hidden;
-                transition: max-height 0.5s ease;
-            }
-            
-            .main-menu-container.show {
-                max-height: 500px;
-            }
-            
-            .main-menu {
-                flex-direction: column;
-                width: 100%;
-            }
-            
-            .menu-item {
-                margin: 5px 0;
-                width: 100%;
-            }
-            
-            .secondary-menu {
-                margin-top: 15px;
-                width: 100%;
-                justify-content: flex-end;
-            }
-            
-            .profile-name {
-                display: inline-block !important;
-            }
-            
-            .feed-header .d-flex {
-                flex-wrap: wrap;
-            }
-            
-            .feed-header h1 {
-                margin-bottom: 10px;
-            }
-        }
-        
-        @media (max-width: 767.98px) {
-            .container {
-                padding: 0 15px;
-            }
-            
-            .logo-icon {
-                width: 70px;
-            }
-            
-            .notification-item .menu-link {
-                width: 32px;
-                height: 32px;
-                margin: 0 3px;
-            }
-            
-            .mobile-menu {
-                display: none;
-                position: fixed;
-                top: 60px;
-                left: 0;
-                right: 0;
-                background: white;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-                padding: 1rem 0;
-                z-index: 1029;
-            }
-            
-            .mobile-menu.show {
-                display: block;
-            }
-            
-            .mobile-search {
-                padding: 0 15px;
-                margin-bottom: 15px;
-            }
-            
-            .mobile-nav {
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .mobile-nav-item {
-                padding: 12px 15px;
-                color: #212121;
-                text-decoration: none;
-                border-bottom: 1px solid #f5f5f5;
-                font-size: 14px;
-                transition: all 0.2s ease;
-            }
-            
-            .mobile-nav-item:hover, .mobile-nav-item.active {
-                background-color: #f9f9f9;
-                color: #f64060;
-                text-decoration: none;
-            }
-            
-            .mobile-nav-item.btn {
-                margin: 15px;
-                border: none;
-            }
-        }
-        
-        @media (max-width: 575.98px) {
-            .logo-icon {
-                width: 60px;
-            }
-            
-            .notification-item .menu-link {
-                width: 28px;
-                height: 28px;
-                font-size: 0.9rem;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .navbar-spacer {
-                height: 70px;
-            }
-            
-            .modern-header {
-                padding: 0.6rem 0;
-            }
-            
-            .logo-text {
-                font-size: 1.3rem;
-            }
-            
-            .feed-grid {
-                display: block;
-            }
-            
-            .post-card-grid {
-                width: 100%;
-                margin-bottom: 20px;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .search-form {
-                flex-direction: column;
-            }
-            
-            .search-input {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-            
-            .logo-icon {
-                width: 35px;
-                height: 35px;
-            }
-            
-            .logo-text {
-                font-size: 1.2rem;
-            }
-            
-            .navbar-spacer {
-                height: 60px;
-            }
-        }
-        
-        /* Ajustements pour le contenu principal */
-        body {
-            background-color: #e9e9e9;
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: block;
-        }
-        
-        .main-content {
-            flex: 1;
-            margin-left: 220px;
-            padding: 20px;
-        }
-        
-        .main-content .container {
-            max-width: 1140px;
-            margin: 0 auto;
-        }
-        
-        /* Style pour la navbar */
-        .navbar-dark.bg-primary {
-            background: linear-gradient(90deg, var(--sidebar-gradient-start, #22005a) 0%, var(--sidebar-gradient-end, #5b21b6) 100%) !important;
-        }
-        
-        .dropdown-menu {
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: none;
-            padding: 8px 0;
-        }
-        
-        .dropdown-item {
-            padding: 8px 20px;
-            font-size: 14px;
-        }
-        
-        .dropdown-item i {
-            margin-right: 8px;
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* Styles pour le menu déroulant des options de post */
-        .post-options {
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .dropdown-menu {
-            min-width: 180px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-        
-        .dropdown-item {
-            padding: 8px 15px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .dropdown-item:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .dropdown-item.text-danger:hover {
-            background-color: #fff5f5;
-        }
-    </style>
-    
-    <!-- Scripts pour l'interface dynamique -->
-    <script>
-        $(document).ready(function() {
-            // Faire disparaître les alertes après 5 secondes
-            setTimeout(function() {
-                $(".alert").fadeOut("slow");
-            }, 5000);
-            
-            // Permettre la fermeture manuelle des alertes
-            $(".alert .close").on("click", function() {
-                $(this).parent().fadeOut("slow");
-            });
-            
-            // Gestion du menu mobile
-            $(".mobile-toggle").on("click", function() {
-                $(".navbar-links").toggleClass("show");
-                $(this).toggleClass("active");
-            });
-            
-            // Ajustement dynamique en fonction de la taille de l'écran
-            function adjustLayout() {
-                if (window.innerWidth <= 768) {
-                    $(".feed-grid").css("display", "block");
-                    $(".post-card-grid").css("width", "100%");
-                } else {
-                    $(".feed-grid").css("display", "");
-                    $(".post-card-grid").css("width", "");
-                }
-            }
-            
-            // Exécuter au chargement et au redimensionnement
-            adjustLayout();
-            $(window).resize(function() {
-                adjustLayout();
-            });
-            
-            // Gestion du dropdown profil
-            $(".profile-dropdown .dropdown-toggle").on("click", function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                $(this).parent().find(".dropdown-menu").toggleClass("show");
-            });
-            
-            // Fermer le dropdown quand on clique ailleurs
-            $(document).on("click", function(e) {
-                if (!$(e.target).closest(".profile-dropdown").length) {
-                    $(".dropdown-menu").removeClass("show");
-                }
-            });
-            
-            // Empêcher la fermeture du menu lors du clic sur les éléments du menu
-            $(".dropdown-menu").on("click", ".dropdown-item", function(e) {
-                e.stopPropagation();
-            });
-        });
-    </script>
-</head>
-<body>
-    <!-- Navbar horizontale -->    
-    <header class="navbar-social">
-        <div class="container-fluid">
-            <div class="navbar-content">
-                <div class="navbar-brand">
-                    <a href="">
-                        <img src="{{ asset('images/logo.png') }}" alt="ConnectSphere" class="logo-img">
-                        <span>ConnectSphere</span>
-                    </a>
-                </div>
-                
-                <div class="search-container">
-                    <div class="search-form">
-                        <input type="text" name="search" id="searchInput" placeholder="Search users /groups" class="search-input" autocomplete="off">
-                        <button type="button" class="search-btn"><i class="fas fa-search"></i></button>
-                    </div>
-                    <div class="search-dropdown" id="searchDropdown"></div>
-                </div>
-                
-                <button class="mobile-toggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                
-                <div class="navbar-links">
-                     <a href="{{ path('app_home') }}" class="nav-link"><i class="fas fa-briefcase"></i>Home</a>
-                    <a href="{{ path('app_social') }}" class="nav-link active"><i class="fas fa-users"></i> Feed</a>
-                    <a href="{{ path('app_job_feed') }}" class="nav-link"><i class="fas fa-briefcase"></i> Jobs</a>
-                    <a href="{{ path('app_events') }}" class="nav-link"><i class="fas fa-calendar-alt"></i> Events</a>
-                    
-                </div>
-                
-                <!-- Ajout de l'icône profil utilisateur avec menu déroulant -->
-                <div class="profile-dropdown">
-                    <div class="dropdown-toggle">
-                        <img src="{{ asset('images/profile-modified.png') }}" alt="Photo par défaut" class="profile-img">
-                        <span class="d-none d-md-inline">{{ app.session.get('user') ? app.session.get('user').username : 'Invité' }}</span>
-                    </div>
-                    <div class="dropdown-menu">
-                        <a href="{{ path('app_social_user_profile', {id: app.session.get('user').id}) }}" class="dropdown-item">
-                            <i class="fas fa-user"></i> Social Feed
-                        </a>
-                        <a href="{{ path('app_social_follow_requests') }}" class="dropdown-item">
-                            <i class="fas fa-user-plus"></i> Follow requests
-                            <span class="badge badge-danger ml-2">{{ follow_requests_count|default(0) }}</span>
-                        </a>
-                         <a href="{{ path('app_social_notifications') }}" class="dropdown-item">
-                            <i class="fas fa-user-plus"></i> Notifications
-                            <span class="badge badge-danger ml-2">{{ follow_requests_count|default(0) }}</span>
-                        </a>
-                        
-                        <div class="dropdown-divider"></div>
-                        <a href="{{ path('app_logout') }}" class="dropdown-item text-danger">
-                            <i class="fas fa-sign-out-alt"></i> Déconnexion
-                        </a>
-                    </div>
-                </div>
+    <link rel="stylesheet" href="{{ asset('css/social-enhancements.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dropdown-menu.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+{% endblock %}
+
+{% block body %}
+  <header class="header">
+        <nav class="nav-container container">
+            <div class="logo">
+                <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:10px;">
+                    <span style="font-weight:bold;font-size:1.5rem;color:black;">ConnectSphere</span>
+                </a>
             </div>
-        </div>
-    </header>
-    
-    <!-- Contenu principal -->
-    <div class="main-content">
-        <div class="container">
-            <!-- Alertes -->
-            {% for label, messages in app.flashes %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                        <span class="alert-icon">
-                            {% if label == 'success' %}
-                                <i class="fas fa-check-circle"></i>
-                            {% elseif label == 'danger' %}
-                                <i class="fas fa-exclamation-circle"></i>
-                            {% elseif label == 'warning' %}
-                                <i class="fas fa-exclamation-triangle"></i>
-                            {% elseif label == 'info' %}
-                                <i class="fas fa-info-circle"></i>
+            <div class="nav-links">
+                <a href="{{ path('app_home') }}" class="nav-link">Home</a>
+                <a href="{{ path('app_social') }}" class="nav-link active">Feed</a>
+                <a href="{{ path('app_job_feed') }}" class="nav-link">Jobs</a>
+                <a href="{{ path('app_events') }}" class="nav-link">Events</a>
+                <a href="{{ path('app_groups') }}" class="nav-link">Groups</a>
+                <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+            </div>            <div class="user-menu dropdown">
+                <button class="d-flex align-items-center border-0 bg-transparent" type="button" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if app.session.get('user') and app.session.get('user').profilePicture and app.session.get('user').profilePicture != 'default.png' %}
+                        <img src="{{ asset('uploads/profile_pictures/' ~ app.session.get('user').profilePicture) }}" alt="Photo de profil" class="avatar-sm">
+                    {% else %}
+                        <img src="{{ asset('images/default.png') }}" alt="Default profile picture" class="avatar-sm">
+                    {% endif %}
+                    <span class="ms-2">{{ app.session.get('user') ? app.session.get('user').username : 'Invité' }}</span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="userMenuDropdown">
+                    <li>
+                        <a href="{{ path('app_social_user_profile', {id: app.session.get('user').id}) }}" class="dropdown-item">
+                            <i class="fas fa-user"></i> Social profile
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_social_notifications') }}" class="dropdown-item">
+                            <i class="fas fa-bell"></i> Notifications
+                            {% if unreadNotificationsCount|default(0) > 0 %}
+                                <span class="badge bg-danger">{{ unreadNotificationsCount }}</span>
                             {% endif %}
-                        </span>
-                        {{ message }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_social_follow_requests') }}" class="dropdown-item">
+                            <i class="fas fa-user-plus"></i> Follow Requests
+                            {% if followRequestsCount|default(0) > 0 %}
+                                <span class="badge bg-danger">{{ followRequestsCount }}</span>
+                            {% endif %}
+                            {% if pendingRequestsCount|default(0) > 0 %}
+                                <span class="badge bg-danger">{{ pendingRequestsCount }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_logout') }}" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i> LogOut
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+<div class="social-feed-page">
+    <!-- Header Controls -->
+    <div class="feed-controls-header">
+        <h1 class="page-title"><i class="fas fa-stream"></i>  Social Feed</h1>
+        
+        <div class="search-filter-form">
+            <form action="{{ path('app_social_search') }}" method="get" class="d-flex">
+                <div class="input-group">
+                <input type="text" 
+                           name="search" 
+                           class="form-control" 
+                           placeholder="Search for users or groups..."
+                           value="{{ results.searchTerm|default('') }}"
+                           autocomplete="off">                    
+                    <button class="btn btn-search" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <button class="btn btn-create-post" data-bs-toggle="modal" data-bs-target="#createPostModal">
+            <i class="fas fa-plus-circle"></i> Create Post
+        </button>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    
+    <!-- Feed Content -->
+    <div class="feed-content">
+        {% if posts is empty %}
+            <div class="no-posts-message">
+                <i class="fas fa-newspaper fa-3x mb-3 pulse-animation"></i>
+                <p><strong>No posts to display at the moment.</strong></p>
+                <p>Be the first to share something with the community!</p>
+                <button class="btn btn-create-post mt-3 btn-glow" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                    <i class="fas fa-plus-circle"></i> Create Post
+                </button>
+            </div>
+        {% else %}
+            <div class="posts-grid">
+                {% for post in posts %}
+                    <div class="post-card" data-post-id="{{ post.post.postId }}" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
+                        <!-- Post Header with User Info -->
+                        <div class="post-header">
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    {% if post.user.profile and post.user.profile.profilePicture %}
+                                        <img src="{{ asset('uploads/profile_pictures/' ~ post.user.profile.profilePicture) }}" alt="{{ post.user.username }}">
+                                    {% else %}
+                                        <img src="{{ asset('images/default-avatar.svg') }}" alt="Default Avatar">
+                                    {% endif %}
+                                </div>
+                                <div class="user-details">
+                                    <h3 class="user-name">{{ post.user.username }}</h3>
+                                    <span class="post-time">
+                                        <i class="far fa-clock"></i> {{ post.post.createdAt|date('d M Y à H:i') }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Post Actions Dropdown -->
+                            {% if app.session.get('user') and app.session.get('user').id == post.user.id %}
+                                <div class="dropdown post-actions">
+                                    <button class="btn action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="{{ path('app_social_edit_post', {'id': post.post.postId}) }}">
+                                                <i class="fas fa-edit"></i> Modifier
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <form method="post" action="{{ path('app_social_delete_post', {'id': post.post.postId}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce post?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.post.postId) }}">
+                                                <button class="dropdown-item text-danger">
+                                                    <i class="fas fa-trash-alt"></i> Supprimer
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Post Content -->
+                        <div class="post-content">
+                            <p>{{ post.post.content }}</p>
+                            
+                            {% if post.post.imagePath %}
+                                <div class="post-media">
+                                    {% if post.post.imagePath starts with 'data:' %}
+                                        <img src="{{ post.post.imagePath }}" alt="Post image" class="post-image">
+                                    {% else %}
+                                        <img src="{{ asset('uploads/post_images/' ~ post.post.imagePath) }}" alt="Post image" class="post-image">
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Post Interactions -->
+                        <div class="post-interactions">
+                            <div class="interaction-buttons">
+                                {% set isLiked = post.userLiked %}
+                                
+                                <form method="post" action="{{ path('app_social_like_post', {'id': post.post.postId}) }}" class="like-form">
+                                    <button type="submit" class="btn btn-interaction {{ isLiked ? 'liked' : '' }}">
+                                        <i class="{{ isLiked ? 'fas' : 'far' }} fa-heart"></i> 
+                                        <span class="interaction-count">{{ post.likeCount }}</span>
+                                    </button>
+                                </form>
+                                
+                                <button class="btn btn-interaction" onclick="toggleComments({{ post.post.postId }})">
+                                    <i class="far fa-comment"></i> 
+                                    <span class="interaction-count">{{ post.comments|length }}</span>
+                                </button>
+                                
+                                <div class="dropdown share-dropdown">
+                                    <button class="btn btn-interaction" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="far fa-share-square"></i>
+                                    </button>
+                                    <ul class="dropdown-menu share-menu">
+                                        <li>
+                                            <a class="dropdown-item" href="{{ path('app_social_share_post', {'id': post.post.postId}) }}">
+                                                <i class="fas fa-retweet"></i> Partager sur mon profil
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="https://www.facebook.com/sharer/sharer.php?u={{ url('app_social_view_post', {'id': post.post.postId})|url_encode }}" target="_blank">
+                                                <i class="fab fa-facebook"></i> Facebook
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="https://twitter.com/intent/tweet?url={{ url('app_social_view_post', {'id': post.post.postId})|url_encode }}&text={{ post.post.content|striptags|slice(0, 100)|url_encode }}..." target="_blank">
+                                                <i class="fab fa-twitter"></i> Twitter
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="https://www.linkedin.com/sharing/share-offsite/?url={{ url('app_social_view_post', {'id': post.post.postId})|url_encode }}" target="_blank">
+                                                <i class="fab fa-linkedin"></i> LinkedIn
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item copy-link" href="#" data-url="{{ url('app_social_view_post', {'id': post.post.postId}) }}">
+                                                <i class="fas fa-link"></i> Copier le lien
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Comments Section -->
+                            <div class="comments-section" id="comments-{{ post.post.postId }}" style="display: none;">
+                                <div class="comment-form">
+                                    <form method="post" action="{{ path('app_social_add_comment', {'id': post.post.postId}) }}" class="comment-submit-form">
+                                        <div class="input-group">
+                                            <textarea class="form-control comment-textarea" name="content" placeholder="Ajouter un commentaire..." required></textarea>
+                                            <button type="submit" class="btn btn-comment">
+                                                <i class="fas fa-paper-plane"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                                <div class="comments-list">
+                                    {% if post.comments is empty %}
+                                        <div class="no-comments">
+                                            <i class="far fa-comments fa-2x mb-2 text-muted"></i>
+                                            <p>Aucun commentaire pour le moment.</p>
+                                            <p class="text-primary">Soyez le premier à commenter !</p>
+                                        </div>
+                                    {% else %}
+                                        {% for comment in post.comments %}
+                                            <div class="comment" data-comment-id="{{ comment.commentId }}">
+                                                <div class="comment-avatar">
+                                                    {% if comment.userId.profile and comment.userId.profile.profilePicture %}
+                                                        <img src="{{ asset('uploads/profile_pictures/' ~ comment.userId.profile.profilePicture) }}" alt="{{ comment.userId.username }}">
+                                                    {% else %}
+                                                        <img src="{{ asset('images/default-avatar.svg') }}" alt="Default Avatar">
+                                                    {% endif %}
+                                                </div>
+                                                <div class="comment-content">
+                                                    <div class="comment-header">
+                                                        <span class="comment-author">{{ comment.userId.username }}</span>
+                                                        <span class="comment-time"><i class="far fa-clock"></i> {{ comment.timeStamp|date('d M Y à H:i') }}</span>
+                                                    </div>
+                                                    <p class="comment-text">{{ comment.content }}</p>
+                                                    {% if app.user and app.user.id == comment.userId.id %}
+                                                        <div class="comment-actions">
+                                                            <button class="btn btn-sm btn-link text-muted edit-comment-btn" data-comment-id="{{ comment.commentId }}">
+                                                                <i class="fas fa-edit"></i> Modifier
+                                                            </button>
+                                                            <form method="post" action="{{ path('app_social_delete_comment', {'id': comment.commentId}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire?');">
+                                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.commentId) }}">
+                                                                <button type="submit" class="btn btn-sm btn-link text-danger">
+                                                                    <i class="fas fa-trash-alt"></i> Supprimer
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 {% endfor %}
-            {% endfor %}
-            
-            <div class="feed-header mt-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1 class="mb-0">Feed</h1>
-                    <a href="{{ path('app_social_add_post') }}" class="btn btn-primary btn-add-post">
-                        <i class="fas fa-plus-circle"></i> Add Post
-                    </a>
-                </div>
-               
             </div>
-            
-            <div class="feed-grid">
-            {% for post in posts %}
-                <article class="post-card-grid">
-                    <div class="post-header-simple">
-                        <div class="user-info">
-                            <span class="username">{{ post.user.username }}</span>
-                            <span class="post-date">{{ post.post.timeStamp|date('d M Y H:i') }}</span>
-                        </div>
-                        {% if currentUser and post.user.id == currentUser.id %}
-                        <div class="post-options dropdown">
-                            <button class="btn-icon" type="button" data-toggle="dropdown">
-                                <i class="fas fa-ellipsis-h"></i>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Create Post Modal -->
+<div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createPostModalLabel"><i class="fas fa-pen"></i> Create a New Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ path('app_social_add_post') }}" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="post-content" class="form-label">What's on your mind?</label>
+                        <textarea class="form-control" id="post-content" name="content" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="post-image" class="form-label">Add an image (optional)</label>
+                        <input type="file" class="form-control" id="post-image" name="image_file" accept="image/*" onchange="previewImage(this)">
+                    </div>
+                    <div id="image-preview" class="mb-3 d-none">
+                        <div class="position-relative">
+                            <img src="#" alt="Preview" class="img-fluid rounded">
+                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" onclick="removeImage()">
+                                <i class="fas fa-times"></i>
                             </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a href="{{ path('app_social_edit_post', {id: post.post.id}) }}" class="dropdown-item">
-                                    <i class="fas fa-edit"></i> Modifier
-                                </a>
-                                <a href="{{ path('app_social_delete_post', {id: post.post.id}) }}" class="dropdown-item text-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post?')">
-                                    <i class="fas fa-trash-alt"></i> Supprimer
-                                </a>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="post-content-simple">
-                        {% if post.post.imagePath %}
-                            <img src="{{ post.post.imagePath }}" alt="Image du post" class="post-image-grid">
-                        {% else %}
-                            <div class="post-text-content">{{ post.post.content }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="post-actions-simple">
-                        <div class="action-buttons">
-                            <form action="{{ path('app_social_like_post', {id: post.post.id}) }}" method="post" class="like-form">
-                                <button type="submit" class="btn-icon {% if post.userLiked %}liked{% endif %}">
-                                    <i class="{% if post.userLiked %}fas{% else %}far{% endif %} fa-heart"></i>
-                                </button>
-                            </form>
-                            <a href="#comments-{{ post.post.id }}" class="btn-icon">
-                                <i class="far fa-comment"></i>
-                            </a>
-                            <div class="share-dropdown">
-                                <button type="button" class="btn-icon share-toggle" data-id="{{ post.post.id }}">
-                                    <i class="fas fa-share"></i>
-                                </button>
-                                <div id="share-options-{{ post.post.id }}" class="share-options">
-                                    <button onclick="shareOnFacebook('{{ absolute_url(path('app_social_view_post', {id: post.post.id})) }}', 'Voir ce post', '{{ post.post.content|slice(0, 100) }}')" class="share-btn facebook">
-                                        <i class="fab fa-facebook-f"></i> Facebook
-                                    </button>
-                                    <button onclick="shareOnTwitter('{{ absolute_url(path('app_social_view_post', {id: post.post.id})) }}', '{{ post.post.content|slice(0, 100) }}')" class="share-btn twitter">
-                                        <i class="fab fa-twitter"></i> Twitter
-                                    </button>
-                                    <button onclick="shareOnLinkedIn('{{ absolute_url(path('app_social_view_post', {id: post.post.id})) }}', 'Voir ce post', '{{ post.post.content|slice(0, 100) }}')" class="share-btn linkedin">
-                                        <i class="fab fa-linkedin-in"></i> LinkedIn
-                                    </button>
-                                    <button onclick="shareOnWhatsApp('{{ absolute_url(path('app_social_view_post', {id: post.post.id})) }}', '{{ post.post.content|slice(0, 100) }}')" class="share-btn whatsapp">
-                                        <i class="fab fa-whatsapp"></i> WhatsApp
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="post-stats">
-                            <div class="like-stat">{{ post.likeCount }} J'aime</div>
-                        </div>
-                        
-                        <div class="comments-preview" id="comments-{{ post.post.id }}">
-                            <a href="#comments-{{ post.post.id }}" class="view-comments">Voir les commentaires ({{ post.comments|length }})</a>
-                            {% for comment in post.comments|slice(0, 3) %}
-                                <div class="comment-preview">
-                                    <span class="comment-username">{{ comment.userId.username }}</span>
-                                    <span class="comment-text">{{ comment.content }}</span>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        
-                        <div class="comment-form-simple">
-                            <form action="{{ path('app_social_add_comment', {id: post.post.id}) }}" method="post">
-                                <input type="text" name="content" placeholder="Ajouter un commentaire..." required>
-                                <button type="submit" class="btn-submit-comment">
-                                    <i class="far fa-paper-plane"></i>
-                                </button>
-                            </form>
                         </div>
                     </div>
-                </article>
-            {% endfor %}
-            {% if posts is empty %}
-                <div class="empty-feed">
-                    <i class="far fa-sad-tear fa-3x"></i>
-                    <p>Aucun post à afficher pour le moment.</p>
-                    <p>Soyez le premier à partager quelque chose !</p>
-                </div>
-            {% endif %}
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Post</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
+<!-- Footer from home page -->
+<footer class="site-footer">
+    {# ... (your full footer HTML) ... #}
+    <div class="footer-content container">
+        <div class="footer-column">
+            <h4>ConnectSphere</h4>
+            <p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p>
+        </div>
+        <div class="footer-column">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="{{ path('app_home') }}">Home</a></li>
+                <li><a href="{{ path('app_events') }}">Events</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Terms of Service</a></li>
+            </ul>
+        </div>
+        <div class="footer-column footer-contact">
+            <h4>Contact Us</h4>
+            <p><i class="fas fa-phone"></i><a href="tel:+21692160411">+216 92 160 411</a></p>
+            <p><i class="fas fa-envelope"></i><a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p>
+        </div>
+        <div class="footer-column">
+            <h4>Follow Us</h4>
+            <div class="footer-social-icons">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
+</footer>
+{% endblock %}
 
-<script src="{{ asset('js/social-share.js') }}"></script>
-<script src="{{ asset('js/search-dropdown.js') }}"></script>
-</body>
-</html>
+{% block javascripts %}
+<script>
+    // Initialisation des tooltips Bootstrap
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Initialisation explicite des dropdowns Bootstrap
+    var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+    var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+        return new bootstrap.Dropdown(dropdownToggleEl);
+    });
+
+    // Fonction pour copier le lien dans le presse-papiers
+    document.querySelectorAll('.copy-link').forEach(function(element) {
+        element.addEventListener('click', function(e) {
+            e.preventDefault();
+            var url = this.getAttribute('data-url');
+            navigator.clipboard.writeText(url).then(function() {
+                // Afficher un message de succès
+                var tooltip = bootstrap.Tooltip.getInstance(element);
+                if (tooltip) {
+                    tooltip.dispose();
+                }
+                element.setAttribute('data-bs-original-title', 'Lien copié!');
+                var newTooltip = new bootstrap.Tooltip(element);
+                newTooltip.show();
+                setTimeout(function() {
+                    newTooltip.hide();
+                    element.setAttribute('data-bs-original-title', 'Copier le lien');
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Erreur lors de la copie: ', err);
+            });
+        });
+    });
+
+    // Animation des boutons d'interaction
+    document.querySelectorAll('.btn-interaction').forEach(function(button) {
+        button.addEventListener('click', function() {
+            this.classList.add('btn-pulse');
+            setTimeout(() => {
+                this.classList.remove('btn-pulse');
+            }, 500);
+        });
+    });
+</script>
+{% endblock %}

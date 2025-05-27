@@ -98,10 +98,13 @@
 
 
     {# --- Event Grid --- #}
-    <div class="row event-grid-row">
+    <div class="events-sections">
+        <div class="upcoming-events">
+            <h2>Upcoming Events</h2>
+        <div class="row event-grid-row">
         {# MODIFIED: Loop over eventsWithStatus instead of events #}
-        {% if eventsWithStatus is defined and eventsWithStatus is not empty %}
-            {% for eventData in eventsWithStatus %}
+        {% if upcomingEventsWithStatus is defined and upcomingEventsWithStatus is not empty %}
+            {% for eventData in upcomingEventsWithStatus %}
                 {% set event = eventData.entity %} {# Get the actual event entity from the wrapper #}
                 {% set hasJoined = eventData.hasJoined %} {# Get the participation status #}
                 <div class="event-column">
@@ -146,6 +149,94 @@
                                         Join
                                     {% endif %}
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# --- Event Modal --- #}
+                <div class="event-modal-overlay" id="event-modal-{{ event.id }}">
+                    <div class="event-modal-content">
+                         <button type="button" class="event-modal-close-x close-modal-btn">×</button>
+                        <div class="event-modal-body">
+                             <div class="event-modal-image-wrapper"><img src="{{ imageSrc }}" class="event-modal-image" alt="{{ event.name }}"></div>
+                             <h3 class="event-modal-title">{{ event.name }}</h3>
+                             <p class="event-modal-description">{{ event.description|striptags }}</p>
+                             <div class="event-modal-details">
+                                 <strong>Date:</strong> {% if event.startTime %}{{ event.startTime|date('d/m/Y H:i') }}{% else %}N/A{% endif %} - {% if event.endTime %}{{ event.endTime|date('d/m/Y H:i') }}{% else %}N/A{% endif %}<br>
+                                 <strong>Location:</strong> {{ event.location ?? 'N/A' }}<br>
+                                 <strong>Category:</strong> {{ event.categoryId.name ?? 'N/A' }}<br>
+                                 <strong>Points:</strong> {{ event.points ?? '0' }}
+                             </div>
+                        </div>
+                         <div class="event-modal-footer">
+                             <div class="share-icons">
+                                 {% set event_url = url('app_events', {'search': event.name|url_encode}) %}
+                                 {% set share_text = "Check out this event: " ~ event.name ~ " on ConnectSphere! " ~ event_url %}
+                                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ event_url|url_encode }}" target="_blank" rel="noopener noreferrer" title="Share on Facebook" class="facebook-share"><i class="fab fa-facebook-square"></i></a>
+                                 <a href="https://api.whatsapp.com/send?text={{ share_text|url_encode }}" target="_blank" rel="noopener noreferrer" title="Share on WhatsApp" class="whatsapp-share"><i class="fab fa-whatsapp-square"></i></a>
+                                 <a href="#" class="copy-link" data-link="{{ event_url }}" title="Copy Link"><i class="fas fa-copy"></i></a>
+                             </div>
+                             <button type="button" class="btn btn-modal-close close-modal-btn">Close</button>
+                        </div>
+                        <div class="copy-link-feedback">Link Copied!</div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+             <div class="col-12">
+                <div class="no-events-message">
+                   No events match your current filter. <a href="{{ path('app_events') }}">Clear filters?</a> or <a href="{{ path('app_event_add_page') }}" class="{% if app.request.attributes.get('_route') != 'app_event_add_page' %}open-add-event-trigger{% endif %}">Create a new event?</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div> <div class="past-events">
+            <h2 class="section-title">Past Events</h2>
+            <div class="row event-grid-row">
+                {% if pastEventsWithStatus is defined and pastEventsWithStatus is not empty %}
+            {% for eventData in pastEventsWithStatus %}
+                {% set event = eventData.entity %}
+                {% set hasJoined = eventData.hasJoined %}
+                <div class="event-column">
+                    <div class="card h-100 event-display-card" id="event-card-{{ event.id }}">
+                        {# --- Image Card --- #}
+                        {% set imageSrc = asset('images/default_event.png') %}
+                        {% if event.image is not null and event.image is not empty %}
+                            {% if event.image starts with 'data:' %} {% set imageSrc = event.image %}
+                            {% else %}
+                                {% set base64Data = event.image %} {% set mimeType = 'image/jpeg' %}
+                                {% if base64Data starts with 'iVBO' %} {% set mimeType = 'image/png' %}
+                                {% elseif base64Data starts with '/9j/' %} {% set mimeType = 'image/jpeg' %}
+                                {% elseif base64Data starts with 'R0lG' %} {% set mimeType = 'image/gif' %}
+                                {% elseif base64Data starts with 'PHN2Zy' %} {% set mimeType = 'image/svg+xml' %}
+                                {% endif %}
+                                {% set imageSrc = 'data:' ~ mimeType ~ ';base64,' ~ base64Data %}
+                            {% endif %}
+                        {% endif %}
+                        <div class="card-img-wrapper"><img src="{{ imageSrc }}" class="card-img-top" alt="{{ event.name|default('Event Image') }}"></div>
+                        {# --- Card Body --- #}
+                        <div class="card-body">
+                             <h5 class="card-title">{{ event.name }}</h5>
+                            <div class="event-text-details">
+                                {{ event.description|slice(0, 80)|striptags ~ (event.description|length > 80 ? '...' : '') }}<br>
+                                <small>
+                                    {% if event.startTime %}{{ event.startTime|date('d/m/Y') }}{% endif %}
+                                    {% if event.endTime and event.startTime|date('Y-m-d') != event.endTime|date('Y-m-d') %} - {{ event.endTime|date('d/m/Y') }}{% endif %}<br>
+                                    {{ event.location ?? 'N/A' }} | Cat: {{ event.categoryId.name ?? 'N/A' }}
+                                </small>
+                            </div>
+                            <div class="event-card-actions">
+                                 <button type="button" class="btn btn-view-details view-details-btn" data-modal-target="#event-modal-{{ event.id }}">Details</button>
+                                {# Boutons pour les avis #}
+                                <a href="{{ path('app_event_reviews', {'id': event.id}) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-star"></i> Reviews
+                                </a>
+                                {% if hasJoined and event.endTime|date('Y-m-d H:i:s') < 'now'|date('Y-m-d H:i:s') %}
+                                    <a href="{{ path('app_event_review', {'id': event.id}) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-pencil-alt"></i> Rate
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

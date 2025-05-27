@@ -3,6 +3,25 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Sélectionner tous les champs de recherche (y compris dans les barres de navigation)
+    const searchInputs = document.querySelectorAll('.search-input, .navbar-search input[type="text"]');
+    
+    // Initialiser les filtres de recherche
+    initSearchFilters();
+    
+    // Initialiser les boutons de nettoyage
+    initClearSearchButton();
+    
+    // Appliquer le filtre initial si présent dans l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialFilter = urlParams.get('filter');
+    if (initialFilter) {
+        const filterButton = document.querySelector(`.filter-btn[data-filter="${initialFilter}"]`);
+        if (filterButton) {
+            filterButton.click();
+        }
+    }
+    
     // Initialiser la recherche en temps réel
     initRealTimeSearch();
     
@@ -14,11 +33,13 @@ document.addEventListener('DOMContentLoaded', function() {
  * Initialise la recherche en temps réel avec des animations
  */
 function initRealTimeSearch() {
-    const searchInputs = document.querySelectorAll('.search-input');
+    // Sélectionner tous les champs de recherche (barre principale et barre de navigation)
+    const searchInputs = document.querySelectorAll('.search-input, .nav-search-input');
     
     searchInputs.forEach(input => {
-        const searchDropdown = input.closest('.search-container').querySelector('.search-dropdown');
-        const loadingIndicator = input.closest('.search-container').querySelector('.search-loading') || createLoadingIndicator(input);
+        // Trouver le conteneur de dropdown approprié
+        const searchDropdown = input.closest('.search-container, .nav-center')?.querySelector('.search-dropdown, .search-results-dropdown') || document.querySelector('.search-results-dropdown');
+        const loadingIndicator = input.closest('.search-container, .nav-search-wrapper')?.querySelector('.search-loading') || createLoadingIndicator(input);
         
         // Ajouter une animation au focus de l'input
         input.addEventListener('focus', function() {
@@ -33,7 +54,7 @@ function initRealTimeSearch() {
             this.classList.remove('input-focused');
             // Délai pour permettre de cliquer sur les résultats
             setTimeout(() => {
-                if (!document.activeElement.closest('.search-dropdown')) {
+                if (!document.activeElement.closest('.search-dropdown, .search-results-dropdown')) {
                     searchDropdown.classList.remove('show');
                 }
             }, 200);
@@ -47,9 +68,19 @@ function initRealTimeSearch() {
             // Afficher l'indicateur de chargement
             if (query.length >= 2) {
                 loadingIndicator.style.opacity = '1';
+                // Afficher le bouton de nettoyage si disponible
+                const clearButton = input.parentNode.querySelector('.clear-search');
+                if (clearButton) {
+                    clearButton.style.display = 'flex';
+                }
             } else {
                 loadingIndicator.style.opacity = '0';
                 searchDropdown.classList.remove('show');
+                // Cacher le bouton de nettoyage si disponible
+                const clearButton = input.parentNode.querySelector('.clear-search');
+                if (clearButton) {
+                    clearButton.style.display = 'none';
+                }
                 return;
             }
             
@@ -61,12 +92,24 @@ function initRealTimeSearch() {
                 }
             }, 300);
         });
+        
+        // Gérer la soumission du formulaire
+        const form = input.closest('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const query = input.value.trim();
+                if (query.length < 2) {
+                    e.preventDefault();
+                    input.focus();
+                }
+            });
+        }
     });
     
     // Fermer les dropdowns lorsqu'on clique ailleurs
     document.addEventListener('click', function(e) {
-        if (!e.target.closest('.search-container')) {
-            document.querySelectorAll('.search-dropdown.show').forEach(dropdown => {
+        if (!e.target.closest('.search-container, .nav-search-wrapper')) {
+            document.querySelectorAll('.search-dropdown.show, .search-results-dropdown.show').forEach(dropdown => {
                 dropdown.classList.remove('show');
             });
         }
@@ -89,12 +132,105 @@ function createLoadingIndicator(input) {
     loadingIndicator.style.color = 'var(--primary-color)';
     loadingIndicator.style.opacity = '0';
     loadingIndicator.style.transition = 'opacity 0.2s ease';
+    loadingIndicator.style.zIndex = '5';
     
     // Ajouter au DOM
     input.parentNode.style.position = 'relative';
     input.parentNode.appendChild(loadingIndicator);
     
     return loadingIndicator;
+}
+
+/**
+ * Initialise les filtres de recherche
+ */
+function initSearchFilters() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    if (!filterButtons.length) return;
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Retirer la classe active de tous les boutons
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Ajouter la classe active au bouton cliqué
+            this.classList.add('active');
+            
+            // Récupérer le filtre
+            const filter = this.getAttribute('data-filter');
+            
+            // Appliquer le filtre
+            applyFilter(filter);
+        });
+    });
+}
+
+/**
+ * Applique un filtre aux résultats de recherche
+ */
+function applyFilter(filter) {
+    const userSection = document.querySelector('.users-grid')?.closest('.results-section');
+    const groupSection = document.querySelector('.groups-grid')?.closest('.results-section');
+    
+    if (!userSection && !groupSection) return;
+    
+    switch (filter) {
+        case 'all':
+            if (userSection) userSection.style.display = 'block';
+            if (groupSection) groupSection.style.display = 'block';
+            break;
+        case 'users':
+            if (userSection) userSection.style.display = 'block';
+            if (groupSection) groupSection.style.display = 'none';
+            break;
+        case 'groups':
+            if (userSection) userSection.style.display = 'none';
+            if (groupSection) groupSection.style.display = 'block';
+            break;
+    }
+    
+    // Mettre à jour l'URL avec le filtre
+    const url = new URL(window.location.href);
+    url.searchParams.set('filter', filter);
+    window.history.replaceState({}, '', url);
+}
+
+/**
+ * Initialise le bouton de nettoyage de recherche
+ */
+function initClearSearchButton() {
+    const clearButtons = document.querySelectorAll('.clear-search');
+    
+    clearButtons.forEach(button => {
+        // Vérifier si le champ de recherche est vide
+        const input = button.parentNode.querySelector('input[type="text"]');
+        button.style.display = input && input.value.trim() ? 'flex' : 'none';
+        
+        button.addEventListener('click', function() {
+            const input = this.parentNode.querySelector('input[type="text"]');
+            if (input) {
+                input.value = '';
+                input.focus();
+                this.style.display = 'none';
+                
+                // Fermer les dropdowns
+                const dropdown = document.querySelector('.search-dropdown.show, .search-results-dropdown.show');
+                if (dropdown) dropdown.classList.remove('show');
+            }
+        });
+    });
+}
+
+/**
+ * Fonction pour nettoyer la recherche (appelée depuis le HTML)
+ */
+function clearSearch(button) {
+    const input = button.parentNode.querySelector('input[type="text"]');
+    if (input) {
+        input.value = '';
+        input.focus();
+        button.style.display = 'none';
+    }
 }
 
 /**
@@ -115,6 +251,18 @@ function fetchSearchResults(query, searchDropdown, loadingIndicator) {
         .then(data => {
             // Masquer l'indicateur de chargement
             loadingIndicator.style.opacity = '0';
+            
+            // Vérifier si des résultats ont été trouvés
+            if ((!data.users || data.users.length === 0) && (!data.groups || data.groups.length === 0)) {
+                searchDropdown.innerHTML = `
+                    <div class="search-no-results">
+                        <p>No results for  "${query}"</p>
+                        <span>Try other keywords</span>
+                    </div>
+                `;
+                searchDropdown.classList.add('show');
+                return;
+            }
             
             // Afficher les résultats
             displaySearchResults(data, searchDropdown);
@@ -142,65 +290,92 @@ function displaySearchResults(data, searchDropdown) {
     searchDropdown.innerHTML = '';
     
     // Créer les sections pour les utilisateurs et les groupes
-    const usersSection = document.createElement('div');
-    usersSection.className = 'search-section';
-    usersSection.innerHTML = '<h4>Utilisateurs</h4>';
-    
-    const groupsSection = document.createElement('div');
-    groupsSection.className = 'search-section';
-    groupsSection.innerHTML = '<h4>Groupes</h4>';
-    
-    // Ajouter les utilisateurs
     if (data.users && data.users.length > 0) {
-        const usersList = document.createElement('div');
-        usersList.className = 'search-results';
+        const usersSection = document.createElement('div');
+        usersSection.className = 'search-dropdown-section';
+        
+        const usersHeader = document.createElement('div');
+        usersHeader.className = 'search-dropdown-header';
+        usersHeader.textContent = 'Utilisateurs';
+        usersSection.appendChild(usersHeader);
         
         data.users.forEach(user => {
-            const userItem = createSearchResultItem(user, 'user');
-            usersList.appendChild(userItem);
+            const userItem = document.createElement('a');
+            userItem.className = 'search-dropdown-item';
+            userItem.href = `/profile/${user.id}`;
+            
+            userItem.innerHTML = `
+                <img src="${user.avatar || '/images/default-avatar.svg'}" alt="${user.username}">
+                <div class="item-info">
+                    <div class="item-name">${user.username}</div>
+                    <div class="item-meta">${user.email || ''}</div>
+                </div>
+                <span class="item-type user">Utilisateur</span>
+            `;
+            
+            usersSection.appendChild(userItem);
         });
         
-        usersSection.appendChild(usersList);
-        searchDropdown.appendChild(usersSection);
-    } else {
-        usersSection.innerHTML += '<p class="no-results">Aucun utilisateur trouvé</p>';
         searchDropdown.appendChild(usersSection);
     }
     
-    // Ajouter les groupes
     if (data.groups && data.groups.length > 0) {
-        const groupsList = document.createElement('div');
-        groupsList.className = 'search-results';
+        const groupsSection = document.createElement('div');
+        groupsSection.className = 'search-dropdown-section';
+        
+        const groupsHeader = document.createElement('div');
+        groupsHeader.className = 'search-dropdown-header';
+        groupsHeader.textContent = 'Groupes';
+        groupsSection.appendChild(groupsHeader);
         
         data.groups.forEach(group => {
-            const groupItem = createSearchResultItem(group, 'group');
-            groupsList.appendChild(groupItem);
+            const groupItem = document.createElement('a');
+            groupItem.className = 'search-dropdown-item';
+            groupItem.href = `/group/${group.id}`;
+            
+            groupItem.innerHTML = `
+                <img src="${group.avatar || '/images/default-group.svg'}" alt="${group.name}">
+                <div class="item-info">
+                    <div class="item-name">${group.name}</div>
+                    <div class="item-meta">${group.description ? group.description.substring(0, 50) + (group.description.length > 50 ? '...' : '') : ''}</div>
+                </div>
+                <span class="item-type group">Groupe</span>
+            `;
+            
+            groupsSection.appendChild(groupItem);
         });
         
-        groupsSection.appendChild(groupsList);
         searchDropdown.appendChild(groupsSection);
+    }
+    
+    // Ajouter un lien pour voir tous les résultats
+    if ((data.users && data.users.length > 0) || (data.groups && data.groups.length > 0)) {
+        const viewAllSection = document.createElement('div');
+        viewAllSection.className = 'search-dropdown-section view-all-section';
+        
+        const viewAllLink = document.createElement('a');
+        viewAllLink.className = 'search-dropdown-item view-all';
+        viewAllLink.href = `/search?search=${encodeURIComponent(document.querySelector('.nav-search-input').value)}`;
+        
+        viewAllLink.innerHTML = `
+            <div class="item-info">
+                <div class="item-name">Voir tous les résultats</div>
+            </div>
+            <i class="fas fa-arrow-right"></i>
+        `;
+        
+        viewAllSection.appendChild(viewAllLink);
+        searchDropdown.appendChild(viewAllSection);
+        searchDropdown.classList.add('show');
     } else {
-        groupsSection.innerHTML += '<p class="no-results">Aucun groupe trouvé</p>';
-        searchDropdown.appendChild(groupsSection);
+        searchDropdown.innerHTML = `
+            <div class="search-no-results">
+                <p>Aucun résultat trouvé</p>
+                <span>Essayez avec d'autres termes</span>
+            </div>
+        `;
+        searchDropdown.classList.add('show');
     }
-    
-    // Ajouter un bouton "Voir plus" si nécessaire
-    if ((data.users && data.users.length > 5) || (data.groups && data.groups.length > 5)) {
-        const viewMoreBtn = document.createElement('div');
-        viewMoreBtn.className = 'view-more-btn';
-        viewMoreBtn.innerHTML = 'Voir plus de résultats <i class="fas fa-arrow-right"></i>';
-        
-        viewMoreBtn.addEventListener('click', function() {
-            // Rediriger vers la page de résultats de recherche complète
-            const query = document.querySelector('.search-input').value.trim();
-            window.location.href = '/search?q=' + encodeURIComponent(query);
-        });
-        
-        searchDropdown.appendChild(viewMoreBtn);
-    }
-    
-    // Afficher le dropdown
-    searchDropdown.classList.add('show');
 }
 
 /**

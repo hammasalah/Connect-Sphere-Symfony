@@ -258,4 +258,9 @@ class Users
 
         return $this;
     }
+
+      public function getProfilePicture(): ?string
+    {
+        return $this->profile ? $this->profile->getProfilePicture() : null;
+    }
 }

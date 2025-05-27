@@ -45,4 +45,22 @@ class UsersRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+ /**
+     * Recherche des utilisateurs par nom d'utilisateur ou email
+     *
+     * @param string $searchTerm Le terme à rechercher
+     * @return Users[] Returns an array of Users objects
+     */
+ public function findBySearch(string $searchTerm): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('LOWER(u.username) LIKE LOWER(:search)')
+            ->orWhere('LOWER(u.email) LIKE LOWER(:search)')
+            ->setParameter('search', '%' . $searchTerm . '%')
+            ->orderBy('u.username', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

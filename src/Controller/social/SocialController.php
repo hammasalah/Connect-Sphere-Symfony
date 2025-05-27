@@ -162,10 +162,25 @@ class SocialController extends AbstractController
             $post->setIsDeleted(0);
 
             if ($imageFile) {
-                $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/uploads/images';
-                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-                $imageFile->move($uploadsDirectory, $newFilename);
-                $post->setImagePath('/uploads/images/' . $newFilename);
+                // Vérifier la taille et le type de l'image
+                $mimeType = $imageFile->getMimeType();
+                
+                // Taille maximale de 2MB
+                $maxSize = 2 * 1024 * 1024; // 2MB en octets
+                if ($imageFile->getSize() > $maxSize) {
+                    $this->addFlash('error', 'L\'image est trop volumineuse. Taille maximale : 2MB');
+                    return $this->redirectToRoute('app_social');
+                }
+                
+                // Compression optimisée selon le type de fichier
+                if ($mimeType === 'image/jpeg' || $mimeType === 'image/png') {
+                    $imageData = file_get_contents($imageFile->getPathname());
+                    $base64Image = base64_encode($imageData);
+                    $post->setImagePath('data:' . $mimeType . ';base64,' . $base64Image);
+                } else {
+                    $this->addFlash('error', 'Format d\'image non supporté. Seuls JPEG et PNG sont acceptés.');
+                    return $this->redirectToRoute('app_social');
+                }
             }
 
             $entityManager->persist($post);
@@ -282,6 +297,90 @@ class SocialController extends AbstractController
         return $this->redirectToRoute('app_social');
     }
     
+    #[Route('/edit-comment/{id}', name: 'app_social_edit_comment', methods: ['POST'])]
+    public function editComment(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        CommentsRepository $commentsRepository
+    ): JsonResponse {
+        // Vérifier si l'utilisateur est connecté
+        $session = $request->getSession();
+        $userSession = $session->get('user');
+        
+        if (!$userSession) {
+            return new JsonResponse(['success' => false, 'message' => 'Utilisateur non connecté'], 401);
+        }
+        
+        $commentId = $request->attributes->get('id');
+        $comment = $commentsRepository->find($commentId);
+        
+        if (!$comment) {
+            return new JsonResponse(['success' => false, 'message' => 'Commentaire non trouvé'], 404);
+        }
+        
+        // Vérifier que l'utilisateur est bien le propriétaire du commentaire
+        if ($comment->getUserId()->getId() !== $userSession->getId()) {
+            return new JsonResponse(['success' => false, 'message' => 'Vous n\'êtes pas autorisé à modifier ce commentaire'], 403);
+        }
+        
+        $content = $request->request->get('content');
+        if (empty($content)) {
+            return new JsonResponse(['success' => false, 'message' => 'Le commentaire ne peut pas être vide'], 400);
+        }
+        
+        $comment->setContent($content);
+        $comment->setTimeStamp((new \DateTime())->format('Y-m-d H:i:s')); // Mise à jour de l'horodatage
+        
+        $entityManager->flush();
+        
+        return new JsonResponse([
+            'success' => true, 
+            'message' => 'Commentaire mis à jour avec succès',
+            'comment' => [
+                'id' => $comment->getCommentId(),
+                'content' => $comment->getContent(),
+                'timestamp' => $comment->getTimeStamp()
+            ]
+        ]);
+    }
+    
+    #[Route('/delete-comment/{id}', name: 'app_social_delete_comment', methods: ['POST'])]
+    public function deleteComment(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        CommentsRepository $commentsRepository
+    ): Response {
+        // Vérifier si l'utilisateur est connecté
+        $session = $request->getSession();
+        $userSession = $session->get('user');
+        
+        if (!$userSession) {
+            $this->addFlash('error', 'Vous devez être connecté pour effectuer cette action');
+            return $this->redirectToRoute('app_login');
+        }
+        
+        $commentId = $request->attributes->get('id');
+        $comment = $commentsRepository->find($commentId);
+        
+        if (!$comment) {
+            $this->addFlash('error', 'Commentaire non trouvé');
+            return $this->redirectToRoute('app_social');
+        }
+        
+        // Vérifier que l'utilisateur est bien le propriétaire du commentaire
+        if ($comment->getUserId()->getId() !== $userSession->getId()) {
+            $this->addFlash('error', 'Vous n\'êtes pas autorisé à supprimer ce commentaire');
+            return $this->redirectToRoute('app_social');
+        }
+        
+        // Suppression logique du commentaire
+        $comment->setIsDeleted(1);
+        $entityManager->flush();
+        
+        $this->addFlash('success', 'Commentaire supprimé avec succès');
+        return $this->redirectToRoute('app_social');
+    }
+    
    
 
     /**
@@ -301,8 +400,8 @@ class SocialController extends AbstractController
             ]);
         }
         
-        $users = $usersRepository->searchUsers($searchTerm);
-        $groups = $userGroupsRepository->searchGroups($searchTerm);
+        $users = $usersRepository->findBySearch($searchTerm);
+        $groups = $userGroupsRepository->findBySearch($searchTerm);
         
         return $this->render('social/search_results.html.twig', [
             'results' => [
@@ -326,8 +425,8 @@ class SocialController extends AbstractController
         $results = [];
         
         if (strlen($searchTerm) >= 2) {
-            $users = $usersRepository->searchUsers($searchTerm);
-            $groups = $userGroupsRepository->searchGroups($searchTerm);
+            $users = $usersRepository->findBySearch($searchTerm);
+            $groups = $userGroupsRepository->findBySearch($searchTerm);
             
             foreach ($users as $user) {
                 $results['users'][] = [
@@ -469,18 +568,75 @@ class SocialController extends AbstractController
             $post->setUpdatedAt((new \DateTime())->format('Y-m-d H:i:s'));
             
             if ($imageFile) {
-                // Supprimer l'ancienne image si elle existe
-                if ($post->getImagePath()) {
-                    $oldImagePath = $this->getParameter('kernel.project_dir') . '/public' . $post->getImagePath();
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
+                // Obtenir les dimensions de l'image originale
+                list($origWidth, $origHeight) = getimagesize($imageFile->getPathname());
+                
+                // Définir la largeur maximale
+                $maxWidth = 800;
+                
+                // Ne redimensionner que si l'image est plus large que maxWidth
+                if ($origWidth > $maxWidth) {
+                    // Calculer la nouvelle hauteur proportionnellement
+                    $ratio = $maxWidth / $origWidth;
+                    $newWidth = $maxWidth;
+                    $newHeight = $origHeight * $ratio;
+                    
+                    // Créer une nouvelle image avec les dimensions calculées
+                    $newImage = imagecreatetruecolor($newWidth, $newHeight);
+                    
+                    // Gérer différents types d'images
+                    $sourceImage = null;
+                    $mimeType = $imageFile->getMimeType();
+                    
+                    switch ($mimeType) {
+                        case 'image/jpeg':
+                            $sourceImage = imagecreatefromjpeg($imageFile->getPathname());
+                            break;
+                        case 'image/png':
+                            $sourceImage = imagecreatefrompng($imageFile->getPathname());
+                            // Préserver la transparence pour les PNG
+                            imagealphablending($newImage, false);
+                            imagesavealpha($newImage, true);
+                            break;
+                        default:
+                            throw new \Exception('Format d\'image non supporté');
                     }
+                    
+                    // Redimensionner l'image
+                    imagecopyresampled(
+                        $newImage,
+                        $sourceImage,
+                        0, 0, 0, 0,
+                        $newWidth,
+                        $newHeight,
+                        $origWidth,
+                        $origHeight
+                    );
+                    
+                    // Capturer la sortie dans un buffer
+                    ob_start();
+                    
+                    // Sauvegarder l'image avec compression
+                    if ($mimeType === 'image/jpeg') {
+                        imagejpeg($newImage, null, 75); // Qualité 75%
+                    } else {
+                        imagepng($newImage, null, 6); // Compression niveau 6
+                    }
+                    
+                    $imageData = ob_get_clean();
+                    
+                    // Libérer la mémoire
+                    imagedestroy($newImage);
+                    imagedestroy($sourceImage);
+                } else {
+                    // Si l'image est déjà plus petite, utiliser l'original
+                    $imageData = file_get_contents($imageFile->getPathname());
                 }
                 
-                $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/uploads/images';
-                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-                $imageFile->move($uploadsDirectory, $newFilename);
-                $post->setImagePath('/uploads/images/' . $newFilename);
+                // Convertir en base64 et sauvegarder
+                $mimeType = $imageFile->getMimeType();
+                $base64Image = base64_encode($imageData);
+                $post->setImagePath('data:' . $mimeType . ';base64,' . $base64Image);
             }
             
             $entityManager->flush();
@@ -744,10 +900,75 @@ class SocialController extends AbstractController
         $post->setIsDeleted(0);
 
         if ($imageFile) {
-            $uploadsDirectory = $this->getParameter('kernel.project_dir') . '/public/uploads/images';
-            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-            $imageFile->move($uploadsDirectory, $newFilename);
-            $post->setMediaUrl('/uploads/images/' . $newFilename);
+            // Obtenir les dimensions de l'image originale
+            list($origWidth, $origHeight) = getimagesize($imageFile->getPathname());
+            
+            // Définir la largeur maximale
+            $maxWidth = 800;
+            
+            // Ne redimensionner que si l'image est plus large que maxWidth
+            if ($origWidth > $maxWidth) {
+                // Calculer la nouvelle hauteur proportionnellement
+                $ratio = $maxWidth / $origWidth;
+                $newWidth = $maxWidth;
+                $newHeight = $origHeight * $ratio;
+                
+                // Créer une nouvelle image avec les dimensions calculées
+                $newImage = imagecreatetruecolor($newWidth, $newHeight);
+                
+                // Gérer différents types d'images
+                $sourceImage = null;
+                $mimeType = $imageFile->getMimeType();
+                
+                switch ($mimeType) {
+                    case 'image/jpeg':
+                        $sourceImage = imagecreatefromjpeg($imageFile->getPathname());
+                        break;
+                    case 'image/png':
+                        $sourceImage = imagecreatefrompng($imageFile->getPathname());
+                        // Préserver la transparence pour les PNG
+                        imagealphablending($newImage, false);
+                        imagesavealpha($newImage, true);
+                        break;
+                    default:
+                        throw new \Exception('Format d\'image non supporté');
+                }
+                
+                // Redimensionner l'image
+                imagecopyresampled(
+                    $newImage,
+                    $sourceImage,
+                    0, 0, 0, 0,
+                    $newWidth,
+                    $newHeight,
+                    $origWidth,
+                    $origHeight
+                );
+                
+                // Capturer la sortie dans un buffer
+                ob_start();
+                
+                // Sauvegarder l'image avec compression
+                if ($mimeType === 'image/jpeg') {
+                    imagejpeg($newImage, null, 75); // Qualité 75%
+                } else {
+                    imagepng($newImage, null, 6); // Compression niveau 6
+                }
+                
+                $imageData = ob_get_clean();
+                
+                // Libérer la mémoire
+                imagedestroy($newImage);
+                imagedestroy($sourceImage);
+            } else {
+                // Si l'image est déjà plus petite, utiliser l'original
+                $imageData = file_get_contents($imageFile->getPathname());
+            }
+            
+            // Convertir en base64 et sauvegarder
+            $mimeType = $imageFile->getMimeType();
+            $base64Image = base64_encode($imageData);
+            $post->setMediaUrl('data:' . $mimeType . ';base64,' . $base64Image);
         } else {
             $post->setMediaUrl('');
         }
@@ -1214,4 +1435,83 @@ class SocialController extends AbstractController
             'notifications' => $notifications
         ], $globalVars));
     }
+
+
+#[Route('/share-post/{id}', name: 'app_social_share_post')]
+public function sharePost(
+    Request $request,
+    int $id,
+    EntityManagerInterface $entityManager,
+    FeedPostsRepository $feedPostsRepository
+): Response {
+    // Vérifier si l'utilisateur est connecté
+    $session = $request->getSession();
+    $userSession = $session->get('user');
+    
+    if (!$userSession) {
+        // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+        return $this->redirectToRoute('app_login');
+    }
+    
+    // Récupérer l'utilisateur depuis la base de données
+    $currentUser = $entityManager->getRepository(\App\Entity\Users::class)->find($userSession->getId());
+    
+    if (!$currentUser) {
+        // Si l'utilisateur n'existe pas dans la base de données, déconnecter et rediriger
+        $session->remove('user');
+        return $this->redirectToRoute('app_login');
+    }
+    
+    // Récupérer le post original
+    $originalPost = $feedPostsRepository->find($id);
+    
+    if (!$originalPost || $originalPost->getIsDeleted()) {
+        $this->addFlash('error', 'Le post que vous essayez de partager n\'existe pas ou a été supprimé.');
+        return $this->redirectToRoute('app_social');
+    }
+    
+    // Créer un nouveau post qui est un partage du post original
+    $newPost = new FeedPosts();
+    $newPost->setUserId($currentUser);
+    $newPost->setContent('Partagé: ' . $originalPost->getContent());
+    $newPost->setTimeStamp(date('Y-m-d H:i:s'));
+    $newPost->setCreatedAt(date('Y-m-d H:i:s'));
+    $newPost->setUpdatedAt(date('Y-m-d H:i:s'));
+    $newPost->setIsDeleted(0);
+    $newPost->setScorePopularite(0);
+    
+    // Si le post original a une image, la copier pour le nouveau post
+    if ($originalPost->getImagePath()) {
+        $newPost->setImagePath($originalPost->getImagePath());
+    }
+    
+    // Enregistrer le nouveau post
+    $entityManager->persist($newPost);
+    
+    // Créer un enregistrement dans la table Shares
+    $share = new Shares();
+    $share->setPostId($originalPost);
+    $share->setUserId($currentUser);
+    $share->setCreatedAt(new \DateTime());
+    
+    $entityManager->persist($share);
+    $entityManager->flush();
+    
+    // Créer une notification pour l'auteur du post original
+    if ($currentUser->getId() !== $originalPost->getUserId()->getId()) {
+        $notification = new Notification();
+        $notification->setUserId($originalPost->getUserId());
+        $notification->setType('share');
+        $notification->setContent($currentUser->getUsername() . ' a partagé votre publication');
+        $notification->setIsRead(false);
+        $notification->setCreatedAt(new \DateTime());
+        $notification->setRelatedId($originalPost->getPostId());
+        
+        $entityManager->persist($notification);
+        $entityManager->flush();
+    }
+    
+    $this->addFlash('success', 'Le post a été partagé avec succès!');
+    return $this->redirectToRoute('app_social');
+}
 }
