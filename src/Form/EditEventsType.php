@@ -6,6 +6,8 @@ use App\Entity\Events;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 
 class EditEventsType extends AbstractType
 {
@@ -17,10 +19,23 @@ class EditEventsType extends AbstractType
             ->add('startTime')
             ->add('endTime')
             ->add('location')
-            ->add('image')
-            ->add('points')
             
-        ;
+            ->add('points')
+            ->add('image', FileType::class, [
+                'label' => 'Event Image (JPEG/PNG)',
+                'mapped' => false, // Not mapped to the entity directly
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid JPEG or PNG image.',
+                    ]),
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

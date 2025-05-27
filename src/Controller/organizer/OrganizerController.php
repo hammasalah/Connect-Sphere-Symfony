@@ -18,6 +18,7 @@ use App\Form\EditJobsType;
 use App\Form\EditEventType;
 use App\Entity\Jobs;
 use App\Entity\Events;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 
 class OrganizerController extends AbstractController
@@ -57,7 +58,7 @@ public function index(
 	),
 	'event_forms' => array_reduce(
 		$this->eventsRepository->findByOrganizer($user),
-		fn($carry, $event) => $carry + [$event->getId() => $this->createForm(\App\Form\EditEventType::class, $event)->createView()],
+		fn($carry, $event) => $carry + [$event->getId() => $this->createForm(\App\Form\EditEventsType::class, $event)->createView()],
 		[]
 	)
 ]);}
@@ -151,14 +152,49 @@ public function editJob(Request $request, Jobs $job, JobsRepository $jobsReposit
     ]);
 }
 
+
+
 #[Route('/event/{id}/edit', name: 'event_edit')]
-public function editEvent(Request $request, Events $event, EventsRepository $eventsRepository): Response
-{
-    $form = $this->createForm(EditEventType::class, $event);
+public function editEvent(
+    int $id,
+    Request $request,
+    EventsRepository $eventsRepository,
+    EntityManagerInterface $entityManager
+): Response {
+    // Fetch the event by ID
+    $event = $eventsRepository->find($id);
+
+    if (!$event) {
+        throw $this->createNotFoundException('The event does not exist.');
+    }
+
+    $form = $this->createForm(\App\Form\EditEventsType::class, $event);
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
-        $eventsRepository->save($event); // persist changes
+        /** @var UploadedFile $imageFile */
+        $imageFile = $form->get('image')->getData();
+
+        if ($imageFile) {
+            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+
+            try {
+                $imageFile->move(
+                    $this->getParameter('event_images_directory'), // Ensure this parameter is defined
+                    $newFilename
+                );
+            } catch (FileException $e) {
+                $this->addFlash('error', 'Failed to upload image.');
+                return $this->redirectToRoute('app_organizer');
+            }
+
+            $event->setImage($newFilename);
+        }
+
+        $entityManager->persist($event);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Event updated successfully.');
         return $this->redirectToRoute('app_organizer');
     }
 
@@ -167,6 +203,23 @@ public function editEvent(Request $request, Events $event, EventsRepository $eve
         'event' => $event,
     ]);
 }
+
+// #[Route('/event/{id}/edit', name: 'event_edit')]
+// public function editEvent(Request $request, Events $event, EventsRepository $eventsRepository): Response
+// {
+//     $form = $this->createForm(\App\Form\EditEventsType::class, $event);
+//     $form->handleRequest($request);
+
+//     if ($form->isSubmitted() && $form->isValid()) {
+//         $eventsRepository->save($event); // persist changes
+//         return $this->redirectToRoute('app_organizer');
+//     }
+
+//     return $this->render('organizer/edit_event.html.twig', [
+//         'form' => $form->createView(),
+//         'event' => $event,
+//     ]);
+// }
 // this method to handle the cancellation
 #[Route('/participation/cancel/{id}', name: 'cancel_participation', methods: ['POST'])]
 public function cancelParticipation(
