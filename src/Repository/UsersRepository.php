@@ -21,28 +21,35 @@ class UsersRepository extends ServiceEntityRepository
         parent::__construct($registry, Users::class);
     }
 
-//    /**
-//     * @return Users[] Returns an array of Users objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+  public function findIdByUsername(string $username): ?int
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->select('u.id')
+            ->where('u.username = :username')
+            ->setParameter('username', $username)
+            ->setMaxResults(1);
 
-//    public function findOneBySomeField($value): ?Users
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $result = $qb->getQuery()->getOneOrNullResult(\Doctrine\ORM\Query::HYDRATE_SCALAR);
+        return $result['id'] ?? null;
+    }
+
+    public function findAllUsers(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u.id, u.username')
+            ->orderBy('u.username', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function searchByUsername(string $searchTerm): array
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u.id, u.username')
+            ->where('u.username LIKE :term')
+            ->setParameter('term', '%'.$searchTerm.'%')
+            ->orderBy('u.username', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

@@ -32,8 +32,8 @@ class MessageController extends AbstractController
         $message = new \App\Entity\Message();
         $message->setSender($sender);
         $message->setReceiver($receiver);
-        $message->setMessage($data['message']);
-        $message->setCreatedAt(new \DateTimeImmutable());
+        $message->setContent($data['message']);
+        $message->setTimestamp(new \DateTimeImmutable());
     
         $em->persist($message);
         $em->flush();
