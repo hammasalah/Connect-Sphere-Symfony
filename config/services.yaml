@@ -27,6 +27,8 @@ parameters:
     upload_directory: '%kernel.project_dir%/public/uploads/profile_pictures'
     groups_images_directory: '%kernel.project_dir%/public/uploads/groups'
     cv_upload_dir: '%kernel.project_dir%/public/uploads/cvs'
+    mercure_jwt_secret: '%env(MERCURE_JWT_SECRET)%'
+    mercure_hub_url: 'http://localhost:3000/.well-known/mercure'
 
 services:
     _defaults:

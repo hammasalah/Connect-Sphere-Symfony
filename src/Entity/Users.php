@@ -60,11 +60,20 @@ class Users
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?UserProfile $profile = null;
 
+    //partie souha 
+       #[ORM\OneToMany(mappedBy: 'sender', targetEntity: Message::class, cascade: ['persist', 'remove'])]
+    private Collection $sentMessages;
+    
+    #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: Message::class, cascade: ['persist', 'remove'])]
+    private Collection $receivedMessages;
+
     public function __construct()
     {
         $this->conversions = new ArrayCollection();
         $this->events = new ArrayCollection();
         $this->jobs = new ArrayCollection();
+         $this->sentMessages = new ArrayCollection();
+        $this->receivedMessages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -257,5 +266,63 @@ class Users
         }
 
         return $this;
+    }
+     //Partie SOUHAAAAAAAAAA
+     
+    public function getSentMessages(): Collection
+{
+    return $this->sentMessages;
+}
+
+public function addSentMessage(Message $message): self
+{
+    if (!$this->sentMessages->contains($message)) {
+        $this->sentMessages[] = $message;
+        $message->setSender($this);
+    }
+
+    return $this;
+}
+
+public function removeSentMessage(Message $message): self
+{
+    if ($this->sentMessages->removeElement($message)) {
+        if ($message->getSender() === $this) {
+            $message->setSender(null);
+        }
+    }
+
+    return $this;
+}
+
+public function getReceivedMessages(): Collection
+{
+    return $this->receivedMessages;
+}
+
+public function addReceivedMessage(Message $message): self
+{
+    if (!$this->receivedMessages->contains($message)) {
+        $this->receivedMessages[] = $message;
+        $message->setReceiver($this);
+    }
+
+    return $this;
+}
+
+public function removeReceivedMessage(Message $message): self
+{
+    if ($this->receivedMessages->removeElement($message)) {
+        if ($message->getReceiver() === $this) {
+            $message->setReceiver(null);
+        }
+    }
+
+    return $this;
+}
+   
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
     }
 }

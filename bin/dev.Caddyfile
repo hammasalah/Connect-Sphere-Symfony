@@ -1,0 +1,28 @@
+{
+    auto_https off
+    admin off
+}
+
+:3000 {
+    encode gzip
+
+    log {
+        output stdout
+        format console
+    }
+
+    mercure {
+        publisher_jwt "4zN9dSeYpX8vQ7LtRm2BkfJhWcUa6gsou"
+        subscriber_jwt "4zN9dSeYpX8vQ7LtRm2BkfJhWcUa6gsou"
+        
+        cors_origins http://localhost:8000
+        publish_origins http://localhost:8000
+        
+        anonymous
+        subscriptions
+    }
+
+    redir / /.well-known/mercure/ui/
+    respond /healthz 200
+    respond "Not Found" 404
+}

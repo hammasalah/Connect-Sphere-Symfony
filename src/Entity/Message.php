@@ -3,63 +3,69 @@
 namespace App\Entity;
 
 use App\Repository\MessageRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
-#[ORM\Table(name: "messages")]
+#[ORM\Table(name: "Messages")]
 class Message
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(name: "message_id", type: "integer")]
+    private ?int $messageId = null;
 
     #[ORM\ManyToOne(targetEntity: Users::class, inversedBy: "sentMessages")]
     #[ORM\JoinColumn(name: "sender_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
     private ?Users $sender = null;
 
     #[ORM\ManyToOne(targetEntity: Users::class, inversedBy: "receivedMessages")]
-    #[ORM\JoinColumn(name: "receiver_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(name: "recipient_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
     private ?Users $receiver = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $message = null;
+    private ?string $content = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_MUTABLE, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?\DateTimeInterface $createdAt = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, name: "timestamp", options: ["default" => "CURRENT_TIMESTAMP"])]
+    private ?\DateTimeInterface $timestamp = null;
+
+    #[ORM\Column(type: Types::STRING, length: 20, name: "type")]
+    private ?string $type = "MESSAGE";
+
+    #[ORM\Column(type: Types::BOOLEAN, name: "read_status", options: ["default" => false])]
+    private bool $readStatus = false;
 
     public function __construct()
     {
-        $this->createdAt = new \DateTime();
+        $this->timestamp = new \DateTime();
+        $this->type = "MESSAGE";
+        $this->readStatus = false;
     }
 
-    public function getId(): ?int
+    public function getMessageId(): ?int
     {
-        return $this->id;
+        return $this->messageId;
     }
 
-    public function getMessage(): ?string
+    public function getContent(): ?string
     {
-        return $this->message;
+        return $this->content;
     }
 
-    public function setMessage(string $message): static
+    public function setContent(string $content): self
     {
-        $this->message = $message;
+        $this->content = $content;
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getTimestamp(): ?\DateTimeInterface
     {
-        return $this->createdAt;
+        return $this->timestamp;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    public function setTimestamp(\DateTimeInterface $timestamp): self
     {
-        $this->createdAt = $createdAt;
+        $this->timestamp = $timestamp;
         return $this;
     }
 
@@ -68,7 +74,7 @@ class Message
         return $this->sender;
     }
 
-    public function setSender(?Users $sender): static
+    public function setSender(?Users $sender): self
     {
         if ($this->sender !== $sender) {
             $this->sender?->getSentMessages()->removeElement($this);
@@ -83,20 +89,45 @@ class Message
         return $this->receiver;
     }
 
-    public function setReceiver(?Users $receiver): static
+    public function setReceiver(?Users $receiver): self
     {
         if ($this->receiver !== $receiver) {
             $oldReceiver = $this->receiver;
             $this->receiver = $receiver;
-
             if ($oldReceiver !== null) {
                 $oldReceiver->removeReceivedMessage($this);
             }
-
             if ($receiver !== null) {
                 $receiver->addReceivedMessage($this);
             }
         }
         return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getReadStatus(): bool
+    {
+        return $this->readStatus;
+    }
+
+    public function setReadStatus(bool $readStatus): self
+    {
+        $this->readStatus = $readStatus;
+        return $this;
+    }
+
+    public function isSentBy(Users $user): bool
+    {
+        return $this->sender && $this->sender->getId() === $user->getId();
     }
 }
