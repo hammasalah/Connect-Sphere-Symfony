@@ -120,17 +120,53 @@ public function index(
         return $this->redirectToRoute('app_organizer');
     }
 
+     #[Route('/event/{id}/delete', name: 'organizer_delete_event', methods: ['POST'])]
+public function deleteEvent(
+    int $id,
+    Request $request,
+    EventsRepository $eventsRepository,
+    ParticipationRepository $participationRepository,
+    EntityManagerInterface $em
+): Response {
+    // Fetch the event by ID
+    $event = $eventsRepository->find($id);
 
-    #[Route('/event/{id}/delete', name: 'organizer_delete_event', methods: ['POST'])]
-    public function deleteEvent(Request $request, Events $event, EntityManagerInterface $em): Response
-    {
-        if ($this->isCsrfTokenValid('delete_event_' . $event->getId(), $request->request->get('_token'))) {
-            $em->remove($event);
-            $em->flush();
-        }
-
+    if (!$event) {
+        $this->addFlash('error', 'Event not found.');
         return $this->redirectToRoute('app_organizer');
     }
+
+    // Verify CSRF token
+    if ($this->isCsrfTokenValid('delete_event_' . $event->getId(), $request->request->get('_token'))) {
+        // Remove related participations
+        $participations = $participationRepository->findBy(['event' => $event]);
+        foreach ($participations as $participation) {
+            $em->remove($participation);
+        }
+
+        // Remove the event
+        $em->remove($event);
+        $em->flush();
+
+        $this->addFlash('success', 'Event and related participations deleted successfully.');
+    } else {
+        $this->addFlash('error', 'Invalid CSRF token.');
+    }
+
+    return $this->redirectToRoute('app_organizer');
+}
+
+
+    // #[Route('/event/{id}/delete', name: 'organizer_delete_event', methods: ['POST'])]
+    // public function deleteEvent(Request $request, Events $event, EntityManagerInterface $em): Response
+    // {
+    //     if ($this->isCsrfTokenValid('delete_event_' . $event->getId(), $request->request->get('_token'))) {
+    //         $em->remove($event);
+    //         $em->flush();
+    //     }
+
+    //     return $this->redirectToRoute('app_organizer');
+    // }
 
 
 
