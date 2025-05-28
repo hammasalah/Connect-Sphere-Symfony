@@ -26,42 +26,43 @@ class OrganizerController extends AbstractController
     public function __construct(
         private JobsRepository $jobsRepository,
         private EventsRepository $eventsRepository,
-        private UsersRepository $usersRepository ,
-         private ParticipationRepository $participationRepository
+        private UsersRepository $usersRepository,
+        private ParticipationRepository $participationRepository
     ) {}
 
     #[Route('/organizer', name: 'app_organizer')]
-public function index(
-    SessionInterface $session,
-    ApplicationsRepository $applicationsRepo,
-    ParticipationRepository $participationRepo
-): Response {
-    $user = $session->get('user');
+    public function index(
+        SessionInterface $session,
+        ApplicationsRepository $applicationsRepo,
+        ParticipationRepository $participationRepo
+    ): Response {
+        $user = $session->get('user');
 
-    if (!$user) {
-        $this->addFlash('error', 'User not found in session. Please log in.');
-        return $this->redirectToRoute('app_login');
+        if (!$user) {
+            $this->addFlash('error', 'User not found in session. Please log in.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        return $this->render('organizer/organizer.html.twig', [
+            'jobs' => $this->jobsRepository->findByUser($user),
+            'events' => $this->eventsRepository->findByOrganizer($user),
+            'my_applications' => $applicationsRepo->findApplicationsByUser($user),
+            'applications_to_my_jobs' => $applicationsRepo->findApplicationsToOrganizerJobs($user),
+            'participants_to_my_events' => $participationRepo->findParticipantsOfMyEvents($user),
+            'my_participations' => $participationRepo->findBy(['participant' => $user]), // Add this line
+            'user' => $user,
+            'job_forms' => array_reduce(
+                $this->jobsRepository->findByUser($user),
+                fn($carry, $job) => $carry + [$job->getId() => $this->createForm(\App\Form\EditJobsType::class, $job)->createView()],
+                []
+            ),
+            'event_forms' => array_reduce(
+                $this->eventsRepository->findByOrganizer($user),
+                fn($carry, $event) => $carry + [$event->getId() => $this->createForm(\App\Form\EditEventsType::class, $event)->createView()],
+                []
+            )
+        ]);
     }
-
-    return $this->render('organizer/organizer.html.twig', [
-	'jobs' => $this->jobsRepository->findByUser($user),
-	'events' => $this->eventsRepository->findByOrganizer($user),
-	'my_applications' => $applicationsRepo->findApplicationsByUser($user),
-	'applications_to_my_jobs' => $applicationsRepo->findApplicationsToOrganizerJobs($user),
-    'participants_to_my_events' => $participationRepo->findParticipantsOfMyEvents($user),
-	'my_participations' => $participationRepo->findBy(['participant' => $user]), // Add this line
-	'user' => $user,
-	'job_forms' => array_reduce(
-		$this->jobsRepository->findByUser($user),
-		fn($carry, $job) => $carry + [$job->getId() => $this->createForm(\App\Form\EditJobsType::class, $job)->createView()],
-		[]
-	),
-	'event_forms' => array_reduce(
-		$this->eventsRepository->findByOrganizer($user),
-		fn($carry, $event) => $carry + [$event->getId() => $this->createForm(\App\Form\EditEventsType::class, $event)->createView()],
-		[]
-	)
-]);}
 
     // Route to approve the application
     #[Route('/organizer/approve-application/{id}', name: 'app_approve_application')]
@@ -99,171 +100,173 @@ public function index(
         return $this->redirectToRoute('app_organizer');
     }
 
-
     #[Route('/job/{id}/delete', name: 'organizer_delete_job', methods: ['POST'])]
-    public function deleteJob(Request $request, Jobs $job, EntityManagerInterface $em): Response
-    {
-        // Verify CSRF token and authorization
-        if (!$this->isCsrfTokenValid('delete_job_' . $job->getId(), $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token');
+    public function deleteJob(
+        int $id,
+        Request $request,
+        JobsRepository $jobsRepository,
+        EntityManagerInterface $em
+    ): Response {
+        // Fetch the job by ID
+        $job = $jobsRepository->find($id);
+
+        if (!$job) {
+            $this->addFlash('error', 'Job not found.');
+            return $this->redirectToRoute('app_organizer');
         }
 
-        // Optional: Add authorization check (example using Symfony's security)
-        // if ($job->getOrganizer() !== $this->getUser()) {
-        //     throw $this->createAccessDeniedException('You are not authorized to delete this job');
-        // }
+        // Verify CSRF token
+        if (!$this->isCsrfTokenValid('delete_job_' . $job->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Invalid CSRF token.');
+            return $this->redirectToRoute('app_organizer');
+        }
 
+        // Remove the job
         $em->remove($job);
         $em->flush();
 
-        $this->addFlash('success', 'Job deleted successfully');
+        $this->addFlash('success', 'Job deleted successfully.');
         return $this->redirectToRoute('app_organizer');
     }
 
-     #[Route('/event/{id}/delete', name: 'organizer_delete_event', methods: ['POST'])]
-public function deleteEvent(
-    int $id,
-    Request $request,
-    EventsRepository $eventsRepository,
-    ParticipationRepository $participationRepository,
-    EntityManagerInterface $em
-): Response {
-    // Fetch the event by ID
-    $event = $eventsRepository->find($id);
 
-    if (!$event) {
-        $this->addFlash('error', 'Event not found.');
-        return $this->redirectToRoute('app_organizer');
-    }
+    #[Route('/event/{id}/delete', name: 'organizer_delete_event', methods: ['POST'])]
+    public function deleteEvent(
+        int $id,
+        Request $request,
+        EventsRepository $eventsRepository,
+        ParticipationRepository $participationRepository,
+        EntityManagerInterface $em
+    ): Response {
+        // Fetch the event by ID
+        $event = $eventsRepository->find($id);
 
-    // Verify CSRF token
-    if ($this->isCsrfTokenValid('delete_event_' . $event->getId(), $request->request->get('_token'))) {
-        // Remove related participations
-        $participations = $participationRepository->findBy(['event' => $event]);
-        foreach ($participations as $participation) {
-            $em->remove($participation);
+        if (!$event) {
+            $this->addFlash('error', 'Event not found.');
+            return $this->redirectToRoute('app_organizer');
         }
 
-        // Remove the event
-        $em->remove($event);
-        $em->flush();
-
-        $this->addFlash('success', 'Event and related participations deleted successfully.');
-    } else {
-        $this->addFlash('error', 'Invalid CSRF token.');
-    }
-
-    return $this->redirectToRoute('app_organizer');
-}
-
-
-    // #[Route('/event/{id}/delete', name: 'organizer_delete_event', methods: ['POST'])]
-    // public function deleteEvent(Request $request, Events $event, EntityManagerInterface $em): Response
-    // {
-    //     if ($this->isCsrfTokenValid('delete_event_' . $event->getId(), $request->request->get('_token'))) {
-    //         $em->remove($event);
-    //         $em->flush();
-    //     }
-
-    //     return $this->redirectToRoute('app_organizer');
-    // }
-
-
-
-
-   #[Route('/job/{id}/edit', name: 'job_edit')]
-public function editJob(Request $request, Jobs $job, JobsRepository $jobsRepository): Response
-{
-    $form = $this->createForm(EditJobsType::class, $job);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        $jobsRepository->save($job); // persist changes
-        return $this->redirectToRoute('app_organizer');
-    }
-
-    return $this->render('organizer/edit_job.html.twig', [
-        'form' => $form->createView(),
-        'job' => $job,
-    ]);
-}
-
-
-
-#[Route('/event/{id}/edit', name: 'event_edit')]
-public function editEvent(
-    int $id,
-    Request $request,
-    EventsRepository $eventsRepository,
-    EntityManagerInterface $entityManager
-): Response {
-    // Fetch the event by ID
-    $event = $eventsRepository->find($id);
-
-    if (!$event) {
-        throw $this->createNotFoundException('The event does not exist.');
-    }
-
-    $form = $this->createForm(\App\Form\EditEventsType::class, $event);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        /** @var UploadedFile $imageFile */
-        $imageFile = $form->get('image')->getData();
-
-        if ($imageFile) {
-            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-
-            try {
-                $imageFile->move(
-                    $this->getParameter('event_images_directory'), // Ensure this parameter is defined
-                    $newFilename
-                );
-            } catch (FileException $e) {
-                $this->addFlash('error', 'Failed to upload image.');
-                return $this->redirectToRoute('app_organizer');
+        // Verify CSRF token
+        if ($this->isCsrfTokenValid('delete_event_' . $event->getId(), $request->request->get('_token'))) {
+            // Remove related participations
+            $participations = $participationRepository->findBy(['event' => $event]);
+            foreach ($participations as $participation) {
+                $em->remove($participation);
             }
 
-            $event->setImage($newFilename);
+            // Remove the event
+            $em->remove($event);
+            $em->flush();
+
+            $this->addFlash('success', 'Event and related participations deleted successfully.');
+        } else {
+            $this->addFlash('error', 'Invalid CSRF token.');
         }
 
-        $entityManager->persist($event);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Event updated successfully.');
         return $this->redirectToRoute('app_organizer');
     }
 
-    return $this->render('organizer/edit_event.html.twig', [
-        'form' => $form->createView(),
-        'event' => $event,
-    ]);
-}
 
-// #[Route('/event/{id}/edit', name: 'event_edit')]
-// public function editEvent(Request $request, Events $event, EventsRepository $eventsRepository): Response
-// {
-//     $form = $this->createForm(\App\Form\EditEventsType::class, $event);
-//     $form->handleRequest($request);
 
-//     if ($form->isSubmitted() && $form->isValid()) {
-//         $eventsRepository->save($event); // persist changes
-//         return $this->redirectToRoute('app_organizer');
-//     }
 
-//     return $this->render('organizer/edit_event.html.twig', [
-//         'form' => $form->createView(),
-//         'event' => $event,
-//     ]);
-// }
-// this method to handle the cancellation
-#[Route('/participation/cancel/{id}', name: 'cancel_participation', methods: ['POST'])]
+    #[Route('/job/{id}/edit', name: 'job_edit')]
+    public function editJob(
+        int $id,
+        Request $request,
+        JobsRepository $jobsRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        // Fetch the job by ID
+        $job = $jobsRepository->find($id);
+
+        if (!$job) {
+            $this->addFlash('error', 'Job not found.');
+            return $this->redirectToRoute('app_organizer');
+        }
+
+        $form = $this->createForm(EditJobsType::class, $job);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($job);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Job updated successfully.');
+            return $this->redirectToRoute('app_organizer');
+        }
+
+        return $this->render('organizer/edit_job.html.twig', [
+            'form' => $form->createView(),
+            'job' => $job,
+        ]);
+    }
+
+
+
+
+
+
+    #[Route('/event/{id}/edit', name: 'event_edit')]
+    public function editEvent(
+        int $id,
+        Request $request,
+        EventsRepository $eventsRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        // Fetch the event by ID
+        $event = $eventsRepository->find($id);
+
+        if (!$event) {
+            throw $this->createNotFoundException('The event does not exist.');
+        }
+
+        $form = $this->createForm(\App\Form\EditEventsType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $imageFile */
+            $imageFile = $form->get('image')->getData();
+
+            if ($imageFile) {
+                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('event_images_directory'), // Ensure this parameter is defined
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Failed to upload image.');
+                    return $this->redirectToRoute('app_organizer');
+                }
+
+                $event->setImage($newFilename);
+            }
+
+            $entityManager->persist($event);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Event updated successfully.');
+            return $this->redirectToRoute('app_organizer');
+        }
+
+        return $this->render('organizer/edit_event.html.twig', [
+            'form' => $form->createView(),
+            'event' => $event,
+        ]);
+    }
+
+
+    // this method to handle the cancellation
+
+    #[Route('/participation/cancel/{id}', name: 'cancel_participation', methods: ['POST'])]
 public function cancelParticipation(
     int $id,
     Request $request,
     ParticipationRepository $participationRepo,
     EntityManagerInterface $em
 ): Response {
+    // Fetch the participation by ID
     $participation = $participationRepo->find($id);
 
     if (!$participation) {
@@ -271,18 +274,44 @@ public function cancelParticipation(
         return $this->redirectToRoute('app_organizer');
     }
 
+    // Verify CSRF token
     $submittedToken = $request->request->get('_token');
     if (!$this->isCsrfTokenValid('cancel_participation_' . $participation->getId(), $submittedToken)) {
         $this->addFlash('error', 'Invalid CSRF token.');
         return $this->redirectToRoute('app_organizer');
     }
 
+    // Remove the participation
     $em->remove($participation);
     $em->flush();
 
     $this->addFlash('success', 'You have successfully cancelled your participation.');
     return $this->redirectToRoute('app_organizer');
 }
+    // #[Route('/participation/cancel/{id}', name: 'cancel_participation', methods: ['POST'])]
+    // public function cancelParticipation(
+    //     int $id,
+    //     Request $request,
+    //     ParticipationRepository $participationRepo,
+    //     EntityManagerInterface $em
+    // ): Response {
+    //     $participation = $participationRepo->find($id);
 
+    //     if (!$participation) {
+    //         $this->addFlash('error', 'Participation not found.');
+    //         return $this->redirectToRoute('app_organizer');
+    //     }
 
+    //     $submittedToken = $request->request->get('_token');
+    //     if (!$this->isCsrfTokenValid('cancel_participation_' . $participation->getId(), $submittedToken)) {
+    //         $this->addFlash('error', 'Invalid CSRF token.');
+    //         return $this->redirectToRoute('app_organizer');
+    //     }
+
+    //     $em->remove($participation);
+    //     $em->flush();
+
+    //     $this->addFlash('success', 'You have successfully cancelled your participation.');
+    //     return $this->redirectToRoute('app_organizer');
+    // }
 }

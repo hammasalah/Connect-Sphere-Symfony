@@ -2,415 +2,388 @@
 
 
 {% block stylesheets %}
-    {# Styles from events_page.css for consistent theme #}
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('css/events_page.css') }}"> {# Main theme CSS from events page #}
-    {# Bootstrap CSS for alerts and modal close buttons #}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    {# Link to the themed CSS for the organizer dashboard (organizer.css) #}
-    <link rel="stylesheet" href="{{ asset('css/organizer.css') }}">
+	{# Styles from events_page.css for consistent theme #}
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="{{ asset('css/events_page.css') }}">
+	{# Main theme CSS from events page #}
+	{# Bootstrap CSS for alerts and modal close buttons #}
+	<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> {# Link to the themed CSS for the organizer dashboard (organizer.css) #}
+	<link rel="stylesheet" href="{{ asset('css/organizer.css') }}">
 {% endblock %}
 
 {% block body %}
 
-<!-- Modified Header with Organizer Links -->
-<header class="header">
-    <nav class="nav-container container">
-        <div class="logo">
-            <a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:10px;">
-                <span style="font-weight:bold;font-size:1.5rem;color:black;">ConnectSphere</span>
-            </a>
-        </div>
-        <div class="nav-links">
-        <a href="{{ path('app_events') }}" class="nav-link">Events</a>
-        <a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
-        <a href="{{ path('app_analytics') }}" class="nav-link">Analytics</a>
-        <a href="{{ path('app_groups') }}" class="nav-link">Groups</a>
-        <a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
-        <a href="{{ path('app_profile') }}" class="nav-link">Profile</a>
-        <a href="{{ path('app_social') }}" class="nav-link">Social</a>
-        {# Add a mobile menu toggle for the main header if it doesn't have one for many links #}
-        {# <button class="main-header-mobile-toggle">MENU</button> #}
-    </nav>
-</header>
+	<!-- Modified Header with Organizer Links -->
+	<header class="header">
+		<nav class="nav-container container">
+			<div class="logo">
+				<a href="{{ path('app_home') }}" style="display:flex;align-items:center;text-decoration:none;">
+					<img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img" style="margin-right:10px;">
+					<span style="font-weight:bold;font-size:1.5rem;color:black;">ConnectSphere</span>
+				</a>
+			</div>
+			<div class="nav-links">
+				<a href="{{ path('app_events') }}" class="nav-link">Events</a>
+				<a href="{{ path('app_job_feed') }}" class="nav-link">Job Feed</a>
+				<a href="{{ path('app_analytics') }}" class="nav-link">Analytics</a>
+				<a href="{{ path('app_groups') }}" class="nav-link">Groups</a>
+				<a href="{{ path('app_chatbot') }}" class="nav-link">Chatbot</a>
+				<a href="{{ path('app_profile') }}" class="nav-link">Profile</a>
+				<a href="{{ path('app_social') }}" class="nav-link">Social</a>
+				{# Add a mobile menu toggle for the main header if it doesn't have one for many links #}
+				{# <button class="main-header-mobile-toggle">MENU</button> #}
+			</nav>
+		</header>
 
-<!-- NO MORE SIDEBAR or SIDEBAR TOGGLE -->
+		<!-- NO MORE SIDEBAR or SIDEBAR TOGGLE -->
 
-{# The app-container div might not be strictly necessary anymore, or its styling will change #}
-<div class="organizer-page-container"> {# Renamed from app-container for clarity #}
-    <!-- Main Content -->
-    {# Removed dashboard-main-content-adapter, styles will be directly on main-content or its children #}
-    <main class="main-content">
-        <div class="dashboard-container">
-            {# --- Flash Messages --- #}
-            <div id="server-flash-message-container" style="margin-bottom: 20px;">
-                {% for label, messages in app.flashes %}
-                    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                        {% for message in messages %}{{ message|raw }}{% endfor %}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            </div>
-            <div id="ajax-message-container" style="margin-bottom: 20px;"></div>
+		{# The app-container div might not be strictly necessary anymore, or its styling will change #}
+		<div class="organizer-page-container">
+			{# Renamed from app-container for clarity #}
+			<!-- Main Content -->
+			{# Removed dashboard-main-content-adapter, styles will be directly on main-content or its children #}
+				<main class="main-content"> <div
+					class="dashboard-container">
+					{# --- Flash Messages --- #}
+					<div id="server-flash-message-container" style="margin-bottom: 20px;">
+						{% for label, messages in app.flashes %}
+							<div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+								{% for message in messages %}
+									{{ message|raw }}
+								{% endfor %}
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+						{% endfor %}
+					</div>
+					<div id="ajax-message-container" style="margin-bottom: 20px;"></div>
 
-            <h1 class="dashboard-page-title">Dashboard - {{ user.username }}</h1>
+					<h1 class="dashboard-page-title">Dashboard -
+						{{ user.username }}</h1>
 
-            <div class="table-nav-buttons">
-                <button class="btn-dashboard-nav active" onclick="showSection('section-jobs', this)">Posted Jobs</button>
-                <button class="btn-dashboard-nav" onclick="showSection('section-events', this)">Posted Events</button>
-                <button class="btn-dashboard-nav" onclick="showSection('section-my-apps', this)">My Applications</button>
-                <button class="btn-dashboard-nav" onclick="showSection('section-apps-to-me', this)">Applications to My Jobs</button>
-                <button class="btn-dashboard-nav" onclick="showSection('section-my-participations', this)">My Participations</button>
-                <button class="btn-dashboard-nav" onclick="showSection('section-participants-to-my-events', this)">Participants to My Events</button>
-            </div>
+					<div class="table-nav-buttons">
+						<button class="btn-dashboard-nav active" onclick="showSection('section-jobs', this)">Posted Jobs</button>
+						<button class="btn-dashboard-nav" onclick="showSection('section-events', this)">Posted Events</button>
+						<button class="btn-dashboard-nav" onclick="showSection('section-my-apps', this)">My Applications</button>
+						<button class="btn-dashboard-nav" onclick="showSection('section-apps-to-me', this)">Applications to My Jobs</button>
+						<button class="btn-dashboard-nav" onclick="showSection('section-my-participations', this)">My Participations</button>
+						<button class="btn-dashboard-nav" onclick="showSection('section-participants-to-my-events', this)">Participants to My Events</button>
+					</div>
 
-            <!-- JOBS SECTION -->
-            <div class="table-section" id="section-jobs">
-                <div class="section-header">My Job Postings</div>
-                {% if jobs|length > 0 %}
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Location</th>
-                                    <th>Type</th>
-                                    <th>Salary Range</th>
-                                    <th>Deadline</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for job in jobs %}
-                                    <tr>
-                                        <td data-label="Title">{{ job.jobTitle }}</td>
-                                        <td data-label="Location">{{ job.jobLocation }}</td>
-                                        <td data-label="Type">{{ job.employmentType }}</td>
-                                        <td data-label="Salary">{{ job.currency }} {{ job.minSalary|number_format }} - {{ job.currency }} {{ job.maxSalary|number_format }}</td>
-                                        <td data-label="Deadline">{{ job.applicationDeadLine|date('Y-m-d') }}</td>
-                                        <td data-label="Actions" class="actions-cell">
-                                            <button class="btn btn-action btn-edit" onclick="toggleForm('job-form-{{ job.id }}')"><i class="fas fa-edit"></i> Edit</button>
-                                            <form method="post" action="{{ path('organizer_delete_job', {'id': job.id}) }}" onsubmit="return confirm('Are you sure you want to delete this job?');" style="display:inline;">
-                                                <input type="hidden" name="_method" value="POST">
-                                                <input type="hidden" name="token" value="{{ csrf_token('delete_job' ~ job.id) }}">
-                                                <button class="btn btn-action btn-delete"><i class="fas fa-trash"></i> Delete</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    <tr id="job-form-{{ job.id }}" class="edit-form-row" style="display:none;">
-                                        <td colspan="6">
-                                            {{ form_start(job_forms[job.id], {'action': path('job_edit', {'id': job.id}), 'attr': {'class': 'dashboard-edit-form'}}) }}
-                                            {{ form_widget(job_forms[job.id]) }}
-                                            <button type="submit" class="btn btn-action btn-save"><i class="fas fa-save"></i> Save Changes</button>
-                                            <button type="button" class="btn btn-action btn-cancel" onclick="toggleForm('job-form-{{ job.id }}')">Cancel</button>
-                                            {{ form_end(job_forms[job.id]) }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="no-data">No job postings available. <a href="{{path('app_create_job')}}">Post a new Job?</a></p>
-                {% endif %}
-            </div>
+					<!-- JOBS SECTION -->
+					<div class="table-section" id="section-jobs">
+						<div class="section-header">My Job Postings</div>
+						{% if jobs|length > 0 %}
+							<div class="table-container">
+								<table class="data-table">
+									<thead>
+										<tr>
+											<th>Title</th>
+											<th>Location</th>
+											<th>Type</th>
+											<th>Salary Range</th>
+											<th>Deadline</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for job in jobs %}
+											<tr>
+												<td data-label="Title">{{ job.jobTitle }}</td>
+												<td data-label="Location">{{ job.jobLocation }}</td>
+												<td data-label="Type">{{ job.employmentType }}</td>
+												<td data-label="Salary">{{ job.currency }}
+													{{ job.minSalary|number_format }}
+													-
+													{{ job.currency }}
+													{{ job.maxSalary|number_format }}</td>
+												<td data-label="Deadline">{{ job.applicationDeadLine|date('Y-m-d') }}</td>
+												<td data-label="Actions" class="actions-cell">
+													<button class="btn btn-action btn-edit" onclick="toggleForm('job-form-{{ job.id }}')">
+														<i class="fas fa-edit"></i>
+														Edit</button>
+													<form method="post" action="{{ path('organizer_delete_job', {'id': job.id}) }}" onsubmit="return confirm('Are you sure you want to delete this job?');" style="display:inline;">
+														<input type="hidden" name="_token" value="{{ csrf_token('delete_job_' ~ job.id) }}">
+														<button class="btn btn-action btn-delete">
+															<i class="fas fa-trash"></i>
+															Delete</button>
+													</form>
+												</td>
+											</tr>
+										</form>
+									</tbody>
+								</td>
+							</tr>
+							<tr id="job-form-{{ job.id }}" class="edit-form-row" style="display:none;">
+								<td colspan="6">
+									{{ form_start(job_forms[job.id], {'action': path('job_edit', {'id': job.id}), 'attr': {'class': 'dashboard-edit-form'}}) }}
+									{{ form_widget(job_forms[job.id]) }}
+									<button type="submit" class="btn btn-action btn-save">
+										<i class="fas fa-save"></i>
+										Save Changes</button>
+									<button type="button" class="btn btn-action btn-cancel" onclick="toggleForm('job-form-{{ job.id }}')">Cancel</button>
+									{{ form_end(job_forms[job.id]) }}
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% else %}
+			<p class="no-data">No job postings available.
+				<a href="{{path('app_create_job')}}">Post a new Job?</a>
+			</p>
+		{% endif %}
+	</div>
 
-            <!-- EVENTS SECTION -->
-            <div class="table-section" id="section-events">
-                <div class="section-header">My Events</div>
-                {% if events|length > 0 %}
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Event Name</th>
-                                    <th>Location</th>
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
-                                    <th>Points</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for event in events %}
-                                    <tr>
-                                        <td data-label="Event Name">{{ event.name }}</td>
-                                        <td data-label="Location">{{ event.location }}</td>
-                                        <td data-label="Start Time">{{ event.startTime|date('Y-m-d H:i') }}</td>
-                                        <td data-label="End Time">{{ event.endTime|date('Y-m-d H:i') }}</td>
-                                        <td data-label="Points">{{ event.points|default(0) }}</td>
-                                        <td data-label="Actions" class="actions-cell">
-                                            <button class="btn btn-action btn-edit" onclick="toggleForm('event-form-{{ event.id }}')"><i class="fas fa-edit"></i> Edit</button>
-                                           <form method="post" action="{{ path('organizer_delete_event', {'id': event.id}) }}" onsubmit="return confirm('Are you sure you want to delete this event?');" style="display:inline;">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete_event_' ~ event.id) }}">
-    <button class="btn btn-action btn-delete"><i class="fas fa-trash"></i> Delete</button>
-</form>>
-                                        </td>
-                                    </tr>
-                                    <tr id="event-form-{{ event.id }}" class="edit-form-row" style="display:none;">
-                                        <td colspan="6">
-                                            {{ form_start(event_forms[event.id], {'action': path('event_edit', {'id': event.id}), 'attr': {'class': 'dashboard-edit-form'}}) }}
-                                            {{ form_widget(event_forms[event.id]) }}
-                                            <button type="submit" class="btn btn-action btn-save"><i class="fas fa-save"></i> Save Changes</button>
-                                            <button type="button" class="btn btn-action btn-cancel" onclick="toggleForm('event-form-{{ event.id }}')">Cancel</button>
-                                            {{ form_end(event_forms[event.id]) }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="no-data">No events found. <a href="{{ path('app_event_add_page')}}">Post a new Event?</a></p>
-                {% endif %}
-            </div>
+	<!-- EVENTS SECTION -->
+	<div class="table-section" id="section-events">
+		<div class="section-header">My Events</div>
+		{% if events|length > 0 %}
+			<div class="table-container">
+				<table class="data-table">
+					<thead>
+						<tr>
+							<th>Event Name</th>
+							<th>Location</th>
+							<th>Start Time</th>
+							<th>End Time</th>
+							<th>Points</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for event in events %}
+							<tr>
+								<td data-label="Event Name">{{ event.name }}</td>
+								<td data-label="Location">{{ event.location }}</td>
+								<td data-label="Start Time">{{ event.startTime|date('Y-m-d H:i') }}</td>
+								<td data-label="End Time">{{ event.endTime|date('Y-m-d H:i') }}</td>
+								<td data-label="Points">{{ event.points|default(0) }}</td>
+								<td data-label="Actions" class="actions-cell">
+									<button class="btn btn-action btn-edit" onclick="toggleForm('event-form-{{ event.id }}')">
+										<i class="fas fa-edit"></i>
+										Edit</button>
+									<form method="post" action="{{ path('organizer_delete_event', {'id': event.id}) }}" onsubmit="return confirm('Are you sure you want to delete this event?');" style="display:inline;">
+										<input type="hidden" name="_token" value="{{ csrf_token('delete_event_' ~ event.id) }}">
+										<button class="btn btn-action btn-delete">
+											<i class="fas fa-trash"></i>
+											Delete</button>
+									</form>>
+								</td>
+							</tr>
+							<tr id="event-form-{{ event.id }}" class="edit-form-row" style="display:none;">
+								<td colspan="6">
+									{{ form_start(event_forms[event.id], {'action': path('event_edit', {'id': event.id}), 'attr': {'class': 'dashboard-edit-form'}}) }}
+									{{ form_widget(event_forms[event.id]) }}
+									<button type="submit" class="btn btn-action btn-save">
+										<i class="fas fa-save"></i>
+										Save Changes</button>
+									<button type="button" class="btn btn-action btn-cancel" onclick="toggleForm('event-form-{{ event.id }}')">Cancel</button>
+									{{ form_end(event_forms[event.id]) }}
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% else %}
+			<p class="no-data">No events found.
+				<a href="{{ path('app_event_add_page')}}">Post a new Event?</a>
+			</p>
+		{% endif %}
+	</div>
 
-            <!-- MY APPLICATIONS SECTION -->
-            <div class="table-section" id="section-my-apps">
-                <div class="section-header">My Job Applications</div>
-                {% if my_applications|length > 0 %}
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Job Title</th>
-                                    <th>Company</th>
-                                    <th>Applied At</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for application in my_applications %}
-                                    <tr>
-                                        <td data-label="Job Title">{{ application.jobId.jobTitle }}</td>
-                                        <td data-label="Company">{{ application.jobId.recruiterName }}</td>
-                                        <td data-label="Applied At">{{ application.appliedAt|date('Y-m-d H:i') }}</td>
-                                        <td data-label="Status"><span class="status-badge status-{{ application.status|lower|replace({' ': '-'}) }}">{{ application.status }}</span></td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="no-data">You haven't applied to any jobs yet. <a href="{{ path('app_job_feed') }}">Find Jobs?</a></p>
-                {% endif %}
-            </div>
+	<!-- MY APPLICATIONS SECTION -->
+	<div class="table-section" id="section-my-apps">
+		<div class="section-header">My Job Applications</div>
+		{% if my_applications|length > 0 %}
+			<div class="table-container">
+				<table class="data-table">
+					<thead>
+						<tr>
+							<th>Job Title</th>
+							<th>Company</th>
+							<th>Applied At</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for application in my_applications %}
+							<tr>
+								<td data-label="Job Title">{{ application.jobId.jobTitle }}</td>
+								<td data-label="Company">{{ application.jobId.recruiterName }}</td>
+								<td data-label="Applied At">{{ application.appliedAt|date('Y-m-d H:i') }}</td>
+								<td data-label="Status">
+									<span class="status-badge status-{{ application.status|lower|replace({' ': '-'}) }}">{{ application.status }}</span>
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% else %}
+			<p class="no-data">You haven't applied to any jobs yet.
+				<a href="{{ path('app_job_feed') }}">Find Jobs?</a>
+			</p>
+		{% endif %}
+	</div>
 
-            <!-- APPLICATIONS TO MY JOBS -->
-            <div class="table-section" id="section-apps-to-me">
-                <div class="section-header">Applications to Your Posted Jobs</div>
-                {% if applications_to_my_jobs|length > 0 %}
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Applicant</th>
-                                    <th>Job Title</th>
-                                    <th>Applied At</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for application in applications_to_my_jobs %}
-                                    <tr>
-                                        <td data-label="Applicant">{{ application.userId.username }}</td>
-                                        <td data-label="Job Title">{{ application.jobId.jobTitle }}</td>
-                                        <td data-label="Applied At">{{ application.appliedAt|date('Y-m-d H:i') }}</td>
-                                        <td data-label="Status"><span class="status-badge status-{{ application.status|lower|replace({' ': '-'}) }}">{{ application.status }}</span></td>
-                                        <td data-label="Actions" class="actions-cell">
-                                            {% if application.status|lower not in ['approved', 'accepted'] %}
-                                            <a href="{{ path('app_approve_application', {'id': application.id}) }}" class="btn btn-action btn-approve"><i class="fas fa-check"></i> Approve</a>
-                                            {% endif %}
-                                            {% if application.status|lower != 'rejected' %}
-                                            <a href="{{ path('app_reject_application', {'id': application.id}) }}" class="btn btn-action btn-reject"><i class="fas fa-times"></i> Reject</a>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="no-data">No applications to your posted jobs yet.</p>
-                {% endif %}
-            </div>
+	<!-- APPLICATIONS TO MY JOBS -->
+	<div class="table-section" id="section-apps-to-me">
+		<div class="section-header">Applications to Your Posted Jobs</div>
+		{% if applications_to_my_jobs|length > 0 %}
+			<div class="table-container">
+				<table class="data-table">
+					<thead>
+						<tr>
+							<th>Applicant</th>
+							<th>Job Title</th>
+							<th>Applied At</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for application in applications_to_my_jobs %}
+							<tr>
+								<td data-label="Applicant">{{ application.userId.username }}</td>
+								<td data-label="Job Title">{{ application.jobId.jobTitle }}</td>
+								<td data-label="Applied At">{{ application.appliedAt|date('Y-m-d H:i') }}</td>
+								<td data-label="Status">
+									<span class="status-badge status-{{ application.status|lower|replace({' ': '-'}) }}">{{ application.status }}</span>
+								</td>
+								<td data-label="Actions" class="actions-cell">
+									{% if application.status|lower not in ['approved', 'accepted'] %}
+										<a href="{{ path('app_approve_application', {'id': application.id}) }}" class="btn btn-action btn-approve">
+											<i class="fas fa-check"></i>
+											Approve</a>
+									{% endif %}
+									{% if application.status|lower != 'rejected' %}
+										<a href="{{ path('app_reject_application', {'id': application.id}) }}" class="btn btn-action btn-reject">
+											<i class="fas fa-times"></i>
+											Reject</a>
+									{% endif %}
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% else %}
+			<p class="no-data">No applications to your posted jobs yet.</p>
+		{% endif %}
+	</div>
 
-            <!-- MY PARTICIPATIONS -->
-            <div class="table-section" id="section-my-participations">
-                <div class="section-header">My Event Participations</div>
-                {% if my_participations|length > 0 %}
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Event Title</th>
-                                    <th>Event Date</th>
-                                    <th>Location</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for participation in my_participations %}
-                                    <tr>
-                                        <td data-label="Event Title">{{ participation.event.getName() }}</td>
-                                        <td data-label="Event Date">{{ participation.event.getStartTime()|date('Y-m-d H:i') }}</td>
-                                        <td data-label="Location">{{ participation.event.getLocation() }}</td>
-                                        <td data-label="Action" class="actions-cell">
-                                            <form method="post" action="{{ path('cancel_participation', {'id': participation.id}) }}" onsubmit="return confirm('Are you sure you want to cancel your participation?');" style="display:inline;">
-                                                <input type="hidden" name="token" value="{{ csrf_token('cancel_participation' ~ participation.id) }}">
-                                                <button type="submit" class="btn btn-action btn-delete"><i class="fas fa-times-circle"></i> Cancel</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="no-data">You haven't participated in any events yet. <a href="{{ path('app_events') }}">Find Events?</a></p>
-                {% endif %}
-            </div>
-
-            <!-- PARTICIPANTS TO MY EVENTS -->
-            <div class="table-section" id="section-participants-to-my-events">
-                <div class="section-header">Participants in My Events</div>
-                {% if participants_to_my_events|length > 0 %}
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Participant Name</th>
-                                    <th>Gender</th>
-                                    <th>Age</th>
-                                    <th>Event Title</th>
-                                    <th>Location</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for participation in participants_to_my_events %}
-                                    <tr>
-                                        <td data-label="Participant Name">{{ participation.participant.username }}</td>
-                                        <td data-label="Gender">{{ participation.participant.gender|default('N/A') }}</td>
-                                        <td data-label="Age">{{ participation.participant.age|default('N/A') }}</td>
-                                        <td data-label="Event Title">{{ participation.event.name }}</td>
-                                        <td data-label="Location">{{ participation.event.location }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="no-data">No participants found for your events.</p>
-                {% endif %}
-            </div>
-        </div>{# end .dashboard-container #}
-    </main> {# end .main-content #}
-</div> {# end .organizer-page-container #}
-
-
-<!-- Footer from events page -->
-<footer class="site-footer">
-    <div class="footer-content container">
-        <div class="footer-column">
-            <h4>ConnectSphere</h4>
-            <p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p>
-        </div>
-        <div class="footer-column">
-            <h4>Quick Links</h4>
-            <ul>
-                <li><a href="{{ path('app_home') }}">Home</a></li>
-                <li><a href="{{ path('app_events') }}">Events</a></li>
-                <li><a href="#">About Us</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">Contact</a></li>
-                <li><a href="#">Terms of Service</a></li>
-            </ul>
-        </div>
-        <div class="footer-column footer-contact">
-            <h4>Contact Us</h4>
-            <p><i class="fas fa-phone"></i><a href="tel:+21692160411">+216 92 160 411</a></p>
-            <p><i class="fas fa-envelope"></i><a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p>
-        </div>
-        <div class="footer-column">
-            <h4>Follow Us</h4>
-            <div class="footer-social-icons">
-                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a>
-                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                <a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a>
-            </div>
-        </div>
-    </div>
-    <div class="footer-bottom">© {{ "now"|date("Y") }} ConnectSphere. All rights reserved.</div>
-</footer>
-
-{% endblock %}
-
-
-{% block javascripts %}
-{# Bootstrap JS Bundle for alerts and other components #}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // --- Flash messages auto-hide ---
-    const serverFlashMessages = document.querySelectorAll('#server-flash-message-container .alert');
-    serverFlashMessages.forEach(function(flashMessage) {
-        setTimeout(function() {
-            const alertInstance = typeof bootstrap !== 'undefined' ? bootstrap.Alert.getInstance(flashMessage) : null;
-            if (alertInstance) {
-                alertInstance.close();
-            } else {
-                flashMessage.style.transition = 'opacity 0.5s ease-out';
-                flashMessage.style.opacity = '0';
-                setTimeout(() => flashMessage.remove(), 500);
-            }
-        }, 7000);
-    });
-
-    // --- Dashboard Section Toggle ---
-    const navButtons = document.querySelectorAll('.table-nav-buttons .btn-dashboard-nav');
-    function showSection(sectionId, clickedButton) {
-        const sections = document.querySelectorAll('.table-section');
-        sections.forEach(section => section.style.display = 'none');
-        
-        const target = document.getElementById(sectionId);
-        if (target) {
-            target.style.display = 'block';
-        }
-
-        navButtons.forEach(button => button.classList.remove('active'));
-        if (clickedButton) {
-            clickedButton.classList.add('active');
-        }
-    }
-    // Make showSection globally available
-    window.showSection = showSection;
-
-
-    // Show jobs section by default
-    const firstNavButton = document.querySelector('.table-nav-buttons .btn-dashboard-nav');
-    if (firstNavButton) {
-        // Ensure the default section to show is 'section-jobs' or whatever the first button targets
-        const defaultSectionId = firstNavButton.getAttribute('onclick').match(/'([^']+)'/)[1];
-        showSection(defaultSectionId, firstNavButton);
-    }
-
-    // --- Dashboard Form Toggle ---
-    function toggleForm(formId) {
-        const row = document.getElementById(formId);
-        if (row) {
-            row.style.display = row.style.display === "none" ? "table-row" : "none";
-        }
-    }
-    // Make toggleForm globally available
-    window.toggleForm = toggleForm;
-
-    // NO MORE SIDEBAR JS NEEDED
+	<!-- MY PARTICIPATIONS -->
+	<div class="table-section" id="section-my-participations">
+		<div class="section-header">My Event Participations</div>
+		{% if my_participations|length > 0 %}
+			<div class="table-container">
+				<table class="data-table">
+					<thead>
+						<tr>
+							<th>Event Title</th>
+							<th>Event Date</th>
+							<th>Location</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for participation in my_participations %}
+							<tr>
+								<td data-label="Event Title">{{ participation.event.getName() }}</td>
+								<td data-label="Event Date">{{ participation.event.getStartTime()|date('Y-m-d H:i') }}</td>
+								<td data-label="Location">{{ participation.event.getLocation() }}</td>
+								<td data-label="Action" class="actions-cell">
+									<form method="post" action="{{ path('cancel_participation', {'id': participation.id}) }}" onsubmit="return confirm('Are you sure you want to cancel your participation?');">
+										<input type="hidden" name="_token" value="{{ csrf_token('cancel_participation_' ~ participation.id) }}">
+										<button type="submit" class="btn btn-action btn-delete">Cancel Participation</button>
+									</form>
+									
+								</td>
+							</tr>
+						</form>
+					</tbody>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table></div>{% else %}<p class="no-data">You haven't participated in any events yet.
+<a href="{{ path('app_events') }}">Find Events?</a></p>{% endif %}</div><!-- PARTICIPANTS TO MY EVENTS --><div class="table-section" id="section-participants-to-my-events"><div class="section-header">Participants in My Events</div>{% if participants_to_my_events|length > 0 %}<div class="table-container">
+<table class="data-table">
+	<thead>
+		<tr>
+			<th>Participant Name</th>
+			<th>Gender</th>
+			<th>Age</th>
+			<th>Event Title</th>
+			<th>Location</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for participation in participants_to_my_events %}
+			<tr>
+				<td data-label="Participant Name">{{ participation.participant.username }}</td>
+				<td data-label="Gender">{{ participation.participant.gender|default('N/A') }}</td>
+				<td data-label="Age">{{ participation.participant.age|default('N/A') }}</td>
+				<td data-label="Event Title">{{ participation.event.name }}</td>
+				<td data-label="Location">{{ participation.event.location }}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table></div>{% else %}<p class="no-data">No participants found for your events.</p>{% endif %}</div></div>{# end .dashboard-container #}</main>{# end .main-content #}</div>{# end .organizer-page-container #}<!-- Footer from events page --><footer class="site-footer"><div class="footer-content container"><div class="footer-column"><h4>ConnectSphere</h4><p>The ultimate platform for planning, promoting, and attending successful events. Join our community!</p></div><div class="footer-column"><h4>Quick Links</h4><ul><li><ahref="{{path('app_home')}}">Home</a></li><li><ahref="{{path('app_events')}}">Events</a></li><li><a href="#">About Us</a></li><li><a href="#">Blog</a></li><li><a href="#">Contact</a></li><li><a href="#">Terms of Service</a></li></ul></div><div class="footer-column footer-contact"><h4>Contact Us</h4><p><i class="fas fa-phone"></i><a href="tel:+21692160411">+216 92 160 411</a></p><p><i class="fas fa-envelope"></i><a href="mailto:ConnecSphere@gmail.com">ConnecSphere@gmail.com</a></p></div><div class="footer-column"><h4>Follow Us</h4><div class="footer-social-icons"><a href="#" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a><a href="#" aria-label="Instagram"><i class="fab fa-instagram-square"></i></a><a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a><a href="#" aria-label="Twitter"><i class="fab fa-twitter-square"></i></a></div></div></div><div class="footer-bottom">©{{ "now"|date("Y") }}ConnectSphere. All rights reserved.</div></footer>{% endblock %}{% block javascripts %}{# Bootstrap JS Bundle for alerts and other components #}<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script><script>document.addEventListener('DOMContentLoaded', () => { // --- Flash messages auto-hide ---
+const serverFlashMessages = document.querySelectorAll('#server-flash-message-container .alert');
+serverFlashMessages.forEach(function (flashMessage) {
+setTimeout(function () {
+const alertInstance = typeof bootstrap !== 'undefined' ? bootstrap.Alert.getInstance(flashMessage) : null;
+if (alertInstance) {
+alertInstance.close();
+} else {
+flashMessage.style.transition = 'opacity 0.5s ease-out';
+flashMessage.style.opacity = '0';
+setTimeout(() => flashMessage.remove(), 500);
+}
+}, 7000);
 });
-</script>
-{% endblock %}
+
+// --- Dashboard Section Toggle ---
+const navButtons = document.querySelectorAll('.table-nav-buttons .btn-dashboard-nav');
+function showSection(sectionId, clickedButton) {
+const sections = document.querySelectorAll('.table-section');
+sections.forEach(section => section.style.display = 'none');
+
+const target = document.getElementById(sectionId);
+if (target) {
+target.style.display = 'block';
+}
+
+navButtons.forEach(button => button.classList.remove('active'));
+if (clickedButton) {
+clickedButton.classList.add('active');
+}
+}
+// Make showSection globally available
+window.showSection = showSection;
+
+
+// Show jobs section by default
+const firstNavButton = document.querySelector('.table-nav-buttons .btn-dashboard-nav');
+if (firstNavButton) { // Ensure the default section to show is 'section-jobs' or whatever the first button targets
+const defaultSectionId = firstNavButton.getAttribute('onclick').match(/'([^']+)'/)[1];
+showSection(defaultSectionId, firstNavButton);
+}
+
+// --- Dashboard Form Toggle ---
+function toggleForm(formId) {
+const row = document.getElementById(formId);
+if (row) {
+row.style.display = row.style.display === "none" ? "table-row" : "none";
+}
+}
+// Make toggleForm globally available
+window.toggleForm = toggleForm;
+
+// NO MORE SIDEBAR JS NEEDED
+});</script>{% endblock %}
